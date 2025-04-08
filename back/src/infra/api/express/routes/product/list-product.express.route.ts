@@ -57,5 +57,3 @@ export class ListProductRoute implements Route {
     return response;
   }
 }
-
-// ! PAREI 1:06:10 vkcTw9jgDTw
