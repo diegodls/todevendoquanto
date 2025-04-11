@@ -20,6 +20,15 @@ export class Product {
     });
   }
 
+  public static with(
+    id: string,
+    name: string,
+    price: number,
+    quantity: number
+  ) {
+    return new Product({ id, name, price, quantity });
+  }
+
   public get id() {
     return this.props.id;
   }

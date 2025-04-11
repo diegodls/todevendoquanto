@@ -14,7 +14,7 @@ export type ListOutputDto = {
     name: string;
     price: number;
     balance: number;
-  };
+  }[];
 };
 
 export interface ProductService {

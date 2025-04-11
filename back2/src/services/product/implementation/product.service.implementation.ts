@@ -52,8 +52,22 @@ export class ProductServiceImplementation implements ProductService {
   }
 
   public async list(): Promise<ListOutputDto> {
-    throw new Error("Method not implemented.");
+    const aProducts = await this.repository.list();
+
+    const products = aProducts.map((p) => {
+      return {
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        balance: p.quantity,
+      };
+    });
+
+    const output: ListOutputDto = {
+      products,
+    };
+    return output;
   }
 }
 
-//parei 32:13 RY0BQV803UU
+//parei  RY0BQV803UU
