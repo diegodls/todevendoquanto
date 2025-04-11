@@ -1,6 +1,8 @@
+import { Product } from "../../../entities/product";
 import { ProductRepository } from "../../../repositories/product/product.repository";
 import {
   BuyOutputDto,
+  CreateOutputDto,
   ListOutputDto,
   ProductService,
   SellOutputDto,
@@ -25,6 +27,19 @@ export class ProductServiceImplementation implements ProductService {
     await this.repository.update(aProduct);
 
     const output: SellOutputDto = {
+      id: aProduct.id,
+      balance: aProduct.quantity,
+    };
+
+    return output;
+  }
+
+  public async create(name: string, price: number): Promise<CreateOutputDto> {
+    const aProduct = Product.create(name, price);
+
+    await this.repository.save(aProduct);
+
+    const output: CreateOutputDto = {
       id: aProduct.id,
       balance: aProduct.quantity,
     };
@@ -69,5 +84,3 @@ export class ProductServiceImplementation implements ProductService {
     return output;
   }
 }
-
-//parei  RY0BQV803UU
