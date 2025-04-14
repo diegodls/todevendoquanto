@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import { Api } from "../api";
+import { errorMiddlewareExpress } from "./middleware/error.middleware.express";
 
 export class ApiExpress implements Api {
   private constructor(readonly app: Express) {}
@@ -37,6 +38,10 @@ export class ApiExpress implements Api {
       });
 
     console.table(routes);
+  }
+
+  public useErrorMiddleware() {
+    this.app.use(errorMiddlewareExpress);
   }
 
   public start(port: number) {

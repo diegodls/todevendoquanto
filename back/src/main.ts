@@ -6,10 +6,16 @@ import { ProductController } from "./api/express/controllers/product.controller"
 
   const productController = ProductController.build();
 
+  api.addGetRoute("/test-error", () => {
+    throw new Error("ERROR TEST");
+  });
+
   api.addGetRoute("/products", productController.list);
   api.addPostRoute("/products/:id/buy", productController.buy);
   api.addPostRoute("/products/:id/sell", productController.sell);
   api.addPostRoute("/products/create", productController.create);
 
-  api.start(Number(process.env.PORT));
+  api.useErrorMiddleware();
+
+  api.start(Number(process.env.PORT) || 3000);
 })();
