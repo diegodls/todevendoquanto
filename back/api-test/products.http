@@ -1,0 +1,44 @@
+###
+GET http://localhost:3000/products
+
+###
+POST http://localhost:3000/products/create
+Content-Type: application/json
+
+{
+    "name" : "Produto 1",
+    "price": 10.1
+}
+
+###
+POST http://localhost:3000/products/create
+Content-Type: application/json
+
+{
+    "name" : "Produto 2",
+    "price": 20.2
+}
+
+###
+POST http://localhost:3000/products/create
+Content-Type: application/json
+
+{
+    "name" : "Produto 3",
+    "price": 30.3
+}
+
+###
+POST http://localhost:3000/products/985bd698-4eed-459f-ae78-d60e1050ab05/buy
+Content-Type: application/json
+
+{
+    "amount": 50
+}
+###
+POST http://localhost:3000/products/985bd698-4eed-459f-ae78-d60e1050ab05/sell
+Content-Type: application/json
+
+{
+    "amount": 50
+}
