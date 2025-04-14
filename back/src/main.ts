@@ -1,4 +1,4 @@
-import { ApiExpress } from "./api/express/ApiExpress";
+import { ApiExpress } from "./api/express/api.express";
 import { ProductController } from "./api/express/controllers/product.controller";
 
 (() => {
@@ -11,5 +11,5 @@ import { ProductController } from "./api/express/controllers/product.controller"
   api.addPostRoute("/products/:id/sell", productController.sell);
   api.addPostRoute("/products/create", productController.create);
 
-  api.start(3000);
+  api.start(Number(process.env.PORT));
 })();
