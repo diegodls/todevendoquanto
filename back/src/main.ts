@@ -1,5 +1,6 @@
 import { ApiExpress } from "./api/express/api.express";
 import { ProductController } from "./api/express/controllers/product.controller";
+import { NotFoundError } from "./util/api.errors";
 
 (() => {
   const api = ApiExpress.build();
@@ -7,7 +8,7 @@ import { ProductController } from "./api/express/controllers/product.controller"
   const productController = ProductController.build();
 
   api.addGetRoute("/test-error", () => {
-    throw new Error("ERROR TEST");
+    throw new NotFoundError("🔴 ERROR ASYNC TEST");
   });
 
   api.addGetRoute("/products", productController.list);
