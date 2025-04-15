@@ -7,7 +7,7 @@ import { NotFoundError } from "./util/api.errors";
 
   const productController = ProductController.build();
 
-  api.addGetRoute("/test-error", () => {
+  api.addGetRoute("/test-error", async () => {
     throw new NotFoundError("🔴 ERROR ASYNC TEST");
   });
 
