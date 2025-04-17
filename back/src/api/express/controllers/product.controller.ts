@@ -9,11 +9,14 @@ export class ProductController {
   public static build() {
     return new ProductController();
   }
+
   public async create(request: Request, response: Response) {
     const { name, price } = request.body;
 
     const aRepository = ProductRepositoryPrisma.build(prisma);
+
     const aService = ProductServiceImplementation.build(aRepository);
+
     const output = await aService.create(name, price);
 
     const data = { id: output.id, name, price, balance: output.balance };
@@ -22,6 +25,7 @@ export class ProductController {
   }
 
   public async list(request: Request, response: Response) {
+    console.log("👉 Listing products -> Controller");
     const aRepository = ProductRepositoryPrisma.build(prisma);
     const aService = ProductServiceImplementation.build(aRepository);
     const output = await aService.list();
@@ -36,6 +40,7 @@ export class ProductController {
     const { amount } = request.body;
 
     const aRepository = ProductRepositoryPrisma.build(prisma);
+
     const aService = ProductServiceImplementation.build(aRepository);
 
     const output = await aService.buy(id, amount);

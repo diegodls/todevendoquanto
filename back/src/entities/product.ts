@@ -1,3 +1,5 @@
+import { ConflictError } from "../util/api.errors";
+
 export type ProductProps = {
   id: string;
   name: string;
@@ -51,7 +53,9 @@ export class Product {
 
   public sell(amount: number) {
     if (this.props.quantity < amount) {
-      throw new Error(`Quantidade do produto ${this.props.name} insuficiente!`);
+      throw new ConflictError(
+        `Quantidade do produto ${this.props.name} insuficiente!`
+      );
     }
 
     this.props.quantity -= amount;

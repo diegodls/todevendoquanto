@@ -21,6 +21,7 @@ export class ProductRepositoryPrisma implements ProductRepository {
   }
 
   public async list(): Promise<Product[]> {
+    console.log("👉 Listing products -> Repository");
     const aProduct = await this.repository.product.findMany();
 
     const products: Product[] = aProduct.map((p) => {
@@ -32,6 +33,7 @@ export class ProductRepositoryPrisma implements ProductRepository {
   }
 
   public async update(product: Product): Promise<void> {
+    console.log("👉 Updating product");
     const data = {
       id: product.id,
       name: product.name,
@@ -47,15 +49,34 @@ export class ProductRepositoryPrisma implements ProductRepository {
     });
   }
 
-  public async find(id: string): Promise<Product | null> {
+  public async findById(id: string): Promise<Product | null> {
+    console.log("👉 Finding product by ID");
     const aProduct = await this.repository.product.findUnique({
       where: { id },
     });
+
     if (!aProduct) {
       return null;
     }
 
     const { name, price, quantity } = aProduct;
+
+    const product = Product.with(id, name, price, quantity);
+
+    return product;
+  }
+
+  public async findByName(name: string): Promise<Product | null> {
+    console.log("👉 Finding product by Name");
+    const aProduct = await this.repository.product.findFirst({
+      where: { name },
+    });
+
+    if (!aProduct) {
+      return null;
+    }
+
+    const { id, price, quantity } = aProduct;
 
     const product = Product.with(id, name, price, quantity);
 

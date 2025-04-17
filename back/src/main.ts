@@ -1,14 +1,14 @@
 import { ApiExpress } from "./api/express/api.express";
 import { ProductController } from "./api/express/controllers/product.controller";
-import { NotFoundError } from "./util/api.errors";
 
 (() => {
   const api = ApiExpress.build();
 
   const productController = ProductController.build();
 
-  api.addGetRoute("/test-error", async () => {
-    throw new NotFoundError("🔴 ERROR ASYNC TEST");
+  api.addGetRoute("/test", async (req, res) => {
+    console.log("🔴🔴 ROTA DE TESTE 🔴🔴");
+    res.json({ message: "🔴🔴 ROTA DE TESTE 🔴🔴" }).send();
   });
 
   api.addGetRoute("/products", productController.list);

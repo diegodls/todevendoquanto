@@ -110,9 +110,13 @@ Prisma.NullTypes = {
  * Enums
  */
 
-exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  Serializable: 'Serializable'
-});
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  role: 'role',
+  permissions: 'permissions'
+};
 
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
@@ -126,8 +130,17 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+exports.Role = exports.$Enums.Role = {
+  ADMIN: 'ADMIN',
+  BASIC: 'BASIC'
+};
 
 exports.Prisma.ModelName = {
+  User: 'User',
   Product: 'Product'
 };
 

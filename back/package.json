@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/main.ts",
+    "generate": "npx prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mongodb": "^6.15.0"
   }
 }

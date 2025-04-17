@@ -1,5 +1,6 @@
 import { Product } from "../../../entities/product";
 import { ProductRepository } from "../../../repositories/product/product.repository";
+import { AlreadyExistError, NotFoundError } from "../../../util/api.errors";
 import {
   BuyOutputDto,
   CreateOutputDto,
@@ -16,10 +17,10 @@ export class ProductServiceImplementation implements ProductService {
   }
 
   public async sell(id: string, amount: number): Promise<SellOutputDto> {
-    const aProduct = await this.repository.find(id);
+    const aProduct = await this.repository.findById(id);
 
     if (!aProduct) {
-      throw new Error(`O produto ${id} não foi encontrado!`);
+      throw new NotFoundError(`Não foi encontrado o produto com ID: ${id}`);
     }
 
     aProduct.sell(amount);
@@ -35,6 +36,12 @@ export class ProductServiceImplementation implements ProductService {
   }
 
   public async create(name: string, price: number): Promise<CreateOutputDto> {
+    const productExists = await this.repository.findByName(name);
+
+    if (productExists) {
+      throw new AlreadyExistError(`${name} já existe!`);
+    }
+
     const aProduct = Product.create(name, price);
 
     await this.repository.save(aProduct);
@@ -48,10 +55,10 @@ export class ProductServiceImplementation implements ProductService {
   }
 
   public async buy(id: string, amount: number): Promise<BuyOutputDto> {
-    const aProduct = await this.repository.find(id);
+    const aProduct = await this.repository.findById(id);
 
     if (!aProduct) {
-      throw new Error(`O produto ${id} não foi encontrado!`);
+      throw new NotFoundError(`O produto ${id} não foi encontrado!`);
     }
 
     aProduct.buy(amount);
