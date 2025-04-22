@@ -18,6 +18,25 @@ export class UserRepositoryPrisma implements UserRepository {
       type: user.type,
       permissions: user.permissions,
     };
+
     await this.repository.user.create({ data });
+  }
+
+  public async findByEmail(email: string): Promise<User | null> {
+    const userExists = await this.repository.user.findFirst({
+      where: { email },
+    });
+
+    if (!userExists) {
+      return null;
+    }
+
+    const { id, name, password, role, permissions } = userExists;
+
+    const output = User.with();
+
+    PAREI AQUI
+
+    return userExists;
   }
 }
