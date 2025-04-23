@@ -7,27 +7,37 @@ export class ApiError extends Error {
   }
 }
 
+class NotModifiedError extends ApiError {
+  // when a requisition is OK but nothing was modified
+  // no need to return/retrieve new/same data
+  constructor(message: string) {
+    super(message, 304);
+  }
+}
+
 class ErrorBadRequest extends ApiError {
   constructor(message: string) {
     super(message, 400);
   }
 }
 
-class ErrorNotFound extends ApiError {
-  constructor(message: string) {
-    super(message, 404);
-  }
-}
-
-class UnauthorizedError extends ApiError {
+class NotAuthenticatedError extends ApiError {
+  // not authenticated
   constructor(message: string) {
     super(message, 401);
   }
 }
 
-class AlreadyExistError extends ApiError {
+class UnauthorizedError extends ApiError {
+  // authenticated, without permissions to do
   constructor(message: string) {
     super(message, 403);
+  }
+}
+
+class ErrorNotFound extends ApiError {
+  constructor(message: string) {
+    super(message, 404);
   }
 }
 
@@ -39,19 +49,18 @@ class ConflictError extends ApiError {
   }
 }
 
-class NotModifiedError extends ApiError {
-  // when a requisition is OK but nothing was modified
-  // no need to return/retrieve new/same data
+class AlreadyExistError extends ApiError {
   constructor(message: string) {
-    super(message, 304);
+    super(message, 422);
   }
 }
 
 export const CustomApiErrors = {
-  ErrorBadRequest,
-  ErrorNotFound,
-  UnauthorizedError,
-  AlreadyExistError,
-  ConflictError,
   NotModifiedError,
+  ErrorBadRequest,
+  NotAuthenticatedError,
+  UnauthorizedError,
+  ErrorNotFound,
+  ConflictError,
+  AlreadyExistError,
 };

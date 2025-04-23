@@ -1,9 +1,10 @@
 import { Response } from "express";
 import { UserRepositoryPrisma } from "../../../../repositories/user/prisma/user.repository.prisma";
-import { UserServiceImplementation } from "../../../../services/user/implemmentation/user.implementation";
+import { UserServiceImplementation } from "../../../../services/user/user.service";
 import { prisma } from "../../../../util/prisma.util";
 import {
   CreateRequestBody,
+  FindByEmailBody,
   UserControllerContract,
 } from "./user.controller.interface";
 
@@ -36,4 +37,9 @@ export class UserController implements UserControllerContract {
 
     response.status(201).json(data).send();
   }
+
+  public async findByEmail(
+    req: FindByEmailBody,
+    res: Response
+  ): Promise<void> {}
 }

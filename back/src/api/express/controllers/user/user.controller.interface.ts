@@ -10,6 +10,13 @@ export type CreateUserBody = {
 
 export type CreateRequestBody = CustomRequestBody<CreateUserBody>;
 
+export type FindByEmailBody = {
+  email: string;
+};
+
+export type FindByRequestBody = CustomRequestBody<FindByEmailBody>;
+
 export interface UserControllerContract {
-  create(request: CreateRequestBody, response: Response): Promise<void>;
+  create(req: CreateRequestBody, resp: Response): Promise<void>;
+  findByEmail(req: FindByEmailBody, res: Response): Promise<void>;
 }
