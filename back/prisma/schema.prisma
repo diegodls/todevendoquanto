@@ -27,6 +27,8 @@ model User {
   email       String   @unique
   role        Role     @default(BASIC)
   permissions String[] @default([])
+
+  @@map("users")
 }
 
 model Product {

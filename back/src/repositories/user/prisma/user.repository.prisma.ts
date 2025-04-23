@@ -1,4 +1,4 @@
-import { User } from "../../../entities/user";
+import { User, UserPermissions, UserRole } from "../../../entities/user";
 import { PrismaClient } from "../../../generated/prisma";
 import { UserRepository } from "./../user.repository";
 
@@ -9,17 +9,23 @@ export class UserRepositoryPrisma implements UserRepository {
     return new UserRepositoryPrisma(repository);
   }
 
-  public async create(user: User): Promise<void> {
+  public async create(user: User) {
     const data = {
       id: user.id,
       name: user.name,
       email: user.email,
       password: user.password,
-      type: user.type,
+      role: user.role,
       permissions: user.permissions,
     };
 
-    await this.repository.user.create({ data });
+    const newUser = await this.repository.user.create({ data });
+
+    if (!newUser) {
+      return null;
+    }
+
+    return user;
   }
 
   public async findByEmail(email: string): Promise<User | null> {
@@ -31,12 +37,14 @@ export class UserRepositoryPrisma implements UserRepository {
       return null;
     }
 
-    const { id, name, password, role, permissions } = userExists;
+    const { id, name, password } = userExists;
 
-    const output = User.with();
+    const role: UserRole = UserRole[userExists.role];
 
-    PAREI AQUI
+    const permissions = userExists.permissions as UserPermissions[];
 
-    return userExists;
+    const output = User.with(id, name, password, role, permissions);
+
+    return output;
   }
 }

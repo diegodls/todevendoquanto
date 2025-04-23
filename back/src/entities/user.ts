@@ -1,9 +1,15 @@
-/*const Role: { [x: string]: "BASIC" | "ADMIN" } = {
+/*
+const Role: { [x: string]: "BASIC" | "ADMIN" } = {
   BASIC: "BASIC",
   ADMIN: "ADMIN",
 };
 
 export type UserRole = (typeof Role)[keyof typeof Role];
+
+export enum UserRole {
+  BASIC = "BASIC",
+  ADMIN = "ADMIN",
+}
 */
 
 export enum UserRole {
@@ -18,7 +24,7 @@ export type UserProps = {
   name: string;
   email: string;
   password: string;
-  role: UserRole | null;
+  role: UserRole;
   permissions: UserPermissions[];
 };
 
@@ -40,14 +46,20 @@ export class User {
     });
   }
 
-  public static with(id: string, name: string, email: string) {
+  public static with(
+    id: string,
+    name: string,
+    email: string,
+    role: UserRole,
+    permissions: UserPermissions[]
+  ) {
     return new User({
       id,
       name,
       email,
       password: "",
-      role: UserRole.BASIC,
-      permissions: [],
+      role,
+      permissions,
     });
   }
 
@@ -67,7 +79,7 @@ export class User {
     return this.props.password;
   }
 
-  public get type() {
+  public get role() {
     return this.props.role;
   }
 

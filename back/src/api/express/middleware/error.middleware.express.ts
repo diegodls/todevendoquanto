@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ApiError } from "../../../util/api.errors";
+import { ApiError } from "./../../../util/api.errors";
 
 export function errorMiddlewareExpress(
   error: Error & Partial<ApiError>,

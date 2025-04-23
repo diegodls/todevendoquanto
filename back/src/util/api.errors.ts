@@ -7,32 +7,51 @@ export class ApiError extends Error {
   }
 }
 
-export class BadRequestError extends ApiError {
+class ErrorBadRequest extends ApiError {
   constructor(message: string) {
     super(message, 400);
   }
 }
 
-export class NotFoundError extends ApiError {
+class ErrorNotFound extends ApiError {
   constructor(message: string) {
     super(message, 404);
   }
 }
 
-export class UnauthorizedError extends ApiError {
+class UnauthorizedError extends ApiError {
   constructor(message: string) {
     super(message, 401);
   }
 }
 
-export class AlreadyExistError extends ApiError {
+class AlreadyExistError extends ApiError {
   constructor(message: string) {
     super(message, 403);
   }
 }
 
-export class ConflictError extends ApiError {
+class ConflictError extends ApiError {
+  // when the db resource don't have the props passed
+  // sell: 2, props have 1
   constructor(message: string) {
     super(message, 409);
   }
 }
+
+class NotModifiedError extends ApiError {
+  // when a requisition is OK but nothing was modified
+  // no need to return/retrieve new/same data
+  constructor(message: string) {
+    super(message, 304);
+  }
+}
+
+export const CustomApiErrors = {
+  ErrorBadRequest,
+  ErrorNotFound,
+  UnauthorizedError,
+  AlreadyExistError,
+  ConflictError,
+  NotModifiedError,
+};

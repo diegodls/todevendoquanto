@@ -25,7 +25,6 @@ export class ProductController {
   }
 
   public async list(request: Request, response: Response) {
-    console.log("👉 Listing products -> Controller");
     const aRepository = ProductRepositoryPrisma.build(prisma);
     const aService = ProductServiceImplementation.build(aRepository);
     const output = await aService.list();
