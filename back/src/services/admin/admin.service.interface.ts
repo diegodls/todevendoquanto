@@ -16,7 +16,7 @@ export type FindByEmailOutputDto = {
   permissions: UserPermissions[];
 };
 
-export interface UserService {
+export interface AdminServiceInterface {
   create(
     name: string,
     email: string,

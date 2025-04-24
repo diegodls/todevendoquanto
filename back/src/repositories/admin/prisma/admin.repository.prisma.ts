@@ -1,12 +1,12 @@
 import { User, UserPermissions, UserRole } from "../../../entities/user";
 import { PrismaClient } from "../../../generated/prisma";
-import { UserRepository } from "./../user.repository";
+import { AdminRepositoryInterface } from "../admin.repository";
 
-export class UserRepositoryPrisma implements UserRepository {
+export class AdminRepositoryPrisma implements AdminRepositoryInterface {
   private constructor(readonly repository: PrismaClient) {}
 
   public static build(repository: PrismaClient) {
-    return new UserRepositoryPrisma(repository);
+    return new AdminRepositoryPrisma(repository);
   }
 
   public async create(user: User) {

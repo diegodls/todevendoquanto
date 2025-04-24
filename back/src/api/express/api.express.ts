@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, RequestHandler } from "express";
 import { Api } from "../api";
 import { errorMiddlewareExpress } from "./middleware/error.middleware.express";
 
@@ -13,18 +13,18 @@ export class ApiExpress implements Api {
     return new ApiExpress(app);
   }
 
-  public addGetRoute(
+  public addGetRoute<Body = {}, Params = {}, Query = {}>(
     path: string,
-    handle: (req: Request, res: Response) => Promise<void>
+    ...handler: Array<RequestHandler<Body, any, Params, Query>>
   ): void {
-    this.app.get(path, handle);
+    this.app.get(path, ...handler);
   }
 
-  public addPostRoute(
+  public addPostRoute<Body = {}, Params = {}, Query = {}>(
     path: string,
-    handle: (req: Request, res: Response) => Promise<void>
+    ...handler: Array<RequestHandler<Body, any, Params, Query>>
   ): void {
-    this.app.post(path, handle);
+    this.app.post(path, ...handler);
   }
 
   private printRoutes() {

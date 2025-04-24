@@ -1,17 +1,17 @@
 import { User } from "../../entities/user";
-import { UserRepository } from "../../repositories/user/user.repository";
+import { AdminRepositoryInterface } from "../../repositories/admin/admin.repository";
 import { CustomApiErrors } from "../../util/api.errors";
 import {
+  AdminServiceInterface,
   CreateOutputDto,
   FindByEmailOutputDto,
-  UserService,
-} from "./user.service.interface";
+} from "./admin.service.interface";
 
-export class UserServiceImplementation implements UserService {
-  private constructor(readonly repository: UserRepository) {}
+export class AdminService implements AdminServiceInterface {
+  private constructor(readonly repository: AdminRepositoryInterface) {}
 
-  public static build(repository: UserRepository) {
-    return new UserServiceImplementation(repository);
+  public static build(repository: AdminRepositoryInterface) {
+    return new AdminService(repository);
   }
 
   public async create(
