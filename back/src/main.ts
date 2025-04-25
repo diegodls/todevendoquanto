@@ -34,6 +34,7 @@ import { testDb } from "./util/db.health";
     "/admin/users",
     adminController.findByEmail
   );
+
   api.addPostRoute("/admin/users/create", adminController.create);
 
   api.useErrorMiddleware();

@@ -1,5 +1,6 @@
 ______BACK
-
+[ ] Swagger;
+[ ] Verify in "main.ts", params type missing props (ex: email);
 
 ______FRONT
 
