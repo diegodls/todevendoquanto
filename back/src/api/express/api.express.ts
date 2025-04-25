@@ -27,6 +27,10 @@ export class ApiExpress implements Api {
     this.app.post(path, ...handler);
   }
 
+  public useErrorMiddleware() {
+    this.app.use(errorMiddlewareExpress);
+  }
+
   private printRoutes() {
     const routes = this.app.router.stack
       .filter((layer: any) => layer.route)
@@ -38,10 +42,6 @@ export class ApiExpress implements Api {
       });
 
     console.table(routes);
-  }
-
-  public useErrorMiddleware() {
-    this.app.use(errorMiddlewareExpress);
   }
 
   public start(port: number) {
