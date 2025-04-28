@@ -1,8 +1,12 @@
 ______BACK
 [ ] Swagger;
+[ ] Create routes flow on excalidraw or similar
 [ ] Verify in "main.ts", params type missing props (ex: email);
+[ ] Add a function with email regex and call on zod schemas (CreateUserBody)
+[ ] Make errors in EN
 
 ______FRONT
-
+[ ] Add Internationalization, language for errors.
 
 ______MOBILE
+[ ] Add Internationalization, language for errors.
