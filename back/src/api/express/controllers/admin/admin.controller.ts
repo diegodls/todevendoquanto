@@ -3,7 +3,7 @@ import { Response } from "express";
 import { AdminRepositoryPrisma } from "../../../../repositories/admin/prisma/admin.repository.prisma";
 import { AdminService } from "../../../../services/admin/admin.service";
 import { CustomApiErrors } from "../../../../util/api.errors";
-import { prisma } from "../../../../util/prisma.util";
+import { prisma } from "../../../../util/orm/prisma/prisma.util";
 import {
   AdminControllerInterface,
   CreateUserRequestBody,

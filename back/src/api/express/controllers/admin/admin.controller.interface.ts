@@ -1,12 +1,7 @@
 import { Request, Response } from "express";
+import { CreateUserBody } from "../../../../util/validations/zod/admin.controller.zod.validation";
 
 type CustomRequestBody<T> = Request<{}, {}, T>;
-
-export type CreateUserBody = {
-  name: string;
-  email: string;
-  password: string;
-};
 
 export type CreateUserRequestBody = CustomRequestBody<CreateUserBody>;
 

@@ -2,7 +2,9 @@ import { ApiExpress } from "./api/express/api.express";
 import { AdminController } from "./api/express/controllers/admin/admin.controller";
 import { FindUserByEmailQueryParams } from "./api/express/controllers/admin/admin.controller.interface";
 import { ProductController } from "./api/express/controllers/product.controller";
+import { validate } from "./api/express/middleware/validate/validate.middleware.express.zod";
 import { testDb } from "./util/db.health";
+import { CreateUserSchema } from "./util/validations/zod/admin.controller.zod.validation";
 
 (async () => {
   testDb();
@@ -31,11 +33,15 @@ import { testDb } from "./util/db.health";
   api.addPostRoute("/products/create", productController.create);
 
   api.addGetRoute<{}, {}, FindUserByEmailQueryParams>(
-    "/admin/users",
+    "/admin/users/findbyemail",
     adminController.findByEmail
   );
 
-  api.addPostRoute("/admin/users/create", adminController.create);
+  api.addPostRoute(
+    "/admin/users/create",
+    validate(CreateUserSchema),
+    adminController.create
+  ); // ! search why <CreateUserRequestBody> return error
 
   api.useErrorMiddleware();
 

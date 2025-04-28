@@ -1,6 +1,6 @@
 import express, { Express, RequestHandler } from "express";
 import { Api } from "../api";
-import { errorMiddlewareExpress } from "./middleware/error.middleware.express";
+import { errorMiddlewareExpress } from "./middleware/error/error.middleware.express";
 
 export class ApiExpress implements Api {
   private constructor(readonly app: Express) {}

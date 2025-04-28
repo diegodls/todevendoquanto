@@ -1,4 +1,4 @@
-import { prisma } from "./prisma.util";
+import { prisma } from "./orm/prisma/prisma.util";
 
 export async function testDb() {
   const health = await prisma.$queryRaw`SELECT 1`;
