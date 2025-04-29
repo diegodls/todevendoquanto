@@ -4,7 +4,7 @@ ______BACK
 [ ] Verify in "main.ts", params type missing props (ex: email);
 [ ] Add a function with email regex and call on zod schemas (CreateUserBody)
 [ ] Make errors in EN
-
+[ ] Case sensitive password
 ______FRONT
 [ ] Add Internationalization, language for errors.
 
