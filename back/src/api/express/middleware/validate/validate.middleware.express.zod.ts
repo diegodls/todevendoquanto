@@ -17,7 +17,7 @@ export const validate =
       });
 
       throw new CustomApiErrors.ErrorBadRequest(
-        "Vários campos com erros",
+        "Internal Server Error.",
         errors
       );
     }
