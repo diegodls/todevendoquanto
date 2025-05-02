@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { User } from "../../entities/user";
 import { AdminRepositoryInterface } from "../../repositories/admin/admin.repository";
 import { CustomApiErrors } from "../../util/api.errors";
@@ -27,12 +28,14 @@ export class AdminService implements AdminServiceInterface {
       );
     }
 
-    const data = User.create(name, email, password);
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
+    const data = User.create(name, email, encryptedPassword);
 
     const newUser = await this.repository.create(data);
 
     if (!newUser) {
-      throw new Error(`${newUser}`);
+      throw new CustomApiErrors.InternalError("Can't create user, try later!");
     }
 
     const output: CreateOutputDto = {
