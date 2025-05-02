@@ -61,6 +61,12 @@ class AlreadyExistError extends ApiError {
   }
 }
 
+class InternalError extends ApiError {
+  constructor(message: string, errors?: Record<string, string>) {
+    super(message, 500, errors);
+  }
+}
+
 export const CustomApiErrors = {
   NotModifiedError,
   ErrorBadRequest,
@@ -69,4 +75,5 @@ export const CustomApiErrors = {
   ErrorNotFound,
   ConflictError,
   AlreadyExistError,
+  InternalError,
 };
