@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CreateUserSchema = z.object({
+export const CreateUserZodSchema = z.object({
   name: z
     .string({
       required_error: "É necessário inserir um nome valido!",
@@ -21,4 +21,4 @@ export const CreateUserSchema = z.object({
     .min(6, { message: "A senha deve ter 6 ou mais caracteres" }),
 });
 
-export type CreateUserBody = z.infer<typeof CreateUserSchema>;
+export type CreateUserBody = z.infer<typeof CreateUserZodSchema>;

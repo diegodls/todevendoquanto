@@ -4,7 +4,7 @@ import { FindUserByEmailQueryParams } from "./api/express/controllers/admin/admi
 import { ProductController } from "./api/express/controllers/product.controller";
 import { validate } from "./api/express/middleware/validate/validate.middleware.express.zod";
 import { testDb } from "./util/db.health";
-import { CreateUserSchema } from "./util/validations/zod/admin.controller.zod.validation";
+import { CreateUserZodSchema } from "./util/validations/zod/admin.controller.zod.validation";
 
 (async () => {
   testDb();
@@ -39,7 +39,7 @@ import { CreateUserSchema } from "./util/validations/zod/admin.controller.zod.va
 
   api.addPostRoute(
     "/admin/users/create",
-    validate(CreateUserSchema),
+    validate(CreateUserZodSchema),
     adminController.create
   ); // ! search why <CreateUserRequestBody> return error
 
