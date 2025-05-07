@@ -1,6 +1,6 @@
 import { User, UserPermissions, UserRole } from "../../../entities/user";
 import { PrismaClient } from "../../../generated/prisma";
-import { AdminRepositoryInterface } from "../admin.repository";
+import { AdminRepositoryInterface } from "../admin.repository.interface";
 
 export class AdminRepositoryPrisma implements AdminRepositoryInterface {
   private constructor(readonly repository: PrismaClient) {}
@@ -29,10 +29,19 @@ export class AdminRepositoryPrisma implements AdminRepositoryInterface {
   }
 
   public async findByEmail(email: string): Promise<User | null> {
+    console.log("IIIIIIIIIIIIII");
+
+    PAREI AQUI, ACHO QUE O BANCO ESTÁ DOWN, NÃO ESTÁ SALVANDO
+    VERIFICAR O FLUXO E TESTAR O "admin.authorization.middleware.express.ts"
+
+    console.log(email);
+
     const userExists = await this.repository.user.findFirst({
       where: { email },
     });
+    console.log(userExists);
 
+    console.log("JJJJJJJJJJJJJJJJJJJJ");
     if (!userExists) {
       return null;
     }
@@ -43,7 +52,7 @@ export class AdminRepositoryPrisma implements AdminRepositoryInterface {
 
     const permissions = userExists.permissions as UserPermissions[];
 
-    const output = User.with(id, name, password, role, permissions);
+    const output = User.with(id, name, email, password, role, permissions);
 
     return output;
   }

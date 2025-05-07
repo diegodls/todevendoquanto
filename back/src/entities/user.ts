@@ -50,6 +50,7 @@ export class User {
     id: string,
     name: string,
     email: string,
+    password: string,
     role: UserRole,
     permissions: UserPermissions[]
   ) {
@@ -57,7 +58,7 @@ export class User {
       id,
       name,
       email,
-      password: "",
+      password: password ?? "",
       role,
       permissions,
     });

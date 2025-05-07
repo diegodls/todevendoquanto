@@ -2,9 +2,12 @@ import { ApiExpress } from "./api/express/api.express";
 import { AdminController } from "./api/express/controllers/admin/admin.controller";
 import { FindUserByEmailQueryParams } from "./api/express/controllers/admin/admin.controller.interface";
 import { ProductController } from "./api/express/controllers/product.controller";
-import { validate } from "./api/express/middleware/validate/validate.middleware.express.zod";
+import { UserController } from "./api/express/controllers/user/user.controller";
+import { authAdminMiddleware } from "./api/express/middleware/authorization/admin.authorization.middleware.express";
+import { RequestBodyValidation } from "./api/express/middleware/validate/requestBodyValitation.middleware.express.zod";
 import { testDb } from "./util/db.health";
-import { CreateUserZodSchema } from "./util/validations/zod/admin.controller.zod.validation";
+import { CreateUserBodyZodSchema } from "./util/validations/zod/admin/admin.create-user.zod.validation";
+import { UserLoginZodSchema } from "./util/validations/zod/user/user.login.zod.validation";
 
 (async () => {
   testDb();
@@ -14,6 +17,8 @@ import { CreateUserZodSchema } from "./util/validations/zod/admin.controller.zod
   const productController = ProductController.build();
 
   const adminController = AdminController.build();
+
+  const userController = UserController.build();
 
   api.addGetRoute(
     "/test",
@@ -27,11 +32,7 @@ import { CreateUserZodSchema } from "./util/validations/zod/admin.controller.zod
     }
   );
 
-  api.addGetRoute("/products", productController.list);
-  api.addPostRoute("/products/:id/buy", productController.buy);
-  api.addPostRoute("/products/:id/sell", productController.sell);
-  api.addPostRoute("/products/create", productController.create);
-
+  // ! ADMIN ROUTES
   api.addGetRoute<{}, {}, FindUserByEmailQueryParams>(
     "/admin/users/findbyemail",
     adminController.findByEmail
@@ -39,9 +40,23 @@ import { CreateUserZodSchema } from "./util/validations/zod/admin.controller.zod
 
   api.addPostRoute(
     "/admin/users/create",
-    validate(CreateUserZodSchema),
+    authAdminMiddleware,
+    RequestBodyValidation(CreateUserBodyZodSchema),
     adminController.create
   ); // ! search why <CreateUserRequestBody> return error
+
+  // ! PRODUCT ROUTES
+  api.addGetRoute("/products", productController.list);
+  api.addPostRoute("/products/:id/buy", productController.buy);
+  api.addPostRoute("/products/:id/sell", productController.sell);
+  api.addPostRoute("/products/create", productController.create);
+
+  // ! USER ROUTES
+  api.addPostRoute(
+    "/login",
+    RequestBodyValidation(UserLoginZodSchema),
+    userController.login
+  );
 
   api.useErrorMiddleware();
 

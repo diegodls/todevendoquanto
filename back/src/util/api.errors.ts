@@ -21,7 +21,7 @@ class NotModifiedError extends ApiError {
   }
 }
 
-class ErrorBadRequest extends ApiError {
+class BadRequestError extends ApiError {
   constructor(message: string, errors?: Record<string, string>) {
     super(message, 400, errors);
   }
@@ -41,7 +41,7 @@ class UnauthorizedError extends ApiError {
   }
 }
 
-class ErrorNotFound extends ApiError {
+class NotFoundError extends ApiError {
   constructor(message: string, errors?: Record<string, string>) {
     super(message, 404, errors);
   }
@@ -69,10 +69,10 @@ class InternalError extends ApiError {
 
 export const CustomApiErrors = {
   NotModifiedError,
-  ErrorBadRequest,
+  BadRequestError,
   NotAuthenticatedError,
   UnauthorizedError,
-  ErrorNotFound,
+  NotFoundError,
   ConflictError,
   AlreadyExistError,
   InternalError,

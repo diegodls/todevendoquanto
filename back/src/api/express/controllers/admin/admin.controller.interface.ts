@@ -1,18 +1,18 @@
 import { Request, Response } from "express";
-import { CreateUserBody } from "../../../../util/validations/zod/admin.controller.zod.validation";
+import { CreateUserBody } from "../../../../util/validations/zod/admin/admin.create-user.zod.validation";
+import {
+  ExpressCustomRequestBody,
+  ExpressCustomRequestQuery,
+} from "../express.custom.request.types";
 
-type CustomRequestBody<T> = Request<{}, {}, T>;
-
-export type CreateUserRequestBody = CustomRequestBody<CreateUserBody>;
-
-type CustomRequestQueryParams<T> = Request<{}, {}, {}, T>;
+export type CreateUserRequestBody = ExpressCustomRequestBody<CreateUserBody>;
 
 export type FindUserByEmailQueryParams = {
   email: string;
 };
 
 export type FindUserByEmailRequestQueryParams =
-  CustomRequestQueryParams<FindUserByEmailQueryParams>;
+  ExpressCustomRequestQuery<FindUserByEmailQueryParams>;
 
 export interface AdminControllerInterface {
   create(req: Request, resp: Response): Promise<void>;

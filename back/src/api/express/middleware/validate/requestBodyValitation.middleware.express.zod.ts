@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { ZodSchema } from "zod";
 import { CustomApiErrors } from "../../../../util/api.errors";
 
-export const validate =
+export const RequestBodyValidation =
   (schema: ZodSchema<any>) =>
   (req: Request, res: Response, next: NextFunction) => {
+    console.log("BBBBBBB");
+    console.log(req.body);
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
@@ -16,13 +18,15 @@ export const validate =
         }
       });
 
-      throw new CustomApiErrors.ErrorBadRequest(
+      throw new CustomApiErrors.BadRequestError(
         "Internal Server Error.",
         errors
       );
     }
 
     req.body = result.data;
+
+    console.log("CCCCCCCC");
 
     next();
   };

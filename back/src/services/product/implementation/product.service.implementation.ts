@@ -21,7 +21,7 @@ export class ProductServiceImplementation implements ProductService {
     const aProduct = await this.repository.findById(id);
 
     if (!aProduct) {
-      throw new CustomApiErrors.ErrorNotFound(
+      throw new CustomApiErrors.NotFoundError(
         `Não foi encontrado o produto com ID: ${id}`
       );
     }
@@ -61,7 +61,7 @@ export class ProductServiceImplementation implements ProductService {
     const aProduct = await this.repository.findById(id);
 
     if (!aProduct) {
-      throw new CustomApiErrors.ErrorNotFound(
+      throw new CustomApiErrors.NotFoundError(
         `O produto ${id} não foi encontrado!`
       );
     }

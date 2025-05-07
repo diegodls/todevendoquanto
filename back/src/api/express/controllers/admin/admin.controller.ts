@@ -23,21 +23,24 @@ export class AdminController implements AdminControllerInterface {
   ): Promise<void> {
     const { name, email, password } = request.body;
 
+    console.log(request.body);
+
     const repository = AdminRepositoryPrisma.build(prisma);
 
     const service = AdminService.build(repository);
+    console.log("DDDDDDDDDDDDDD");
 
-    const output = await service.create(name, email, password);
+    const data = await service.create(name, email, password);
 
-    const data = {
-      id: output.id,
-      name: output.name,
-      email: output.email,
-      role: output.role,
-      permissions: output.permissions,
+    const output = {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      permissions: data.permissions,
     };
 
-    response.status(201).json(data).send();
+    response.status(201).json(output).send();
   }
 
   public async findByEmail(
@@ -46,13 +49,9 @@ export class AdminController implements AdminControllerInterface {
   ): Promise<void> {
     const { email } = req.query;
 
-    console.log("");
-    console.log("QUERY:");
-    console.log(email);
-
     if (!email) {
-      throw new CustomApiErrors.ErrorBadRequest(
-        "O email não foi enviado ou é inválido!"
+      throw new CustomApiErrors.BadRequestError(
+        "Email wasn't send or is invalid!"
       );
     }
 
