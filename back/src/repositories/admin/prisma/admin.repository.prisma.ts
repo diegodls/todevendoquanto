@@ -29,19 +29,10 @@ export class AdminRepositoryPrisma implements AdminRepositoryInterface {
   }
 
   public async findByEmail(email: string): Promise<User | null> {
-    console.log("IIIIIIIIIIIIII");
-
-    PAREI AQUI, ACHO QUE O BANCO ESTÁ DOWN, NÃO ESTÁ SALVANDO
-    VERIFICAR O FLUXO E TESTAR O "admin.authorization.middleware.express.ts"
-
-    console.log(email);
-
     const userExists = await this.repository.user.findFirst({
       where: { email },
     });
-    console.log(userExists);
 
-    console.log("JJJJJJJJJJJJJJJJJJJJ");
     if (!userExists) {
       return null;
     }
