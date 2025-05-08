@@ -23,12 +23,9 @@ export class AdminController implements AdminControllerInterface {
   ): Promise<void> {
     const { name, email, password } = request.body;
 
-    console.log(request.body);
-
     const repository = AdminRepositoryPrisma.build(prisma);
 
     const service = AdminService.build(repository);
-    console.log("DDDDDDDDDDDDDD");
 
     const data = await service.create(name, email, password);
 

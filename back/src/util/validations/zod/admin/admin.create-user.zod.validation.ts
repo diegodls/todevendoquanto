@@ -1,8 +1,10 @@
 import { z } from "zod";
 
 export const CreateUserAuthZodSchema = z.object({
-  id: z.number({ required_error: "" }),
-  name: z.string({ required_error: "" }),
+  id: z.string({
+    required_error: "User ID non-exists!",
+    invalid_type_error: "Invalid User ID.",
+  }),
 });
 
 export type CreateUserAuth = z.infer<typeof CreateUserAuthZodSchema>;

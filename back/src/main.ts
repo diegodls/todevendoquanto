@@ -4,7 +4,7 @@ import { FindUserByEmailQueryParams } from "./api/express/controllers/admin/admi
 import { ProductController } from "./api/express/controllers/product.controller";
 import { UserController } from "./api/express/controllers/user/user.controller";
 import { authAdminMiddleware } from "./api/express/middleware/authorization/admin.authorization.middleware.express";
-import { RequestBodyValidation } from "./api/express/middleware/validate/requestBodyValitation.middleware.express.zod";
+import { RequestBodyValidation } from "./api/express/middleware/validate/body.validate.middleware.express.zod";
 import { testDb } from "./util/db.health";
 import { CreateUserBodyZodSchema } from "./util/validations/zod/admin/admin.create-user.zod.validation";
 import { UserLoginZodSchema } from "./util/validations/zod/user/user.login.zod.validation";
@@ -24,6 +24,7 @@ import { UserLoginZodSchema } from "./util/validations/zod/user/user.login.zod.v
     "/test",
     (req, res, next) => {
       console.log("Hello");
+      console.log("MIDDLEWARE-TEST");
       next();
     },
     async (req, res) => {

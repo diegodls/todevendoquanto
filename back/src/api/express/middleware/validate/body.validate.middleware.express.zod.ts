@@ -1,12 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodSchema } from "zod";
 import { CustomApiErrors } from "../../../../util/api.errors";
+import { BodyValidateMiddlewareErrorsCodes } from "../../../../util/errors-codes/middleware.errors.codes/body.validate";
 
 export const RequestBodyValidation =
   (schema: ZodSchema<any>) =>
   (req: Request, res: Response, next: NextFunction) => {
-    console.log("BBBBBBB");
-    console.log(req.body);
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
@@ -20,13 +19,12 @@ export const RequestBodyValidation =
 
       throw new CustomApiErrors.BadRequestError(
         "Internal Server Error.",
-        errors
+        errors,
+        BodyValidateMiddlewareErrorsCodes.E_0_MW_BDY_0001.code
       );
     }
 
     req.body = result.data;
-
-    console.log("CCCCCCCC");
 
     next();
   };

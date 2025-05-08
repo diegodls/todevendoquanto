@@ -20,27 +20,15 @@ export class AdminService implements AdminServiceInterface {
     email: string,
     password: string
   ): Promise<CreateOutputDto> {
-    console.log("EEEEEE");
     const userExists = await this.repository.findByEmail(email);
 
-    console.log("FFFFFFF");
-
     if (userExists) {
-      console.log("GGGGGGG");
       throw new CustomApiErrors.AlreadyExistError(
         `Usuário já existente com o email ${email}`
       );
     }
 
-    console.log("HHHHH");
     const encryptedPassword = await bcrypt.hash(password, 10);
-
-    console.log("");
-    console.log("PASSWORD:");
-    console.log(password);
-    console.log("");
-    console.log("EN.PASSWORD:");
-    console.log(encryptedPassword);
 
     const data = User.create(name, email, encryptedPassword);
 
