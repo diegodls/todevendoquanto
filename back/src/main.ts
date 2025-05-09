@@ -3,7 +3,7 @@ import { AdminController } from "./api/express/controllers/admin/admin.controlle
 import { FindUserByEmailQueryParams } from "./api/express/controllers/admin/admin.controller.interface";
 import { ProductController } from "./api/express/controllers/product.controller";
 import { UserController } from "./api/express/controllers/user/user.controller";
-import { authAdminMiddleware } from "./api/express/middleware/authorization/admin.authorization.middleware.express";
+import { AdminAuthMiddleware } from "./api/express/middleware/authorization/admin.authorization.middleware.express";
 import { RequestBodyValidation } from "./api/express/middleware/validate/body.validate.middleware.express.zod";
 import { testDb } from "./util/db.health";
 import { CreateUserBodyZodSchema } from "./util/validations/zod/admin/admin.create-user.zod.validation";
@@ -41,7 +41,7 @@ import { UserLoginZodSchema } from "./util/validations/zod/user/user.login.zod.v
 
   api.addPostRoute(
     "/admin/users/create",
-    authAdminMiddleware,
+    AdminAuthMiddleware,
     RequestBodyValidation(CreateUserBodyZodSchema),
     adminController.create
   ); // ! search why <CreateUserRequestBody> return error

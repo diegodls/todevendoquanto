@@ -48,7 +48,6 @@ export class UserService implements UserServiceInterface {
 
     const token = jwt.sign(payload, secret, { expiresIn: tokenExpiresTime });
 
-    //$2b$10$NOi7A15uWP9nkDwfECwAduedW4bWbsBGH1Ady3j5WLsRmpCwyNP.u
     const output: UserLoginOutputDto = { token };
 
     return output;
