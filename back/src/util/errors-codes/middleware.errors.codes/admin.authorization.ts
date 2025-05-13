@@ -21,8 +21,16 @@ const E_0_MW_ADM_0003: MiddlewareErrorsCodesProps = {
   actions: "Client side must send a valid Bearer token",
 };
 
+const E_0_MW_ADM_0004: MiddlewareErrorsCodesProps = {
+  instance: "admin.authorization.middleware.express",
+  code: "E_0_MW_ADM_0004",
+  details: "Token doesn't exists or not send",
+  actions: "Client side must send Bearer token",
+};
+
 export const AdminMiddlewareErrorsCodes = {
   E_0_MW_ADM_0001,
   E_0_MW_ADM_0002,
   E_0_MW_ADM_0003,
+  E_0_MW_ADM_0004,
 };
