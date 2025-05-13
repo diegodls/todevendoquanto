@@ -1,26 +1,34 @@
 import { prisma } from "./orm/prisma/prisma.util";
 
+const timeToThrow = 5000;
+
 export async function testDb() {
-  try {
-    const health = await prisma.$queryRaw`SELECT 1`;
+  const health = await prisma.$queryRaw`SELECT 1`;
+
+  setTimeout(() => {
+    if (!health) {
+      console.log("");
+      console.log("🔴🔴🔴🔴🔴");
+      console.log("");
+      console.log("ERROR ON DATABASE CONNECTION !!!");
+      console.log("");
+      console.log("HEALTH:");
+      console.log(health);
+      console.log("");
+      console.log("🔴🔴🔴🔴🔴");
+      console.log("");
+      process.exit(1);
+    }
+
     console.log("");
-    console.log("____________________________________________");
+    console.log("🟢🟢🟢🟢🟢");
     console.log("");
-    console.log("DB HEALTH:");
+    console.log("DATABASE ok");
     console.log("");
+    console.log("HEALTH:");
     console.log(health);
     console.log("");
-    console.log("____________________________________________");
+    console.log("🟢🟢🟢🟢🟢");
     console.log("");
-  } catch (error) {
-    console.log("");
-    console.log("____________________________________________");
-    console.log("");
-    console.log("DATABASE ERROR!");
-    console.log(error);
-    console.log("");
-    console.log("____________________________________________");
-    console.log("");
-    process.exit(1);
-  }
+  }, timeToThrow);
 }
