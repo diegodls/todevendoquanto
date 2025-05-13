@@ -1,4 +1,4 @@
-import e, { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { CustomApiErrors } from "../../../../util/api.errors";
 import { AdminMiddlewareErrorsCodes } from "../../../../util/errors-codes/middleware.errors.codes/admin.authorization";
@@ -14,16 +14,25 @@ export const AdminAuthMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const { authorization } = req.headers;
+  const authHeader = req.headers.authorization;
 
-  if (!authorization) {
+  if (!authHeader?.startsWith("Bearer ")) {
     throw new CustomApiErrors.UnauthorizedError(
       "Unauthorized",
       {},
       AdminMiddlewareErrorsCodes.E_0_MW_ADM_0002.code
     );
   }
-  const token = authorization.split(" ")[1];
+
+  const token = authHeader.split(" ")[1];
+
+  if (!token) {
+    throw new CustomApiErrors.UnauthorizedError(
+      "Unauthorized",
+      {},
+      AdminMiddlewareErrorsCodes.E_0_MW_ADM_0004.code
+    );
+  }
 
   const jwt_pass = process.env.JWT_PASS;
 
@@ -35,49 +44,9 @@ export const AdminAuthMiddleware = (
     );
   }
 
-  const idDecoded = jwt.verify(token, jwt_pass, (err, decoded) => {
-    if (err) {
-      throw new CustomApiErrors.UnauthorizedError(
-        "Internal Server Error!",
-        {},
-        AdminMiddlewareErrorsCodes.E_0_MW_ADM_0003.code
-      );
-    }
+  const decoded = jwt.verify(token, jwt_pass) as CreateUserAuth;
 
-    parei aqui, colocar o id fora da função, remover o idDecorede e tratar como função o jwt.verify
-    atribuir aqui o id
-
-    const { id } = decoded as CreateUserAuth;
-
-    console.log("🔴🔴🔴🔴🔴");
-    console.log("");
-    console.log("err:");
-    console.log(err);
-    console.log("🟢🟢🟢🟢🟢");
-    console.log("");
-    console.log("decoded:");
-    console.log(decoded);
-    console.log("🟢🟢🟢🟢🟢");
-    console.log("");
-    console.log("id:");
-    console.log(id);
-
-    return id;
-  });
-
-  console.log("");
-  console.log("🔵🔵🔵🔵🔵");
-  console.log("ID");
-  console.log(idDecoded);
-
-  throw new CustomApiErrors.UnauthorizedError(
-    "AAAAAAAAAAAAAAAAAA",
-    {},
-    AdminMiddlewareErrorsCodes.E_0_MW_ADM_0002.code
-  );
-
-  /*
-  if (!id) {
+  if (!decoded?.id) {
     throw new CustomApiErrors.InternalError(
       "Internal Server Error!",
       {},
@@ -85,10 +54,7 @@ export const AdminAuthMiddleware = (
     );
   }
 
-  const verifiedUser: CreateUserAuth = { id };
-
-  (req as AuthRequest).user = verifiedUser;
+  (req as AuthRequest).user = decoded;
 
   next();
-  */
 };
