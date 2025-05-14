@@ -6,7 +6,7 @@ ______BACK
 [ ] Make errors in EN
 [ ] Case sensitive password
 [ ] Make custom errors identifiers, like: elx000001 = Error parsing token | send to user:  "Internal Server Error! Code: elx000001", work for logging: console.log(elx000001) | el: [E]rror [L]ogin 000001, type the interface to apply prefix like: Interface<T>{ error: "0xE<T>0001}
-
+[ ] Verify the jwt errors on middleware error handler
 ______FRONT
 [ ] Add Internationalization, language for errors.
 
