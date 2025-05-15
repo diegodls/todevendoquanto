@@ -1,0 +1,22 @@
+________________________BACK
+
+[ ] 00009 - DEALING WITH ADMIN ROUTE (PERMISSIONS)
+
+______TO DO
+[ ] 00001 - Swagger;
+
+[ ] 00002 - Create routes flow on excalidraw or similar
+
+[ ] 00003 - Verify in "main.ts", params type missing props (ex: email);
+
+[ ] 00004 - Add a function with email regex and call on zod schemas (CreateUserBody)
+
+[ ] 00005 - Make errors in EN
+
+[ ] 00006 - Case sensitive password
+
+[ ] 00007 - Make custom errors identifiers, like: elx000001 = Error parsing token | send to user:  "Internal Server Error! Code: elx000001", work for logging: console.log(elx000001) | el: [E]rror [L]ogin 000001, type the interface to apply prefix like: Interface<T>{ error: "0xE<T>0001}
+
+[ ] 00008 - Verify the "jwt errors" on middleware error handler
+
+______DONE
