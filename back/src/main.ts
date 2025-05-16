@@ -44,7 +44,7 @@ import { UserLoginZodSchema } from "./util/validations/zod/user/user.login.zod.v
     AdminAuthMiddleware,
     RequestBodyValidation(CreateUserBodyZodSchema),
     adminController.create
-  ); // ! search why <CreateUserRequestBody> return error
+  );
 
   // ! PRODUCT ROUTES
   api.addGetRoute("/products", productController.list);
