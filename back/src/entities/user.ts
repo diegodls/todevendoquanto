@@ -30,7 +30,7 @@ export type UserProps = {
 
 export class User {
   private constructor(readonly props: UserProps) {}
-  //TODO: password must be case sensitive
+
   public static create(
     name: UserProps["name"],
     email: UserProps["email"],
