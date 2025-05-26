@@ -3,7 +3,7 @@ import { CreateUserBody } from "../../../../util/validations/zod/admin/admin.cre
 import {
   ExpressCustomRequestBody,
   ExpressCustomRequestQuery,
-} from "../express.custom.request.types";
+} from "../product/express.custom.request.types";
 
 export type CreateUserRequestBody = ExpressCustomRequestBody<CreateUserBody>;
 

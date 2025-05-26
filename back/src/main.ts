@@ -1,7 +1,7 @@
 import { ApiExpress } from "./api/express/api.express";
 import { AdminController } from "./api/express/controllers/admin/admin.controller";
 import { FindUserByEmailQueryParams } from "./api/express/controllers/admin/admin.controller.interface";
-import { ProductController } from "./api/express/controllers/product.controller";
+import { ProductController } from "./api/express/controllers/product/product.controller";
 import { UserController } from "./api/express/controllers/user/user.controller";
 import { AdminAuthMiddleware } from "./api/express/middleware/authorization/admin.authorization.middleware.express";
 import { RequestBodyValidation } from "./api/express/middleware/validate/body.validate.middleware.express.zod";
