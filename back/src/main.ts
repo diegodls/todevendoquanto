@@ -11,7 +11,6 @@ import { UserLoginZodSchema } from "./util/validations/zod/user/user.login.zod.v
 
 (async () => {
   testDb();
-
   const api = ApiExpress.build();
 
   const productController = ProductController.build();
