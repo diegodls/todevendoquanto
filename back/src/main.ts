@@ -5,7 +5,10 @@ import { ProductController } from "./api/express/controllers/product/product.con
 import { UserController } from "./api/express/controllers/user/user.controller";
 import { AdminAuthMiddleware } from "./api/express/middleware/authorization/admin.authorization.middleware.express";
 import { RequestBodyValidation } from "./api/express/middleware/validate/body.validate.middleware.express.zod";
+import { UserRepositoryPrisma } from "./repositories/user/prisma/user.repository.prisma";
+import { UserService } from "./services/user/user.service";
 import { testDb } from "./util/db.health";
+import { prisma } from "./util/orm/prisma/prisma.util";
 import { CreateUserBodyZodSchema } from "./util/validations/zod/admin/admin.create-user.zod.validation";
 import { UserLoginZodSchema } from "./util/validations/zod/user/user.login.zod.validation";
 
@@ -17,7 +20,20 @@ import { UserLoginZodSchema } from "./util/validations/zod/user/user.login.zod.v
 
   const adminController = AdminController.build();
 
-  const userController = UserController.build();
+  const repository = UserRepositoryPrisma.build(prisma);
+
+  const service = new UserService(repository);
+
+  const token = await service.generateUserLoginToken({
+    email: "user001@email.com",
+    password: "123456",
+  });
+
+  console.log("");
+  console.log("🟦🔴🔴🔴🔴");
+  console.log(token);
+
+  const userController = UserController.build(service, repository);
 
   api.addGetRoute(
     "/test",

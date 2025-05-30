@@ -9,10 +9,8 @@ import {
   UserServiceInterface,
 } from "./user.service.interface";
 
-export type JWT_Payload = { id: string };
-
 export class UserService implements UserServiceInterface {
-  private constructor(readonly repository: UserRepositoryInterface) {}
+  constructor(readonly repository: UserRepositoryInterface) {}
 
   public static build(repository: UserRepositoryInterface) {
     return new UserService(repository);

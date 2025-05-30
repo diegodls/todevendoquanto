@@ -4,7 +4,7 @@
   "main": "main.ts",
   "scripts": {
     "dev": "nodemon --exec ts-node src/main.ts",
-    "dev:tsx": "npx tsx src/main.ts",
+    "dev:tsx": "tsx watch src/main.ts",
     "generate": "npx prisma generate",
     "test": "vitest",
     "test:w": "vitest --watch"
