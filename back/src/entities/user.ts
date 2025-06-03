@@ -17,74 +17,26 @@ export enum UserRole {
   ADMIN = "ADMIN",
 }
 
-export type UserPermissions = "user-create" | "user-update" | "user-delete";
-
 export type UserProps = {
-  id: string;
+  readonly id: string;
   name: string;
   email: string;
   password: string;
   role: UserRole;
-  permissions: UserPermissions[];
 };
 
 export class User {
-  private constructor(readonly props: UserProps) {}
+  public readonly id: string = "";
+  public name: string = "";
+  public email: string = "";
+  public password: string = "";
+  public role: UserRole = UserRole.BASIC;
 
-  public static create(
-    name: UserProps["name"],
-    email: UserProps["email"],
-    password: UserProps["password"]
-  ) {
-    return new User({
-      id: crypto.randomUUID().toString(),
-      name,
-      email,
-      password,
-      role: UserRole.BASIC,
-      permissions: [],
-    });
-  }
+  constructor(props: Partial<User>, id?: string) {
+    Object.assign(this, props);
 
-  public static with(
-    id: string,
-    name: string,
-    email: string,
-    password: string,
-    role: UserRole,
-    permissions: UserPermissions[]
-  ) {
-    return new User({
-      id,
-      name,
-      email,
-      password: password ?? "",
-      role,
-      permissions,
-    });
-  }
-
-  public get id() {
-    return this.props.id;
-  }
-
-  public get name() {
-    return this.props.name;
-  }
-
-  public get email() {
-    return this.props.email;
-  }
-
-  public get password() {
-    return this.props.password;
-  }
-
-  public get role() {
-    return this.props.role;
-  }
-
-  public get permissions() {
-    return this.props.permissions;
+    if (!id) {
+      this.id = crypto.randomUUID();
+    }
   }
 }
