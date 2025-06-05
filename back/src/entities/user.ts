@@ -12,18 +12,16 @@ export enum UserRole {
 }
 */
 
+export type CreateUserDTO = {
+  name: string;
+  email: string;
+  password: string;
+};
+
 export enum UserRole {
   BASIC = "BASIC",
   ADMIN = "ADMIN",
 }
-
-export type UserProps = {
-  readonly id: string;
-  name: string;
-  email: string;
-  password: string;
-  role: UserRole;
-};
 
 export class User {
   public readonly id: string = "";

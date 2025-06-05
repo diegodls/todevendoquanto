@@ -1,0 +1,25 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id
+  name     String
+  password String
+  email    String @unique
+  role     Role   @default(BASIC)
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  BASIC
+}
