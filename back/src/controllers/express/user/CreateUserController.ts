@@ -1,6 +1,6 @@
 import { CreateUserDTO } from "../../../entities/User";
 import { UserService } from "../../../services/userService";
-import { HttpRequest, HttpResponse } from "../../../types/https";
+import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 import { ICreateUserController } from "../../ICreateUserController";
 
 export class UserController implements ICreateUserController {

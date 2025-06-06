@@ -1,5 +1,10 @@
-import { app } from "./app/express/app";
+import { ExpressApp } from "./app/express/ExpressApp";
+import { userRouters } from "./routes/user/userRoutes";
 
-const PORT = process.env.PORT ?? 3333;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3333;
 
-app.listen(PORT);
+const app = ExpressApp.build();
+
+app.loadUserRoutes(userRouters);
+
+app.start(PORT);

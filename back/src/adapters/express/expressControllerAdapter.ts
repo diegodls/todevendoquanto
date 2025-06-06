@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
-import { HttpRequest, HttpResponse } from "../../types/https";
+import { HttpRequest, HttpResponse } from "../../types/HttpRequestResponse";
 
-export const expressAdapter = (controller: any) => {
+export const expressControllerAdapter = (controller: any) => {
   return async (request: Request, response: Response) => {
     const httpRequest: HttpRequest = {
       body: request.body,
