@@ -10,11 +10,11 @@ const userController = new UserController(userService);
 interface IUserRoutes<T> {
   method: HttpMethod;
   path: string;
-  controller: T;
+  handler: T;
 }
 
 const userRoutes: IUserRoutes<UserController>[] = [
-  { method: "post", path: "/users/create", controller: userController },
+  { method: "post", path: "/users/create", handler: userController },
 ];
 
-export { IUserRoutes, userRoutes as userRouters };
+export { IUserRoutes, userRoutes };

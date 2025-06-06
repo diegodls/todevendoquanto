@@ -1,6 +1,7 @@
 import express, { Express, RequestHandler } from "express";
 import { expressControllerAdapter } from "../../adapters/express/expressControllerAdapter";
 import { UserController } from "../../controllers/express/user/CreateUserController";
+import { ITestRoutes } from "../../routes/test/testRoutes";
 import { IUserRoutes } from "../../routes/user/userRoutes";
 import { HttpMethod } from "../../types/HttpMethod";
 import { IApp } from "../IApp";
@@ -9,6 +10,13 @@ type ExpressHttpMethod = keyof Pick<Express, HttpMethod>;
 
 export class ExpressApp implements IApp {
   private constructor(readonly app: Express) {}
+
+  private genericHandler(path: string): RequestHandler {
+    return () => {
+      console.log("🔴⚠️GENERIC METHOD - NOT IMPLEMENTED⚠️🔴");
+      console.log(path);
+    };
+  }
 
   private registerRoute(
     app: Express,
@@ -25,7 +33,21 @@ export class ExpressApp implements IApp {
         this.app,
         route.method,
         route.path,
-        expressControllerAdapter(route.controller)
+        expressControllerAdapter(route.handler) ??
+          this.genericHandler(route.path)
+      );
+    });
+  }
+
+  public loadTestRoutes(testRoutes: ITestRoutes<Function>[]): void {
+    testRoutes.forEach((route) => {
+      this.registerRoute(
+        this.app,
+        route.method,
+        route.path,
+        route.handler
+          ? expressControllerAdapter(route.handler)
+          : this.genericHandler(route.path)
       );
     });
   }
