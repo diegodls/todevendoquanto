@@ -1,7 +1,8 @@
-import { CreateUserDTO, User } from "../entities/User";
-import { IUserRepository } from "../repositories/IUserRepository";
+import { CreateUserDTO, User } from "../../entities/User";
+import { IUserRepository } from "../../repositories/IUserRepository";
+import { IUserService } from "./IUserService";
 
-export class UserService {
+export class UserService implements IUserService {
   constructor(private readonly repository: IUserRepository) {}
 
   public async create(data: CreateUserDTO): Promise<User | null> {

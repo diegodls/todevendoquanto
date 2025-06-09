@@ -1,21 +1,15 @@
-import { HttpMethod } from "../../types/HttpMethod";
+import { TestController } from "../../controllers/express/test/TestController";
+import { ITestController } from "../../controllers/interfaces/test/ITestController";
+import { IRoute } from "../IRoute";
 
-interface ITestRoutes<T> {
-  path: string;
-  method: HttpMethod;
-  handler: T;
-}
+const testController = new TestController();
 
-const testRoutes: ITestRoutes<Function>[] = [
+const testRoutes: IRoute<ITestController>[] = [
   {
     path: "/test",
     method: "get",
-    handler: () => {
-      console.log("❓❓❓");
-      console.log("ROTA TEST");
-      console.log("❓❓❓");
-    },
+    handler: testController,
   },
 ];
 
-export { ITestRoutes, testRoutes };
+export { testRoutes };

@@ -1,7 +1,7 @@
 import { CreateUserDTO } from "../../../entities/User";
-import { UserService } from "../../../services/userService";
+import { UserService } from "../../../services/user/userService";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
-import { ICreateUserController } from "../../ICreateUserController";
+import { ICreateUserController } from "../../interfaces/user/ICreateUserController";
 
 export class UserController implements ICreateUserController {
   constructor(private readonly service: UserService) {}
