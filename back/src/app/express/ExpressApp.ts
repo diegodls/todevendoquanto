@@ -1,8 +1,8 @@
 import express, { Express, RequestHandler } from "express";
-import { expressControllerAdapter } from "../../adapters/express/expressControllerAdapter";
-import { TestController } from "../../controllers/express/test/TestController";
+import { httpAdapterExpress } from "../../adapters/express/httpAdapterExpress";
 import { UserController } from "../../controllers/express/user/CreateUserController";
 import { IRoute } from "../../routes/IRoute";
+import { ITestRoutes } from "../../routes/test/ITestRoutes";
 import { HttpMethod } from "../../types/HttpMethod";
 import { IApp } from "../IApp";
 
@@ -34,20 +34,24 @@ export class ExpressApp implements IApp {
         this.app,
         route.method,
         route.path,
-        expressControllerAdapter(route.handler)
+        httpAdapterExpress(route.handler)
       );
     });
   }
 
-  public loadTestRoutes(testRoutes: IRoute<TestController>[]): void {
+  public loadTestRoutes(testRoutes: ITestRoutes): void {
     testRoutes.forEach((route) => {
       this.registerRoute(
         this.app,
         route.method,
         route.path,
-        expressControllerAdapter(route.handler)
+        httpAdapterExpress(route.handler)
       );
     });
+  }
+
+  public loadMiddleware(middleware: RequestHandler) {
+    this.app.use(middleware);
   }
 
   public static build() {

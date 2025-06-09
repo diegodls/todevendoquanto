@@ -1,12 +1,16 @@
 import { TestController } from "../../controllers/express/test/TestController";
-import { ITestController } from "../../controllers/interfaces/test/ITestController";
-import { IRoute } from "../IRoute";
+import { ITestRoutes } from "./ITestRoutes";
 
 const testController = new TestController();
 
-const testRoutes: IRoute<ITestController>[] = [
+const testRoutes: ITestRoutes = [
   {
     path: "/test",
+    method: "get",
+    handler: testController,
+  },
+  {
+    path: "/error",
     method: "get",
     handler: testController,
   },
