@@ -1,4 +1,4 @@
-import express, { Express, RequestHandler } from "express";
+import express, { ErrorRequestHandler, Express, RequestHandler } from "express";
 import { httpAdapterExpress } from "../../adapters/express/httpAdapterExpress";
 import { UserController } from "../../controllers/express/user/CreateUserController";
 import { IRoute } from "../../routes/IRoute";
@@ -7,6 +7,8 @@ import { HttpMethod } from "../../types/HttpMethod";
 import { IApp } from "../IApp";
 
 type ExpressHttpMethod = keyof Pick<Express, HttpMethod>;
+
+type Middleware = RequestHandler | ErrorRequestHandler;
 
 export class ExpressApp implements IApp {
   private constructor(readonly app: Express) {}
@@ -50,14 +52,12 @@ export class ExpressApp implements IApp {
     });
   }
 
-  public loadMiddleware(middleware: RequestHandler) {
+  public loadMiddleware(middleware: Middleware): void {
     this.app.use(middleware);
   }
 
   public static build() {
     const app = express();
-
-    //app.use(errorMiddleware);
 
     app.use(express.json());
 

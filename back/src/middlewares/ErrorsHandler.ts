@@ -1,10 +1,10 @@
-import { ApiError } from "../utils/ApiError";
-import { ErrorTyped, TErrorHandler } from "./IErrorsHandler";
+import { ApiError } from "../utils/errors/ApiError";
+import { TErrorHandler, TypedError } from "./IErrorsHandler";
 
-const errorHandler: TErrorHandler = (error: ErrorTyped) => {
+const errorHandler: TErrorHandler = (error: TypedError) => {
   const status = error.status ?? 500;
   let message = error.message ?? "Internal Server Error";
-  const errors = error.errors ?? [];
+  const errors = error.errors;
   let code = error.code;
 
   const timestamp = new Date().toLocaleString("pt-BR", {

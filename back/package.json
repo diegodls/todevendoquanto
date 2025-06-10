@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsnd --transpile-only --respawn --ignore-watch node_modules src/main.ts"
+    "dev": "tsnd --transpile-only --respawn --ignore-watch node_modules src/main.ts",
+    "check": "tsc --noEmit --watch"
   },
   "keywords": [],
   "author": "",

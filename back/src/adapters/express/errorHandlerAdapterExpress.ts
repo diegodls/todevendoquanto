@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response } from "express";
+import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import { errorHandler } from "../../middlewares/ErrorsHandler";
-import { ErrorTyped } from "../../middlewares/IErrorsHandler";
+import { TypedError } from "../../middlewares/IErrorsHandler";
 
-const errorHandlerAdapterExpress = (
-  error: ErrorTyped,
-  request: Request,
+const errorHandlerAdapterExpress: ErrorRequestHandler = (
+  error: TypedError,
+  _request: Request,
   response: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const { message, status, errors, code, timestamp } = errorHandler(error);
 

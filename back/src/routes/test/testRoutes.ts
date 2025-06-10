@@ -1,7 +1,11 @@
+import { ErrorController } from "../../controllers/express/error/ErrorController";
 import { TestController } from "../../controllers/express/test/TestController";
+import { ErrorService } from "../../services/error/errorService";
 import { ITestRoutes } from "./ITestRoutes";
 
 const testController = new TestController();
+const errorService = new ErrorService();
+const errorController = new ErrorController(errorService);
 
 const testRoutes: ITestRoutes = [
   {
@@ -12,7 +16,7 @@ const testRoutes: ITestRoutes = [
   {
     path: "/error",
     method: "get",
-    handler: testController,
+    handler: errorController,
   },
 ];
 

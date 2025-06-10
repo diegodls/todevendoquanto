@@ -12,23 +12,27 @@ export enum UserRole {
 }
 */
 
-export type CreateUserDTO = {
+type CreateUserInputDTO = {
   name: string;
   email: string;
   password: string;
 };
 
-export enum UserRole {
+type CreateUserOutputDTO = Omit<User, "password">;
+
+enum UserRole {
   BASIC = "BASIC",
   ADMIN = "ADMIN",
 }
 
-export class User {
+class User {
   public readonly id: string = "";
   public name: string = "";
   public email: string = "";
   public password: string = "";
   public role: UserRole = UserRole.BASIC;
+  // ! ADICIONAR O CREATED_AT
+  // ! ADICIONAR O UPDATED_AT
 
   constructor(props: Partial<User>, id?: string) {
     Object.assign(this, props);
@@ -38,3 +42,5 @@ export class User {
     }
   }
 }
+
+export { CreateUserInputDTO, CreateUserOutputDTO, User, UserRole };

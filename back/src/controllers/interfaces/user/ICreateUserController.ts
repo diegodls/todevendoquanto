@@ -1,6 +1,11 @@
-import { CreateUserDTO } from "../../../entities/User";
+import {
+  CreateUserInputDTO,
+  CreateUserOutputDTO,
+} from "../../../entities/User";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 
 export interface ICreateUserController {
-  handle(request: HttpRequest<CreateUserDTO>): Promise<HttpResponse>;
+  handle(
+    request: HttpRequest<CreateUserInputDTO>
+  ): Promise<HttpResponse<CreateUserOutputDTO>>;
 }
