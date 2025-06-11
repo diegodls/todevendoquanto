@@ -6,6 +6,11 @@ import { UserService } from "../../../services/user/userService";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 import { InternalError } from "../../../utils/errors/ApiError";
 import { userErroCodes } from "../../../utils/errors/codes/user/userErrorCodes";
+import { bodyValidation } from "../../../validation/zod/BodyValidation";
+import {
+  CreateUserBodySchema,
+  CreateUserInputDTOZod,
+} from "../../../validation/zod/schemas/user/CreateUserBody";
 import { ICreateUserController } from "../../interfaces/user/ICreateUserController";
 
 export class UserController implements ICreateUserController {
@@ -14,7 +19,10 @@ export class UserController implements ICreateUserController {
   public async handle(
     request: HttpRequest<CreateUserInputDTO>
   ): Promise<HttpResponse<CreateUserOutputDTO>> {
-    const createdUser = await this.service.create(request.body);
+    const data =
+      bodyValidation<CreateUserInputDTOZod>(CreateUserBodySchema)(request);
+
+    const createdUser = await this.service.create(data);
 
     if (!createdUser) {
       throw new InternalError(
@@ -25,9 +33,6 @@ export class UserController implements ICreateUserController {
     }
 
     const { password, ...userOutput } = createdUser;
-
-    console.log("");
-    console.log(userOutput);
 
     const output: HttpResponse<CreateUserOutputDTO> = {
       statusCode: 200,

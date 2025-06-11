@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsnd --transpile-only --respawn --ignore-watch node_modules src/main.ts",
-    "check": "tsc --noEmit --watch"
+    "tsc": "tsc --noEmit --watch"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +14,8 @@
   "dependencies": {
     "@prisma/client": "^6.9.0",
     "express": "^5.1.0",
-    "nodemailer": "^7.0.3"
+    "nodemailer": "^7.0.3",
+    "zod": "^3.25.61"
   },
   "devDependencies": {
     "@prisma/adapter-pg": "^6.9.0",
