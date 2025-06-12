@@ -1,6 +1,6 @@
 import express, { ErrorRequestHandler, Express, RequestHandler } from "express";
 import { httpAdapterExpress } from "../../adapters/express/httpAdapterExpress";
-import { UserController } from "../../controllers/express/user/CreateUserController";
+import { CreateUserController } from "../../controllers/express/user/CreateUserController";
 import { IRoute } from "../../routes/IRoute";
 import { ITestRoutes } from "../../routes/test/ITestRoutes";
 import { HttpMethod } from "../../types/HttpMethod";
@@ -13,14 +13,6 @@ type Middleware = RequestHandler | ErrorRequestHandler;
 export class ExpressApp implements IApp {
   private constructor(readonly app: Express) {}
 
-  private genericHandler(path: string): RequestHandler {
-    // ! MOVER ESSE GENERIC LÁ PRA FUNÇÃO DO ADAPTER_EXPRESS
-    return () => {
-      console.log("🔴⚠️GENERIC METHOD - NOT IMPLEMENTED⚠️🔴");
-      console.log(path);
-    };
-  }
-
   private registerRoute(
     app: Express,
     method: ExpressHttpMethod,
@@ -30,7 +22,7 @@ export class ExpressApp implements IApp {
     return app[method](path, handlers);
   }
 
-  public loadUserRoutes(allRoutes: IRoute<UserController>[]) {
+  public loadUserRoutes(allRoutes: IRoute<CreateUserController>[]) {
     allRoutes.forEach((route) => {
       this.registerRoute(
         this.app,

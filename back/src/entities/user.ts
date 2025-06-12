@@ -20,6 +20,15 @@ type CreateUserInputDTO = {
 
 type CreateUserOutputDTO = Omit<User, "password">;
 
+type UserLoginInputDTO = {
+  email: string;
+  password: string;
+};
+
+type UserLoginOutputDTO = {
+  token: string;
+};
+
 enum UserRole {
   BASIC = "BASIC",
   ADMIN = "ADMIN",
@@ -43,4 +52,11 @@ class User {
   }
 }
 
-export { CreateUserInputDTO, CreateUserOutputDTO, User, UserRole };
+export {
+  CreateUserInputDTO,
+  CreateUserOutputDTO,
+  User,
+  UserLoginInputDTO,
+  UserLoginOutputDTO,
+  UserRole,
+};

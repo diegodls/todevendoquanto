@@ -7,20 +7,17 @@ import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 import { InternalError } from "../../../utils/errors/ApiError";
 import { userErroCodes } from "../../../utils/errors/codes/user/userErrorCodes";
 import { bodyValidation } from "../../../validation/zod/BodyValidation";
-import {
-  CreateUserBodySchema,
-  CreateUserInputDTOZod,
-} from "../../../validation/zod/schemas/user/CreateUserBody";
+import { CreateUserBodySchema } from "../../../validation/zod/schemas/user/CreateUserBody";
 import { ICreateUserController } from "../../interfaces/user/ICreateUserController";
 
-export class UserController implements ICreateUserController {
+export class CreateUserController implements ICreateUserController {
   constructor(private readonly service: UserService) {}
 
   public async handle(
     request: HttpRequest<CreateUserInputDTO>
   ): Promise<HttpResponse<CreateUserOutputDTO>> {
     const data =
-      bodyValidation<CreateUserInputDTOZod>(CreateUserBodySchema)(request);
+      bodyValidation<CreateUserInputDTO>(CreateUserBodySchema)(request);
 
     const createdUser = await this.service.create(data);
 

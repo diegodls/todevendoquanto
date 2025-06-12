@@ -1,6 +1,7 @@
-import { z } from "zod";
+import { z, ZodType } from "zod";
+import { CreateUserInputDTO } from "../../../../entities/User";
 
-const CreateUserBodySchema = z.object({
+const CreateUserBodySchema: ZodType<CreateUserInputDTO> = z.object({
   name: z
     .string({
       description: "Insert a name",
@@ -8,10 +9,17 @@ const CreateUserBodySchema = z.object({
     })
     .nonempty("Must pass a valid ")
     .min(3, { message: "Name must have 3 or more caracteres" }),
-  email: z.email("Invalid email!").nonempty("Must pass a valid email!"),
-  password: z.string().min(6, "Password must have 6 or more caracteres"),
+  email: z
+    .string({
+      invalid_type_error: "Must pass a valid email!",
+      required_error: "Must pass a valid email!",
+    })
+    .email({ message: "Must pass a valid email!" })
+    .nonempty("Must pass a valid email!"),
+  password: z
+    .string()
+    .nonempty("Must pass a valid password!")
+    .min(6, "Password must have 6 or more caracteres"),
 });
 
-type CreateUserInputDTOZod = z.infer<typeof CreateUserBodySchema>;
-
-export { CreateUserBodySchema, CreateUserInputDTOZod };
+export { CreateUserBodySchema };
