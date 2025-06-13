@@ -1,9 +1,8 @@
-import { CreateUserController } from "../controllers/express/user/CreateUserController";
-import { IRoute } from "../routes/IRoute";
 import { ITestRoutes } from "../routes/test/ITestRoutes";
+import { IUserRoutes } from "../routes/user/IUserRoutes";
 
 export interface IApp {
   start(PORT: number): void;
-  loadUserRoutes(userRoutes: IRoute<CreateUserController>[]): void;
+  loadUserRoutes(userRoutes: IUserRoutes): void;
   loadTestRoutes(testRoutes: ITestRoutes): void;
 }

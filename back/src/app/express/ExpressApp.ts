@@ -1,8 +1,7 @@
 import express, { ErrorRequestHandler, Express, RequestHandler } from "express";
 import { httpAdapterExpress } from "../../adapters/express/httpAdapterExpress";
-import { CreateUserController } from "../../controllers/express/user/CreateUserController";
-import { IRoute } from "../../routes/IRoute";
 import { ITestRoutes } from "../../routes/test/ITestRoutes";
+import { IUserRoutes } from "../../routes/user/IUserRoutes";
 import { HttpMethod } from "../../types/HttpMethod";
 import { IApp } from "../IApp";
 
@@ -22,7 +21,7 @@ export class ExpressApp implements IApp {
     return app[method](path, handlers);
   }
 
-  public loadUserRoutes(allRoutes: IRoute<CreateUserController>[]) {
+  public loadUserRoutes(allRoutes: IUserRoutes) {
     allRoutes.forEach((route) => {
       this.registerRoute(
         this.app,

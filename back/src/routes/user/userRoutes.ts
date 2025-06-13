@@ -1,16 +1,18 @@
 import { CreateUserController } from "../../controllers/express/user/CreateUserController";
+import { UserLoginController } from "../../controllers/express/user/UserLoginController";
 import { UserRepositoryPrisma } from "../../repositories/prisma/UserRepositoryPrisma";
 import { UserService } from "../../services/user/userService";
 import { prisma } from "../../utils/orm/prisma/prismaClient";
-import { IRoute } from "../IRoute";
+import { IUserRoutes } from "./IUserRoutes";
 
 const userRepository = new UserRepositoryPrisma(prisma);
 const userService = new UserService(userRepository);
-const userController = new CreateUserController(userService);
+const createUserController = new CreateUserController(userService);
+const loginUserController = new UserLoginController(userService);
 
-const userRoutes: IRoute<CreateUserController>[] = [
-  { method: "post", path: "/users/create", handler: userController },
-  { method: "get", path: "/users/login", handler: userController },
+const userRoutes: IUserRoutes = [
+  { method: "post", path: "/users/create", handler: createUserController },
+  { method: "post", path: "/users/login", handler: loginUserController },
 ];
 
 export { userRoutes };

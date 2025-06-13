@@ -1,3 +1,6 @@
+import bcrypt, { compare } from "bcrypt";
+import jwt, { SignOptions } from "jsonwebtoken";
+
 import {
   CreateUserInputDTO,
   User,
@@ -7,8 +10,10 @@ import {
 import { IUserRepository } from "../../repositories/IUserRepository";
 import {
   AlreadyExistError,
+  InternalError,
   UnauthorizedError,
 } from "../../utils/errors/ApiError";
+import { userServiceErrorCodes } from "../../utils/errors/codes/user/userErrorCodes";
 import { IUserService } from "./IUserService";
 
 export class UserService implements IUserService {
@@ -23,7 +28,23 @@ export class UserService implements IUserService {
       throw new AlreadyExistError("User already exists with given email");
     }
 
-    const userToBeCreated = new User({ name, email, password });
+    const saltRounds = 10;
+
+    const encryptedPassword = await bcrypt.hash(password, saltRounds);
+
+    if (!encryptedPassword) {
+      throw new InternalError(
+        "Internal Server Error!",
+        {},
+        userServiceErrorCodes.E_0_SVC_USR_0002.code
+      );
+    }
+
+    const userToBeCreated = new User({
+      name,
+      email,
+      password: encryptedPassword,
+    });
 
     return await this.repository.create(userToBeCreated);
   }
@@ -31,12 +52,34 @@ export class UserService implements IUserService {
   public async login(data: UserLoginInputDTO): Promise<UserLoginOutputDTO> {
     const { email, password } = data;
 
-    const userAlreadyExists = await this.repository.findByEmail(email);
+    const userExists = await this.repository.findByEmail(email);
 
-    if (!userAlreadyExists) {
+    if (!userExists) {
       throw new UnauthorizedError("Wrong credentials!");
     }
 
-    return { token: "" };
+    const isPasswordValid = await compare(password, userExists.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedError("Wrong credentials!");
+    }
+
+    const secret = process.env.JWT_PASS;
+
+    if (!secret) {
+      throw new InternalError(
+        "Internal Server Error, try again latter",
+        {},
+        userServiceErrorCodes.E_0_SVC_USR_0001.code
+      );
+    }
+
+    const tokenExpireTime: SignOptions["expiresIn"] = "8h";
+
+    const payload = { id: userExists.id };
+
+    const token = jwt.sign(payload, secret, { expiresIn: tokenExpireTime });
+
+    return { token };
   }
 }

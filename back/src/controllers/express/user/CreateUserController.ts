@@ -5,9 +5,9 @@ import {
 import { UserService } from "../../../services/user/userService";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 import { InternalError } from "../../../utils/errors/ApiError";
-import { userErroCodes } from "../../../utils/errors/codes/user/userErrorCodes";
+import { userControllerErrorCodes } from "../../../utils/errors/codes/user/userErrorCodes";
 import { bodyValidation } from "../../../validation/zod/BodyValidation";
-import { CreateUserBodySchema } from "../../../validation/zod/schemas/user/CreateUserBody";
+import { CreateUserBodySchema } from "../../../validation/zod/schemas/user/CreateUserBodySchema";
 import { ICreateUserController } from "../../interfaces/user/ICreateUserController";
 
 export class CreateUserController implements ICreateUserController {
@@ -25,7 +25,7 @@ export class CreateUserController implements ICreateUserController {
       throw new InternalError(
         "Internal Server Error",
         {},
-        userErroCodes.E_0_CTR_USR_0001.code
+        userControllerErrorCodes.E_0_CTR_USR_0001.code
       );
     }
 
