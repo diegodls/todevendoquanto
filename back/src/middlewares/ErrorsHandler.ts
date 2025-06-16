@@ -1,4 +1,10 @@
+import {
+  JsonWebTokenError,
+  NotBeforeError,
+  TokenExpiredError,
+} from "jsonwebtoken";
 import { ApiError } from "../utils/errors/ApiError";
+import { MiddlewareErrorHandler } from "../utils/errors/codes/middleware/middlewareErrorHandler";
 import { TErrorHandler, TypedError } from "./IErrorsHandler";
 
 const errorHandler: TErrorHandler = (error: TypedError) => {
@@ -17,7 +23,22 @@ const errorHandler: TErrorHandler = (error: TypedError) => {
     hour12: false,
   });
 
-  //! TODO: JSONWEBTOKEN
+  //! JSONWEBTOKEN
+
+  if (error instanceof TokenExpiredError) {
+    message = "Internal Server Error";
+    code = MiddlewareErrorHandler.E_0_MW_ADM_0001.code;
+  }
+
+  if (error instanceof JsonWebTokenError) {
+    message = "Internal Server Error";
+    code = MiddlewareErrorHandler.E_0_MW_ADM_0002.code;
+  }
+
+  if (error instanceof NotBeforeError) {
+    message = "Internal Server Error";
+    code = MiddlewareErrorHandler.E_0_MW_ADM_0003.code;
+  }
 
   const returnError = new ApiError(message, status, errors, code, timestamp);
 
