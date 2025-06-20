@@ -29,6 +29,11 @@ type UserLoginOutputDTO = {
   token: string;
 };
 
+interface UserLoginPayload {
+  email: User["email"];
+  role: User["role"];
+}
+
 enum UserRole {
   BASIC = "BASIC",
   ADMIN = "ADMIN",
@@ -58,5 +63,6 @@ export {
   User,
   UserLoginInputDTO,
   UserLoginOutputDTO,
+  UserLoginPayload,
   UserRole,
 };

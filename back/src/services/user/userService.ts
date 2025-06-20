@@ -6,6 +6,7 @@ import {
   User,
   UserLoginInputDTO,
   UserLoginOutputDTO,
+  UserLoginPayload,
 } from "../../entities/User";
 import { IUserRepository } from "../../repositories/IUserRepository";
 import {
@@ -76,9 +77,15 @@ export class UserService implements IUserService {
 
     const tokenExpireTime: SignOptions["expiresIn"] = "8h";
 
-    const payload = { id: userExists.id };
+    const payload: UserLoginPayload = {
+      email: userExists.email,
+      role: userExists.role,
+    };
 
-    const token = jwt.sign(payload, secret, { expiresIn: tokenExpireTime });
+    const token = jwt.sign(payload, secret, {
+      subject: userExists.id,
+      expiresIn: tokenExpireTime,
+    });
 
     return { token };
   }

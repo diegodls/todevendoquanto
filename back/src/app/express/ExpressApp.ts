@@ -21,8 +21,8 @@ export class ExpressApp implements IApp {
     return app[method](path, handlers);
   }
 
-  public loadUserRoutes(allRoutes: IUserRoutes) {
-    allRoutes.forEach((route) => {
+  public loadUserRoutes(userRoutes: IUserRoutes) {
+    userRoutes.forEach((route) => {
       this.registerRoute(
         this.app,
         route.method,
