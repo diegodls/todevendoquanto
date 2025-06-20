@@ -8,12 +8,10 @@ const UserLoginBodySchema: ZodType<UserLoginInputDTO> = z.object({
       required_error: "Must pass a valid email",
     })
     .email("Must pass a valid email"),
-  password: z
-    .string({
-      required_error: "Must pass a valid password",
-      invalid_type_error: "Must pass a valid password",
-    })
-    .min(6, "Must pass a valid password"),
+  password: z.string({
+    required_error: "Must pass a valid password",
+    invalid_type_error: "Must pass a valid password",
+  }),
 });
 
 export { UserLoginBodySchema };
