@@ -1,5 +1,6 @@
 import { errorHandlerAdapterExpress } from "./adapters/express/errorHandlerAdapterExpress";
 import { ExpressApp } from "./app/express/ExpressApp";
+import { adminRoutes } from "./routes/admin/adminRoutes";
 import { testRoutes } from "./routes/test/testRoutes";
 import { userRoutes } from "./routes/user/userRoutes";
 
@@ -10,6 +11,8 @@ const app = ExpressApp.build();
 app.loadUserRoutes(userRoutes);
 
 app.loadTestRoutes(testRoutes);
+
+app.loadAdminRoutes(adminRoutes);
 
 app.loadMiddleware(errorHandlerAdapterExpress);
 

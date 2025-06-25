@@ -1,5 +1,6 @@
 import express, { ErrorRequestHandler, Express, RequestHandler } from "express";
 import { httpAdapterExpress } from "../../adapters/express/httpAdapterExpress";
+import { IAdminRoutes } from "../../routes/admin/IAdminRoutes";
 import { ITestRoutes } from "../../routes/test/ITestRoutes";
 import { IUserRoutes } from "../../routes/user/IUserRoutes";
 import { HttpMethod } from "../../types/HttpMethod";
@@ -16,30 +17,32 @@ export class ExpressApp implements IApp {
     app: Express,
     method: ExpressHttpMethod,
     path: string,
-    ...handlers: RequestHandler[]
+    handlers: RequestHandler[]
   ) {
-    return app[method](path, handlers);
+    return app[method](path, ...handlers);
+  }
+
+  public loadAdminRoutes(adminRoutes: IAdminRoutes): void {
+    adminRoutes.forEach((route) => {
+      this.registerRoute(this.app, route.method, route.path, [
+        httpAdapterExpress(route.handler),
+      ]);
+    });
   }
 
   public loadUserRoutes(userRoutes: IUserRoutes) {
     userRoutes.forEach((route) => {
-      this.registerRoute(
-        this.app,
-        route.method,
-        route.path,
-        httpAdapterExpress(route.handler)
-      );
+      this.registerRoute(this.app, route.method, route.path, [
+        httpAdapterExpress(route.handler),
+      ]);
     });
   }
 
   public loadTestRoutes(testRoutes: ITestRoutes): void {
     testRoutes.forEach((route) => {
-      this.registerRoute(
-        this.app,
-        route.method,
-        route.path,
-        httpAdapterExpress(route.handler)
-      );
+      this.registerRoute(this.app, route.method, route.path, [
+        httpAdapterExpress(route.handler),
+      ]);
     });
   }
 

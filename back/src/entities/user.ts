@@ -12,6 +12,8 @@ export enum UserRole {
 }
 */
 
+type BearerToken = `Bearer ${string}`;
+
 type CreateUserInputDTO = {
   name: string;
   email: string;
@@ -19,6 +21,14 @@ type CreateUserInputDTO = {
 };
 
 type CreateUserOutputDTO = Omit<User, "password">;
+
+type DeleteUserInputDTO = {
+  idToDelete: string;
+};
+
+type DeleteUserOutputDTO = {
+  deletedId: string;
+};
 
 type UserLoginInputDTO = {
   email: string;
@@ -60,6 +70,8 @@ class User {
 export {
   CreateUserInputDTO,
   CreateUserOutputDTO,
+  DeleteUserInputDTO,
+  DeleteUserOutputDTO,
   User,
   UserLoginInputDTO,
   UserLoginOutputDTO,

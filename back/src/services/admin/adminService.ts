@@ -2,7 +2,7 @@ import { User } from "../../entities/User";
 import { IAdminRepository } from "../../repositories/IAdminRepository";
 import { NotFoundError, UnauthorizedError } from "../../utils/errors/ApiError";
 import { adminServiceErrorCodes } from "../../utils/errors/codes/admin/adminErrorCodes";
-import { IAdminService } from "./iAdminService";
+import { IAdminService } from "./IAdminService";
 
 class AdminService implements IAdminService {
   constructor(private readonly repository: IAdminRepository) {}
@@ -10,13 +10,13 @@ class AdminService implements IAdminService {
   public async deleteUserById(
     adminId: User["id"],
     idToDelete: User["id"]
-  ): Promise<void> {
+  ): Promise<User | null> {
     console.log("");
     console.log(`AdminService > Searching Admin with ID: ${adminId}...`);
 
-    const userAdmin = await this.repository.findUserById(adminId);
+    const currentUser = await this.repository.findUserById(adminId);
 
-    if (!userAdmin) {
+    if (!currentUser) {
       console.log(`AdminService > Admin with ID: ${adminId} was not found!`);
       throw new UnauthorizedError(
         "Invalid Credentials",
@@ -25,7 +25,7 @@ class AdminService implements IAdminService {
       );
     }
 
-    if (userAdmin.role !== "ADMIN") {
+    if (currentUser.role !== "ADMIN") {
       console.log(
         `AdminService > Admin with ID: ${adminId} doesn't have admin privileges`
       );
@@ -36,9 +36,9 @@ class AdminService implements IAdminService {
       );
     }
 
-    const userToDelete = await this.repository.findUserById(idToDelete);
+    const userToBeDeleted = await this.repository.findUserById(idToDelete);
 
-    if (!userToDelete) {
+    if (!userToBeDeleted) {
       console.log(
         `AdminService > User to delete with ID: ${idToDelete} was not found!`
       );
@@ -49,7 +49,7 @@ class AdminService implements IAdminService {
       );
     }
 
-    if (userToDelete.role === "ADMIN") {
+    if (userToBeDeleted.role === "ADMIN") {
       console.log(`AdminService > Can't delete another Admin`);
       console.log(`${adminId} ⚔️ ${idToDelete}`);
       throw new UnauthorizedError(
@@ -59,7 +59,9 @@ class AdminService implements IAdminService {
       );
     }
 
-    const output = this.repository.deleteUserById(idToDelete);
+    const output = await this.repository.deleteUserById(idToDelete);
+
+    return output;
   }
 }
 
