@@ -2,6 +2,7 @@ import { IErrorsCode } from "../IErrorCodes";
 
 interface IAdminControllerErrorCodes {
   E_0_CTR_ADM_0001: IErrorsCode;
+  E_0_CTR_ADM_0002: IErrorsCode;
 }
 
 interface IAdminServiceErrorCodes {

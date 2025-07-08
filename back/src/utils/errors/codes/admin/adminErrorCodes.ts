@@ -7,7 +7,13 @@ const adminControllerErrorCodes: IAdminControllerErrorCodes = {
   E_0_CTR_ADM_0001: {
     code: "E_0_CTR_ADM_0001",
     details: "Auth header not send",
-    actions: "Cliente must send a AuthHeader with Bearer Token",
+    actions: "Client must send a AuthHeader with Bearer Token",
+    instance: "adminController",
+  },
+  E_0_CTR_ADM_0002: {
+    code: "E_0_CTR_ADM_0002",
+    details: "Auth header not send",
+    actions: "Client must send a AuthHeader with ADMIN role",
     instance: "adminController",
   },
 };

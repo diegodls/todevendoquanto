@@ -1,4 +1,4 @@
-import { DeleteUserController } from "../../controllers/admin/DeleteUserController";
+import { DeleteUserController } from "../../controllers/express/admin/DeleteUserController";
 import { AdminRepository } from "../../repositories/prisma/AdminRepository";
 import { AdminService } from "../../services/admin/adminService";
 import { prisma } from "../../utils/orm/prisma/prismaClient";
