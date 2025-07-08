@@ -1,35 +1,35 @@
 import { prisma } from "./orm/prisma/prismaClient";
 
-const timeToThrow = 5000;
-
-export async function testDb() {
-  const health = await prisma.$queryRaw`SELECT 1`;
+async function testDb(timeToThrow = 3000) {
   //TODO: Maybe transform this into a "APP class" function
 
-  setTimeout(() => {
-    if (!health) {
-      console.log("");
-      console.log("🔴🔴🔴🔴🔴");
-      console.log("");
-      console.log("ERROR ON DATABASE CONNECTION !!!");
-      console.log("");
-      console.log("HEALTH:");
-      console.log(health);
-      console.log("");
-      console.log("🔴🔴🔴🔴🔴");
-      console.log("");
-      process.exit(1);
-    }
+  console.log("");
+  console.log("👀 CHECKING DATABASE...");
 
+  await prisma.$connect();
+
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error("⚠️ QUERY TIMEOUT"));
+    }, timeToThrow);
+  });
+
+  try {
+    await Promise.race([
+      await prisma.$queryRawUnsafe(`SELECT 1`),
+      timeoutPromise,
+    ]);
     console.log("");
-    console.log("🟢🟢🟢🟢🟢");
+    console.log("🟢 DATABASE RUNNING FINE!");
+  } catch (error) {
     console.log("");
-    console.log("DATABASE ok");
+    console.log("🔴 DATABASE NOT FILLING WELL");
     console.log("");
-    console.log("HEALTH:");
-    console.log(health);
+    console.log("⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
+    console.log(error);
     console.log("");
-    console.log("🟢🟢🟢🟢🟢");
-    console.log("");
-  }, timeToThrow);
+    process.exit(1);
+  }
 }
+
+export { testDb };
