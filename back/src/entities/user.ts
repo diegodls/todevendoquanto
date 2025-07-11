@@ -44,6 +44,14 @@ interface UserLoginPayload {
   role: User["role"];
 }
 
+interface UserLoginDecode {
+  email: User["email"];
+  role: User["role"];
+  sub: User["id"];
+  iat: number;
+  exp: number;
+}
+
 enum UserRole {
   BASIC = "BASIC",
   ADMIN = "ADMIN",
@@ -73,6 +81,7 @@ export {
   DeleteUserInputDTO,
   DeleteUserOutputDTO,
   User,
+  UserLoginDecode,
   UserLoginInputDTO,
   UserLoginOutputDTO,
   UserLoginPayload,

@@ -6,8 +6,10 @@ import { IAdminRepository } from "../IAdminRepository";
 class AdminRepository implements IAdminRepository {
   constructor(private readonly ormClient: PrismaClientGenerated) {}
 
-  public async findUserById(): Promise<User | null> {
-    return null;
+  public async findUserById(id: User["id"]): Promise<User | null> {
+    const user = await this.ormClient.user.findUnique({ where: { id } });
+
+    return user ? prismaEntityUserParser(user) : null;
   }
 
   public async deleteUserById(id: User["id"]): Promise<User | null> {

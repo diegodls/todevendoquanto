@@ -7,7 +7,7 @@ import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 interface IDeleteUserController {
   handle(
     request: HttpRequest<DeleteUserInputDTO>
-  ): HttpResponse<DeleteUserOutputDTO>;
+  ): Promise<HttpResponse<DeleteUserOutputDTO>>;
 }
 
 export { IDeleteUserController };

@@ -3,11 +3,14 @@ import jwt from "jsonwebtoken";
 import {
   DeleteUserInputDTO,
   DeleteUserOutputDTO,
-  UserLoginPayload,
+  UserLoginDecode,
 } from "../../../entities/User";
 import { AdminService } from "../../../services/admin/adminService";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
-import { UnauthorizedError } from "../../../utils/errors/ApiError";
+import {
+  NotModifiedError,
+  UnauthorizedError,
+} from "../../../utils/errors/ApiError";
 import { adminControllerErrorCodes } from "../../../utils/errors/codes/admin/adminErrorCodes";
 import { bodyValidation } from "../../../validation/zod/BodyValidation";
 import { DeleteUserByIDBodySchema } from "../../../validation/zod/schemas/admin/DeleteUserByIDBodySchema";
@@ -15,20 +18,14 @@ import { IDeleteUserController } from "../../interfaces/admin/IDeleteUserControl
 
 class DeleteUserController implements IDeleteUserController {
   constructor(private readonly service: AdminService) {}
-  handle(
+  public async handle(
     request: HttpRequest<DeleteUserInputDTO, Request["headers"]>
-  ): HttpResponse<DeleteUserOutputDTO> {
+  ): Promise<HttpResponse<DeleteUserOutputDTO>> {
     const authHeader = request.headers.authorization;
 
     const data = bodyValidation<DeleteUserInputDTO>(DeleteUserByIDBodySchema)(
       request
     );
-
-    console.log("body data");
-    console.log(data);
-
-    console.log("authHeader");
-    console.log(authHeader);
 
     if (!authHeader?.startsWith("Bearer ")) {
       throw new UnauthorizedError(
@@ -42,9 +39,9 @@ class DeleteUserController implements IDeleteUserController {
 
     const jwtSecret = process.env.JWT_PASS ?? "";
 
-    const decode = jwt.verify(token, jwtSecret) as UserLoginPayload;
+    const decode = jwt.verify(token, jwtSecret) as UserLoginDecode;
 
-    if (decode.role !== "ADMIN") {
+    if (decode?.role !== "ADMIN") {
       throw new UnauthorizedError(
         "Not authorized",
         {},
@@ -52,9 +49,18 @@ class DeleteUserController implements IDeleteUserController {
       );
     }
 
+    const deletedUser = await this.service.deleteUserById(
+      decode.sub,
+      data.idToDelete
+    );
+
+    if (!deletedUser) {
+      throw new NotModifiedError("User to be deleted not found");
+    }
+
     const output: HttpResponse<DeleteUserOutputDTO> = {
       statusCode: 200,
-      body: { deletedId: decode.email },
+      body: { deletedId: deletedUser.id },
     };
 
     return output;

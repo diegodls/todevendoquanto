@@ -11,13 +11,9 @@ class AdminService implements IAdminService {
     adminId: User["id"],
     idToDelete: User["id"]
   ): Promise<User | null> {
-    console.log("");
-    console.log(`AdminService > Searching Admin with ID: ${adminId}...`);
+    const currentAdminUser = await this.repository.findUserById(adminId);
 
-    const currentUser = await this.repository.findUserById(adminId);
-
-    if (!currentUser) {
-      console.log(`AdminService > Admin with ID: ${adminId} was not found!`);
+    if (!currentAdminUser) {
       throw new UnauthorizedError(
         "Invalid Credentials",
         {},
@@ -25,10 +21,7 @@ class AdminService implements IAdminService {
       );
     }
 
-    if (currentUser.role !== "ADMIN") {
-      console.log(
-        `AdminService > Admin with ID: ${adminId} doesn't have admin privileges`
-      );
+    if (currentAdminUser.role !== "ADMIN") {
       throw new UnauthorizedError(
         "You don't have the right permissions.",
         {},
@@ -39,9 +32,6 @@ class AdminService implements IAdminService {
     const userToBeDeleted = await this.repository.findUserById(idToDelete);
 
     if (!userToBeDeleted) {
-      console.log(
-        `AdminService > User to delete with ID: ${idToDelete} was not found!`
-      );
       throw new NotFoundError(
         "ID to be deleted was not found!",
         {},
@@ -50,8 +40,6 @@ class AdminService implements IAdminService {
     }
 
     if (userToBeDeleted.role === "ADMIN") {
-      console.log(`AdminService > Can't delete another Admin`);
-      console.log(`${adminId} ⚔️ ${idToDelete}`);
       throw new UnauthorizedError(
         "You can't delete another ADMIN USER.",
         {},
