@@ -1,5 +1,5 @@
 import { z, ZodType } from "zod";
-import { CreateUserInputDTO } from "../../../../entities/User";
+import { CreateUserInputDTO } from "../../../../core/domain/User";
 
 const CreateUserBodySchema: ZodType<CreateUserInputDTO> = z.object({
   name: z

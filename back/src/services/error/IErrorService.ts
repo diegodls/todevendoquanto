@@ -1,4 +1,4 @@
-import { ErrorDTO } from "../../controllers/interfaces/error/IErrorController";
+import { ErrorDTO } from "../../core/usecases/error/IErrorController";
 
 interface IErrorService {
   verify(data: ErrorDTO): ErrorDTO | null;

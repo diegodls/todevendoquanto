@@ -12,7 +12,7 @@ const deleteUserController = new DeleteUserController(adminService);
 
 const adminRoutes: IAdminRoutes = [
   {
-    path: "/admin/deleteUser",
+    path: "/admin/users/delete/id",
     method: "delete",
     handler: deleteUserController,
   },

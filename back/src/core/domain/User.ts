@@ -23,7 +23,7 @@ type CreateUserInputDTO = {
 type CreateUserOutputDTO = Omit<User, "password">;
 
 type DeleteUserInputDTO = {
-  idToDelete: string;
+  id: string;
 };
 
 type DeleteUserOutputDTO = {
@@ -42,14 +42,6 @@ type UserLoginOutputDTO = {
 interface UserLoginPayload {
   email: User["email"];
   role: User["role"];
-}
-
-interface UserLoginDecode {
-  email: User["email"];
-  role: User["role"];
-  sub: User["id"];
-  iat: number;
-  exp: number;
 }
 
 enum UserRole {
@@ -81,7 +73,6 @@ export {
   DeleteUserInputDTO,
   DeleteUserOutputDTO,
   User,
-  UserLoginDecode,
   UserLoginInputDTO,
   UserLoginOutputDTO,
   UserLoginPayload,

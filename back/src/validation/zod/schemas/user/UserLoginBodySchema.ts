@@ -1,5 +1,5 @@
 import { z, ZodType } from "zod";
-import { UserLoginInputDTO } from "../../../../entities/User";
+import { UserLoginInputDTO } from "../../../../core/domain/User";
 
 const UserLoginBodySchema: ZodType<UserLoginInputDTO> = z.object({
   email: z

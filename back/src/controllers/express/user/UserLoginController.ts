@@ -1,9 +1,12 @@
-import { UserLoginInputDTO, UserLoginOutputDTO } from "../../../entities/User";
+import {
+  UserLoginInputDTO,
+  UserLoginOutputDTO,
+} from "../../../core/domain/User";
+import { IUserLoginController } from "../../../core/usecases/user/IUserLoginController";
 import { UserService } from "../../../services/user/userService";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 import { bodyValidation } from "../../../validation/zod/BodyValidation";
 import { UserLoginBodySchema } from "../../../validation/zod/schemas/user/UserLoginBodySchema";
-import { IUserLoginController } from "../../interfaces/user/IUserLoginController";
 
 class UserLoginController implements IUserLoginController {
   constructor(private readonly service: UserService) {}

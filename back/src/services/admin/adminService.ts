@@ -1,4 +1,4 @@
-import { User } from "../../entities/User";
+import { User } from "../../core/domain/User";
 import { IAdminRepository } from "../../repositories/IAdminRepository";
 import { NotFoundError, UnauthorizedError } from "../../utils/errors/ApiError";
 import { adminServiceErrorCodes } from "../../utils/errors/codes/admin/adminErrorCodes";
@@ -33,7 +33,7 @@ class AdminService implements IAdminService {
 
     if (!userToBeDeleted) {
       throw new NotFoundError(
-        "ID to be deleted was not found!",
+        "User not found",
         {},
         adminServiceErrorCodes.E_0_SVC_ADM_0003.code
       );

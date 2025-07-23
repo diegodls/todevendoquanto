@@ -1,7 +1,7 @@
 import {
   DeleteUserInputDTO,
   DeleteUserOutputDTO,
-} from "../../../entities/User";
+} from "../../../core/domain/User";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 
 interface IDeleteUserController {

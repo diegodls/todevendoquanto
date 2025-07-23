@@ -1,4 +1,4 @@
-import { ErrorDTO } from "../../controllers/interfaces/error/IErrorController";
+import { ErrorDTO } from "../../core/usecases/error/IErrorController";
 import { InternalError } from "../../utils/errors/ApiError";
 import { testServiceErrorCodes } from "../../utils/errors/codes/error/testErrorCodes";
 import { IErrorService } from "./IErrorService";

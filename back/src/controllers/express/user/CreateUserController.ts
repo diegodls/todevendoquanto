@@ -1,14 +1,14 @@
 import {
   CreateUserInputDTO,
   CreateUserOutputDTO,
-} from "../../../entities/User";
+} from "../../../core/domain/User";
+import { ICreateUserController } from "../../../core/usecases/user/ICreateUserController";
 import { UserService } from "../../../services/user/userService";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 import { InternalError } from "../../../utils/errors/ApiError";
 import { userControllerErrorCodes } from "../../../utils/errors/codes/user/userErrorCodes";
 import { bodyValidation } from "../../../validation/zod/BodyValidation";
 import { CreateUserBodySchema } from "../../../validation/zod/schemas/user/CreateUserBodySchema";
-import { ICreateUserController } from "../../interfaces/user/ICreateUserController";
 
 export class CreateUserController implements ICreateUserController {
   constructor(private readonly service: UserService) {}

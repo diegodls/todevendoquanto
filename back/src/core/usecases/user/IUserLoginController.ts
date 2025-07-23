@@ -1,4 +1,7 @@
-import { UserLoginInputDTO, UserLoginOutputDTO } from "../../../entities/User";
+import {
+  UserLoginInputDTO,
+  UserLoginOutputDTO,
+} from "../../../core/domain/User";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 
 interface IUserLoginController {

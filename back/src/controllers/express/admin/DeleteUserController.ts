@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 import {
   DeleteUserInputDTO,
   DeleteUserOutputDTO,
-  UserLoginDecode,
-} from "../../../entities/User";
+} from "../../../core/domain/User";
+import { IUserLoginDecode } from "../../../core/ports/auth";
 import { AdminService } from "../../../services/admin/adminService";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 import {
@@ -14,7 +14,7 @@ import {
 import { adminControllerErrorCodes } from "../../../utils/errors/codes/admin/adminErrorCodes";
 import { bodyValidation } from "../../../validation/zod/BodyValidation";
 import { DeleteUserByIDBodySchema } from "../../../validation/zod/schemas/admin/DeleteUserByIDBodySchema";
-import { IDeleteUserController } from "../../interfaces/admin/IDeleteUserController";
+import { IDeleteUserController } from "../../../core/usecases/admin/IDeleteUserController";
 
 class DeleteUserController implements IDeleteUserController {
   constructor(private readonly service: AdminService) {}
@@ -39,7 +39,7 @@ class DeleteUserController implements IDeleteUserController {
 
     const jwtSecret = process.env.JWT_PASS ?? "";
 
-    const decode = jwt.verify(token, jwtSecret) as UserLoginDecode;
+    const decode = jwt.verify(token, jwtSecret) as IUserLoginDecode;
 
     if (decode?.role !== "ADMIN") {
       throw new UnauthorizedError(
@@ -49,10 +49,7 @@ class DeleteUserController implements IDeleteUserController {
       );
     }
 
-    const deletedUser = await this.service.deleteUserById(
-      decode.sub,
-      data.idToDelete
-    );
+    const deletedUser = await this.service.deleteUserById(decode.sub, data.id);
 
     if (!deletedUser) {
       throw new NotModifiedError("User to be deleted not found");

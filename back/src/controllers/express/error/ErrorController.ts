@@ -1,11 +1,11 @@
+import {
+  IErrorController,
+  ErrorDTO,
+} from "../../../core/usecases/error/IErrorController";
 import { ErrorService } from "../../../services/error/errorService";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 import { InternalError } from "../../../utils/errors/ApiError";
 import { testControllerErrorCodes } from "../../../utils/errors/codes/error/testErrorCodes";
-import {
-  ErrorDTO,
-  IErrorController,
-} from "../../interfaces/error/IErrorController";
 
 class ErrorController implements IErrorController {
   constructor(private readonly service: ErrorService) {}

@@ -1,7 +1,7 @@
 import {
   CreateUserInputDTO,
   CreateUserOutputDTO,
-} from "../../../entities/User";
+} from "../../../core/domain/User";
 import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
 
 export interface ICreateUserController {

@@ -7,7 +7,7 @@ import {
   UserLoginInputDTO,
   UserLoginOutputDTO,
   UserLoginPayload,
-} from "../../entities/User";
+} from "../../core/domain/User";
 import { IUserRepository } from "../../repositories/IUserRepository";
 import {
   AlreadyExistError,

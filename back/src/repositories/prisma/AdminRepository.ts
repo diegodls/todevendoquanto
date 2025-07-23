@@ -1,4 +1,4 @@
-import { User } from "../../entities/User";
+import { User } from "../../core/domain/User";
 import { PrismaClientGenerated } from "../../utils/orm/prisma/prismaClient";
 import { prismaEntityUserParser } from "../../utils/orm/prisma/prismaEntityUserParser";
 import { IAdminRepository } from "../IAdminRepository";

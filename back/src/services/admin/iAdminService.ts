@@ -1,4 +1,4 @@
-import { User } from "../../entities/User";
+import { User } from "../../core/domain/User";
 
 interface IAdminService {
   deleteUserById(

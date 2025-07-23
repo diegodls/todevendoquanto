@@ -3,7 +3,7 @@ import {
   User,
   UserLoginInputDTO,
   UserLoginOutputDTO,
-} from "../../entities/User";
+} from "../../core/domain/User";
 
 interface IUserService {
   create(data: CreateUserInputDTO): Promise<User | null>;
