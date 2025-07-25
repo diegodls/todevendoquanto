@@ -12,38 +12,6 @@ export enum UserRole {
 }
 */
 
-type BearerToken = `Bearer ${string}`;
-
-type CreateUserInputDTO = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-type CreateUserOutputDTO = Omit<User, "password">;
-
-type DeleteUserInputDTO = {
-  id: string;
-};
-
-type DeleteUserOutputDTO = {
-  deletedId: string;
-};
-
-type UserLoginInputDTO = {
-  email: string;
-  password: string;
-};
-
-type UserLoginOutputDTO = {
-  token: string;
-};
-
-interface UserLoginPayload {
-  email: User["email"];
-  role: User["role"];
-}
-
 enum UserRole {
   BASIC = "BASIC",
   ADMIN = "ADMIN",
@@ -67,14 +35,4 @@ class User {
   }
 }
 
-export {
-  CreateUserInputDTO,
-  CreateUserOutputDTO,
-  DeleteUserInputDTO,
-  DeleteUserOutputDTO,
-  User,
-  UserLoginInputDTO,
-  UserLoginOutputDTO,
-  UserLoginPayload,
-  UserRole,
-};
+export { User, UserRole };

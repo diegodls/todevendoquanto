@@ -1,8 +1,11 @@
 import {
   CreateUserInputDTO,
   CreateUserOutputDTO,
-} from "../../../core/domain/User";
-import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
+} from "@/application/dtos/CreateUserDTO";
+import {
+  HttpRequest,
+  HttpResponse,
+} from "@/core/shared/types/HttpRequestResponse";
 
 export interface ICreateUserController {
   handle(

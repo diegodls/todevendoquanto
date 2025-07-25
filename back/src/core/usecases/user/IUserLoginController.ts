@@ -1,8 +1,11 @@
 import {
   UserLoginInputDTO,
   UserLoginOutputDTO,
-} from "../../../core/domain/User";
-import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
+} from "@/application/dtos/UserLoginDTO";
+import {
+  HttpRequest,
+  HttpResponse,
+} from "@/core/shared/types/HttpRequestResponse";
 
 interface IUserLoginController {
   handle(

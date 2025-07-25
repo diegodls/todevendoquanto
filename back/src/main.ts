@@ -1,9 +1,10 @@
-import { errorHandlerAdapterExpress } from "./adapters/express/errorHandlerAdapterExpress";
-import { ExpressApp } from "./app/express/ExpressApp";
-import { adminRoutes } from "./routes/admin/adminRoutes";
-import { testRoutes } from "./routes/test/testRoutes";
-import { userRoutes } from "./routes/user/userRoutes";
-import { testDb } from "./utils/dbHealth";
+//import { testDb } from "@/core/shared/utils/dbHealth";
+import { testRoutes } from "@/infrastructure/http/express/routes/testRoutes";
+import { userRoutes } from "@/infrastructure/http/express/routes/userRoutes";
+import { ExpressApp } from "@/infrastructure/http/express/server";
+import { testDb } from "./core/shared/utils/dbHealth";
+import { errorHandlerAdapterExpress } from "./infrastructure/http/express/adapters/errorHandlerAdapterExpress";
+import { adminRoutes } from "./infrastructure/http/express/routes/adminRoutes";
 
 testDb();
 

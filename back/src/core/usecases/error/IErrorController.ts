@@ -1,4 +1,7 @@
-import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
+import {
+  HttpRequest,
+  HttpResponse,
+} from "@/core/shared/types/HttpRequestResponse";
 
 type ErrorDTOWhere = "controller" | "service";
 

@@ -1,8 +1,11 @@
 import {
   DeleteUserInputDTO,
   DeleteUserOutputDTO,
-} from "../../../core/domain/User";
-import { HttpRequest, HttpResponse } from "../../../types/HttpRequestResponse";
+} from "@/application/dtos/DeleteUserDTO";
+import {
+  HttpRequest,
+  HttpResponse,
+} from "@/core/shared/types/HttpRequestResponse";
 
 interface IDeleteUserController {
   handle(
