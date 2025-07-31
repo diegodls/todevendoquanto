@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsnd --transpile-only --respawn --ignore-watch node_modules src/main.ts",
-    "tsc": "tsc --noEmit --watch"
+    "dev": "tsnd -r tsconfig-paths/register --transpile-only --respawn --ignore-watch node_modules src/main.ts",
+    "tsc": "tsc --noEmit --watch --traceResolution"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +17,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.3",
+    "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.61"
   },
   "devDependencies": {
