@@ -1,5 +1,5 @@
-import { TypedError } from '@/core/ports/infrastructure/middlewares/IErrorsHandler';
-import { errorHandler } from "@/infrastructure/middlewares/ErrorsHandler";
+import { TypedError } from "@/core/ports/infrastructure/errors/IErrorsHandler";
+import { errorHandler } from "@/infrastructure/errors/ErrorsHandler";
 
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 

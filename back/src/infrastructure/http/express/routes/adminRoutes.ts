@@ -1,14 +1,14 @@
 import { AdminService } from "@/application/services/admin/adminService";
 import { IAdminRoutes } from "@/core/ports/infrastructure/http/routes/IAdminRoutes";
 import { prisma } from "@/core/shared/utils/orm/prisma/prismaClient";
-import { DeleteUserController } from "@/infrastructure/http/express/controllers/admin/DeleteUserController";
+import { DeleteUserByIDController } from "@/infrastructure/http/express/controllers/admin/DeleteUserByIDController";
 import { AdminRepository } from "@/infrastructure/repositories/prisma/AdminRepository";
 
 const adminRepository = new AdminRepository(prisma);
 
 const adminService = new AdminService(adminRepository);
 
-const deleteUserController = new DeleteUserController(adminService);
+const deleteUserController = new DeleteUserByIDController(adminService);
 
 const adminRoutes: IAdminRoutes = [
   {

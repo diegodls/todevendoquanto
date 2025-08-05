@@ -8,9 +8,8 @@ interface IUserLoginDecode {
   exp: number;
 }
 
-interface JWTAuth {
+interface IJWTAuth {
   verifyToken(token: string): Promise<IUserLoginDecode>;
 }
 
-export { IUserLoginDecode, JWTAuth };
-
+export { IJWTAuth, IUserLoginDecode };

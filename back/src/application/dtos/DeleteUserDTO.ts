@@ -1,9 +1,9 @@
-type DeleteUserInputDTO = {
+type DeleteUserByIDInputDTO = {
   id: string;
 };
 
-type DeleteUserOutputDTO = {
+type DeleteUserByIDOutputDTO = {
   deletedId: string;
 };
 
-export { DeleteUserInputDTO, DeleteUserOutputDTO };
+export { DeleteUserByIDInputDTO, DeleteUserByIDOutputDTO };

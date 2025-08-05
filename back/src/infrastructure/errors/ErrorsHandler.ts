@@ -4,12 +4,12 @@ import {
   TokenExpiredError,
 } from "jsonwebtoken";
 
-import { ApiError } from "@/core/shared/utils/errors/ApiError";
-import { MiddlewareErrorHandler } from "@/core/shared/utils/errors/codes/middleware/middlewareErrorHandler";
 import {
   TErrorHandler,
   TypedError,
-} from "@/core/ports/infrastructure/middlewares/IErrorsHandler";
+} from "@/core/ports/infrastructure/errors/IErrorsHandler";
+import { ApiError } from "@/core/shared/utils/errors/ApiError";
+import { MiddlewareErrorHandler } from "@/core/shared/utils/errors/codes/middleware/middlewareErrorHandler";
 
 const errorHandler: TErrorHandler = (error: TypedError) => {
   const status = error.status ?? 500;

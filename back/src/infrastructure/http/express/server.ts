@@ -1,15 +1,18 @@
-
-import { IApp } from '@/core/ports/infrastructure/http/IApp';
-import { IAdminRoutes } from '@/core/ports/infrastructure/http/routes/IAdminRoutes';
-import { ITestRoutes } from '@/core/ports/infrastructure/http/routes/ITestRoutes';
-import { IUserRoutes } from '@/core/ports/infrastructure/http/routes/IUserRoutes';
+import { IApp } from "@/core/ports/infrastructure/http/IApp";
+import { IAdminRoutes } from "@/core/ports/infrastructure/http/routes/IAdminRoutes";
+import { ITestRoutes } from "@/core/ports/infrastructure/http/routes/ITestRoutes";
+import { IUserRoutes } from "@/core/ports/infrastructure/http/routes/IUserRoutes";
 import { HttpMethod } from "@/core/shared/types/HttpMethod";
+import { JWTAuth } from "@/infrastructure/auth/JWTAuth";
 import { httpAdapterExpress } from "@/infrastructure/http/express/adapters/httpAdapterExpress";
+import { IsAdminMiddleware } from "@/infrastructure/http/express/middleware/isAdminMiddleware";
 import express, { ErrorRequestHandler, Express, RequestHandler } from "express";
 
 type ExpressHttpMethod = keyof Pick<Express, HttpMethod>;
 
 type Middleware = RequestHandler | ErrorRequestHandler;
+
+const jwtHandler = new JWTAuth();
 
 export class ExpressApp implements IApp {
   private constructor(readonly app: Express) {}
@@ -26,6 +29,7 @@ export class ExpressApp implements IApp {
   public loadAdminRoutes(adminRoutes: IAdminRoutes): void {
     adminRoutes.forEach((route) => {
       this.registerRoute(this.app, route.method, route.path, [
+        IsAdminMiddleware(jwtHandler), //TODO: put this into IAdminRoutes to enlace
         httpAdapterExpress(route.handler),
       ]);
     });
