@@ -1,0 +1,39 @@
+import { JwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
+import { HttpRequest } from "@/core/shared/types/HttpRequestResponse";
+import { UnauthorizedError } from "@/core/shared/utils/errors/ApiError";
+import { adminControllerErrorCodes } from "@/core/shared/utils/errors/codes/admin/adminErrorCodes";
+import { JWTAuth } from "@/infrastructure/auth/JWTAuth";
+
+const jwtHandler = new JWTAuth();
+
+const adminUserFromToken = async (request: HttpRequest) => {
+  const authHeader = request.headers.authorization;
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    throw new UnauthorizedError(
+      "Not authorized",
+      {},
+      adminControllerErrorCodes.E_0_CTR_ADM_0001.code
+    );
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  // TODO: verificar o expiration date
+
+  //const [bearer, token] = authHeader.split(" ");
+
+  const user = await jwtHandler.verifyToken<JwtPayload>(token);
+
+  if (user?.role !== "ADMIN") {
+    throw new UnauthorizedError(
+      "Not authorized",
+      {},
+      adminControllerErrorCodes.E_0_CTR_ADM_0001.code
+    );
+  }
+
+  return user;
+};
+
+export { adminUserFromToken };

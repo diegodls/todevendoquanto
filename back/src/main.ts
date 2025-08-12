@@ -1,7 +1,7 @@
 //import { testDb } from "@/core/shared/utils/dbHealth";
+import { ExpressApp } from "@/infrastructure/http/express/app";
 import { testRoutes } from "@/infrastructure/http/express/routes/testRoutes";
 import { userRoutes } from "@/infrastructure/http/express/routes/userRoutes";
-import { ExpressApp } from "@/infrastructure/http/express/server";
 import { testDb } from "./core/shared/utils/dbHealth";
 import { errorHandlerAdapterExpress } from "./infrastructure/http/express/adapters/errorHandlerAdapterExpress";
 import { adminRoutes } from "./infrastructure/http/express/routes/adminRoutes";

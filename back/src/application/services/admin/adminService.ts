@@ -45,7 +45,7 @@ class AdminService implements IAdminService {
 
     if (userToBeDeleted.role === "ADMIN") {
       throw new UnauthorizedError(
-        "You can't delete another ADMIN USER.",
+        "You cannot performe this action",
         {},
         adminServiceErrorCodes.E_0_SVC_ADM_0004.code
       );

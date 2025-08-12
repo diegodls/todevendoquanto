@@ -7,4 +7,5 @@ export interface IApp {
   loadUserRoutes(userRoutes: IUserRoutes): void;
   loadTestRoutes(testRoutes: ITestRoutes): void;
   loadAdminRoutes(adminRoutes: IAdminRoutes): void;
+  // TODO: Maybe split routes in "Load Public/Authenticated Routes"
 }

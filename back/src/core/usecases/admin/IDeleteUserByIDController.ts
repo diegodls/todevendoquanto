@@ -3,13 +3,13 @@ import {
   DeleteUserByIDOutputDTO,
 } from "@/application/dtos/DeleteUserDTO";
 import {
-  HttpRequest,
+  AuthenticatedHttpRequest,
   HttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 
 interface IDeleteUserByIDController {
   handle(
-    request: HttpRequest<DeleteUserByIDInputDTO>
+    request: AuthenticatedHttpRequest<DeleteUserByIDInputDTO>
   ): Promise<HttpResponse<DeleteUserByIDOutputDTO>>;
 }
 

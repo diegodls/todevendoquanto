@@ -1,6 +1,6 @@
 import { User } from "../../../domain/User";
 
-interface IUserLoginDecode {
+interface JwtPayload {
   email: User["email"];
   role: User["role"];
   sub: User["id"];
@@ -9,7 +9,7 @@ interface IUserLoginDecode {
 }
 
 interface IJWTAuth {
-  verifyToken(token: string): Promise<IUserLoginDecode>;
+  verifyToken<T>(token: string): Promise<T>;
 }
 
-export { IJWTAuth, IUserLoginDecode };
+export { IJWTAuth, JwtPayload };
