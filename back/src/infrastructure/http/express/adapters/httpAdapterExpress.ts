@@ -1,9 +1,9 @@
-import { DeleteUserByIDInputDTO } from "@/application/dtos/DeleteUserDTO";
 import {
   AuthenticatedHttpRequest,
   HttpRequest,
   HttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
+import { Controller } from "@/core/usecases/admin/IDeleteUserByIDController";
 import { adminUserFromToken } from "@/infrastructure/auth/adminUserFromToken";
 
 import { Request, Response } from "express";
@@ -24,9 +24,18 @@ const publicHttpAdapterExpress = (controller: any) => {
   };
 };
 
-const authenticatedHttpAdapterExpress = (controller: any) => {
+const authenticatedHttpAdapterExpress = <
+  B = any,
+  H = any,
+  P = any,
+  Q = any,
+  R = any
+>(
+  controller: Controller<B, H, P, Q, R>
+) => {
   return async (request: Request, response: Response) => {
     const adminUser = await adminUserFromToken(request);
+    // TODO: Se quiser juntar tudo em um adapter, dá para receber a prop isAuth: boolean junto ao controller e fazer a lógica referente ao isAuth.
 
     const authenticatedHttpRequest: AuthenticatedHttpRequest = {
       body: request.body,
@@ -36,8 +45,9 @@ const authenticatedHttpAdapterExpress = (controller: any) => {
       user: adminUser,
     };
 
-    const httpResponse: HttpResponse<DeleteUserByIDInputDTO> =
-      await controller.handle(authenticatedHttpRequest);
+    const httpResponse: HttpResponse<R> = await controller.handle(
+      authenticatedHttpRequest
+    );
 
     response.status(httpResponse.statusCode).json(httpResponse.body);
   };

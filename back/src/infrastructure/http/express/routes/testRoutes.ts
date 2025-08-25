@@ -11,12 +11,12 @@ const testRoutes: ITestRoutes = [
   {
     path: "/test",
     method: "get",
-    handler: testController,
+    controller: testController,
   },
   {
     path: "/error",
     method: "get",
-    handler: errorController,
+    controller: errorController,
   },
 ];
 

@@ -28,7 +28,7 @@ export class ExpressApp implements IApp {
   public loadAdminRoutes(adminRoutes: IAdminRoutes): void {
     adminRoutes.forEach((route) => {
       this.registerRoute(this.app, route.method, route.path, [
-        authenticatedHttpAdapterExpress(route.handler),
+        authenticatedHttpAdapterExpress(route.controller),
       ]);
     });
   }
@@ -36,7 +36,7 @@ export class ExpressApp implements IApp {
   public loadUserRoutes(userRoutes: IUserRoutes) {
     userRoutes.forEach((route) => {
       this.registerRoute(this.app, route.method, route.path, [
-        publicHttpAdapterExpress(route.handler),
+        publicHttpAdapterExpress(route.controller),
       ]);
     });
   }
@@ -44,7 +44,7 @@ export class ExpressApp implements IApp {
   public loadTestRoutes(testRoutes: ITestRoutes): void {
     testRoutes.forEach((route) => {
       this.registerRoute(this.app, route.method, route.path, [
-        publicHttpAdapterExpress(route.handler),
+        publicHttpAdapterExpress(route.controller),
       ]);
     });
   }

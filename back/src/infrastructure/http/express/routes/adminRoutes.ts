@@ -14,7 +14,7 @@ const adminRoutes: IAdminRoutes = [
   {
     path: "/admin/users/delete/id",
     method: "delete",
-    handler: deleteUserController,
+    controller: deleteUserController,
   },
 ];
 

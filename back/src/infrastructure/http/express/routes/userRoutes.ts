@@ -11,8 +11,8 @@ const createUserController = new CreateUserController(userService);
 const loginUserController = new UserLoginController(userService);
 
 const userRoutes: IUserRoutes = [
-  { method: "post", path: "/users/create", handler: createUserController },
-  { method: "post", path: "/users/login", handler: loginUserController },
+  { method: "post", path: "/users/create", controller: createUserController },
+  { method: "post", path: "/users/login", controller: loginUserController },
 ];
 
 export { userRoutes };

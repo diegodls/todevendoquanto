@@ -8,10 +8,10 @@ import {
   HttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { NotModifiedError } from "@/core/shared/utils/errors/ApiError";
-import { IDeleteUserByIDController } from "@/core/usecases/admin/IDeleteUserByIDController";
+import { Controller } from "@/core/usecases/admin/IDeleteUserByIDController";
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
 import { DeleteUserByIDBodySchema } from "@/infrastructure/validation/zod/schemas/admin/DeleteUserByIDBodySchema";
-class DeleteUserByIDController implements IDeleteUserByIDController {
+class DeleteUserByIDController implements Controller {
   constructor(private readonly service: AdminService) {}
   public async handle(
     request: AuthenticatedHttpRequest<DeleteUserByIDInputDTO>
