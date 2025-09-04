@@ -1,6 +1,6 @@
 import { IRouteOBJ } from "@/core/ports/infrastructure/http/routes/IRouteOBJ";
-import { DeleteUserByIDController } from "@/infrastructure/http/express/controllers/admin/DeleteUserByIDController";
+import { IDeleteUserByIDController } from "@/core/usecases/admin/IDeleteUserByIDController";
 
-type IAdminRoutes = [IRouteOBJ<DeleteUserByIDController>];
+type IAdminRoutes = [IRouteOBJ<IDeleteUserByIDController>];
 
 export { IAdminRoutes };

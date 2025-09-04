@@ -3,7 +3,7 @@ import {
   HttpRequest,
   HttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
-import { Controller } from "@/core/usecases/admin/IDeleteUserByIDController";
+import { AuthenticatedController } from "@/core/usecases/Controller";
 import { adminUserFromToken } from "@/infrastructure/auth/adminUserFromToken";
 
 import { Request, Response } from "express";
@@ -31,7 +31,7 @@ const authenticatedHttpAdapterExpress = <
   Q = any,
   R = any
 >(
-  controller: Controller<B, H, P, Q, R>
+  controller: AuthenticatedController<B, H, P, Q, R>
 ) => {
   return async (request: Request, response: Response) => {
     const adminUser = await adminUserFromToken(request);
