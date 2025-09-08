@@ -8,12 +8,12 @@ import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/UserR
 
 const userRepository = new UserRepositoryPrisma(prisma);
 const userService = new UserService(userRepository);
-const createUserController = new UserSignInController(userService);
+const signInUserController = new UserSignInController(userService);
 const loginUserController = new UserLoginController(userService);
 
 const userRoutes: IUserRoutes = [
-  { method: "post", path: "/users/create", controller: createUserController },
-  { method: "post", path: "/users/login", controller: loginUserController },
+  { method: "post", path: "/user/signin", controller: signInUserController },
+  { method: "post", path: "/user/login", controller: loginUserController },
 ];
 
 export { userRoutes };
