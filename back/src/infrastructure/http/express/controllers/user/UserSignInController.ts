@@ -1,7 +1,7 @@
 import {
-  CreateUserInputDTO,
-  CreateUserOutputDTO,
-} from "@/application/dtos/CreateUserDTO";
+  UserSignInInputDTO,
+  UserSignInOutputDTO,
+} from "@/application/dtos/UserSignInDTO";
 import { UserService } from "@/application/services/user/userService";
 import {
   PublicHttpRequest,
@@ -9,18 +9,18 @@ import {
 } from "@/core/shared/types/HttpRequestResponse";
 import { InternalError } from "@/core/shared/utils/errors/ApiError";
 import { userControllerErrorCodes } from "@/core/shared/utils/errors/codes/user/userErrorCodes";
-import { ICreateUserController } from "@/core/usecases/user/ICreateUserController";
+import { IUserSignInController } from "@/core/usecases/user/IUserSignInController";
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
-import { CreateUserBodySchema } from "@/infrastructure/validation/zod/schemas/user/CreateUserBodySchema";
+import { UserSignInBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserSignInBodySchema";
 
-export class CreateUserController implements ICreateUserController {
+export class UserSignInController implements IUserSignInController {
   constructor(private readonly service: UserService) {}
 
   public async handle(
-    request: PublicHttpRequest<CreateUserInputDTO>
-  ): Promise<PublicHttpResponse<CreateUserOutputDTO>> {
+    request: PublicHttpRequest<UserSignInInputDTO>
+  ): Promise<PublicHttpResponse<UserSignInOutputDTO>> {
     const data =
-      bodyValidation<CreateUserInputDTO>(CreateUserBodySchema)(request);
+      bodyValidation<UserSignInInputDTO>(UserSignInBodySchema)(request);
 
     const createdUser = await this.service.create(data);
 
@@ -34,7 +34,7 @@ export class CreateUserController implements ICreateUserController {
 
     const { password, ...userOutput } = createdUser;
 
-    const output: PublicHttpResponse<CreateUserOutputDTO> = {
+    const output: PublicHttpResponse<UserSignInOutputDTO> = {
       statusCode: 200,
       body: userOutput,
     };

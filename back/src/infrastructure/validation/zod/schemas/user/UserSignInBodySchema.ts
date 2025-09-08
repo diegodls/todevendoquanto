@@ -1,8 +1,7 @@
-import { CreateUserInputDTO } from '@/application/dtos/CreateUserDTO';
+import { UserSignInInputDTO } from "@/application/dtos/UserSignInDTO";
 import { z, ZodType } from "zod";
 
-
-const CreateUserBodySchema: ZodType<CreateUserInputDTO> = z.object({
+const UserSignInBodySchema: ZodType<UserSignInInputDTO> = z.object({
   name: z
     .string({
       description: "Insert a name",
@@ -23,4 +22,4 @@ const CreateUserBodySchema: ZodType<CreateUserInputDTO> = z.object({
     .min(6, "Password must have 6 or more caracteres"),
 });
 
-export { CreateUserBodySchema };
+export { UserSignInBodySchema };

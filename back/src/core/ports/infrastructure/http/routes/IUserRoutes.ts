@@ -1,9 +1,9 @@
 import { IRouteOBJ } from "@/core/ports/infrastructure/http/routes/IRouteOBJ";
-import { CreateUserController } from "@/infrastructure/http/express/controllers/user/CreateUserController";
 import { UserLoginController } from "@/infrastructure/http/express/controllers/user/UserLoginController";
+import { UserSignInController } from "@/infrastructure/http/express/controllers/user/UserSignInController";
 
 type IUserRoutes = [
-  IRouteOBJ<CreateUserController>,
+  IRouteOBJ<UserSignInController>,
   IRouteOBJ<UserLoginController>
 ];
 

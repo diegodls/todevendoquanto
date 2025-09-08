@@ -1,9 +1,9 @@
-import { CreateUserInputDTO } from "@/application/dtos/CreateUserDTO";
 import {
   UserLoginInputDTO,
   UserLoginOutputDTO,
   UserLoginPayload,
 } from "@/application/dtos/UserLoginDTO";
+import { UserSignInInputDTO } from "@/application/dtos/UserSignInDTO";
 import { IUserService } from "@/application/services/user/IUserService";
 import { User } from "@/core/domain/User";
 import { IUserRepository } from "@/core/ports/repositories/IUserRepository";
@@ -20,7 +20,7 @@ import jwt, { SignOptions } from "jsonwebtoken";
 export class UserService implements IUserService {
   constructor(private readonly repository: IUserRepository) {}
 
-  public async create(data: CreateUserInputDTO): Promise<User | null> {
+  public async create(data: UserSignInInputDTO): Promise<User | null> {
     const { name, email, password } = data;
 
     const userAlreadyExists = await this.repository.findByEmail(email);

@@ -1,12 +1,12 @@
-import { CreateUserInputDTO } from "@/application/dtos/CreateUserDTO";
 import {
   UserLoginInputDTO,
   UserLoginOutputDTO,
 } from "@/application/dtos/UserLoginDTO";
+import { UserSignInInputDTO } from "@/application/dtos/UserSignInDTO";
 import { User } from "@/core/domain/User";
 
 interface IUserService {
-  create(data: CreateUserInputDTO): Promise<User | null>;
+  create(data: UserSignInInputDTO): Promise<User | null>;
   login(data: UserLoginInputDTO): Promise<UserLoginOutputDTO>;
 }
 
