@@ -3,12 +3,12 @@ import {
   CreateUserOutputDTO,
 } from "@/application/dtos/CreateUserDTO";
 import {
-  HttpRequest,
-  HttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 
 export interface ICreateUserController {
   handle(
-    request: HttpRequest<CreateUserInputDTO>
-  ): Promise<HttpResponse<CreateUserOutputDTO>>;
+    request: PublicHttpRequest<CreateUserInputDTO>
+  ): Promise<PublicHttpResponse<CreateUserOutputDTO>>;
 }

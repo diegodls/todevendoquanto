@@ -1,8 +1,8 @@
 import {
-  HttpRequest,
-  HttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 
 export interface ITestController {
-  handle(request: HttpRequest): Promise<HttpResponse>;
+  handle(request: PublicHttpRequest): Promise<PublicHttpResponse>;
 }

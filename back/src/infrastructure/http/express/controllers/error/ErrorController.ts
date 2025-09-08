@@ -1,7 +1,7 @@
-import { ErrorService } from '@/application/services/error/errorService';
+import { ErrorService } from "@/application/services/error/errorService";
 import {
-  HttpRequest,
-  HttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { InternalError } from "@/core/shared/utils/errors/ApiError";
 import { testControllerErrorCodes } from "@/core/shared/utils/errors/codes/error/testErrorCodes";
@@ -10,11 +10,10 @@ import {
   IErrorController,
 } from "@/core/usecases/error/IErrorController";
 
-
 class ErrorController implements IErrorController {
   constructor(private readonly service: ErrorService) {}
 
-  handle(request: HttpRequest<ErrorDTO>): HttpResponse | void {
+  handle(request: PublicHttpRequest<ErrorDTO>): PublicHttpResponse | void {
     const { where } = request.body;
 
     if (!where) {

@@ -1,6 +1,6 @@
 import {
-  HttpRequest,
-  HttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 
 type ErrorDTOWhere = "controller" | "service";
@@ -10,7 +10,7 @@ interface ErrorDTO {
 }
 
 interface IErrorController {
-  handle(request: HttpRequest<ErrorDTO>): HttpResponse | void;
+  handle(request: PublicHttpRequest<ErrorDTO>): PublicHttpResponse | void;
 }
 
 export { ErrorDTO, ErrorDTOWhere, IErrorController };

@@ -1,9 +1,10 @@
 import {
   AuthenticatedHttpRequest,
-  HttpRequest,
-  HttpResponse,
+  AuthenticatedHttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
-import { AuthenticatedController } from "@/core/usecases/Controller";
+import { AuthenticatedController } from "@/core/usecases/AuthenticatedController";
 import { adminUserFromToken } from "@/infrastructure/auth/adminUserFromToken";
 
 import { Request, Response } from "express";
@@ -11,14 +12,16 @@ import { Request, Response } from "express";
 const publicHttpAdapterExpress = (controller: any) => {
   //TODO: abstrair o "Controller" para um genérico (com o método handler) e trocar esse "any"
   return async (request: Request, response: Response) => {
-    const httpRequest: HttpRequest = {
+    const httpRequest: PublicHttpRequest = {
       body: request.body,
       headers: request.headers,
       params: request.params,
       query: request.query,
     };
 
-    const httpResponse: HttpResponse = await controller.handle(httpRequest);
+    const httpResponse: PublicHttpResponse = await controller.handle(
+      httpRequest
+    );
 
     response.status(httpResponse.statusCode).json(httpResponse.body);
   };
@@ -45,7 +48,7 @@ const authenticatedHttpAdapterExpress = <
       user: adminUser,
     };
 
-    const httpResponse: HttpResponse<R> = await controller.handle(
+    const httpResponse: AuthenticatedHttpResponse<R> = await controller.handle(
       authenticatedHttpRequest
     );
 

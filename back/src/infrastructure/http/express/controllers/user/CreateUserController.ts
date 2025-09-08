@@ -4,8 +4,8 @@ import {
 } from "@/application/dtos/CreateUserDTO";
 import { UserService } from "@/application/services/user/userService";
 import {
-  HttpRequest,
-  HttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { InternalError } from "@/core/shared/utils/errors/ApiError";
 import { userControllerErrorCodes } from "@/core/shared/utils/errors/codes/user/userErrorCodes";
@@ -17,8 +17,8 @@ export class CreateUserController implements ICreateUserController {
   constructor(private readonly service: UserService) {}
 
   public async handle(
-    request: HttpRequest<CreateUserInputDTO>
-  ): Promise<HttpResponse<CreateUserOutputDTO>> {
+    request: PublicHttpRequest<CreateUserInputDTO>
+  ): Promise<PublicHttpResponse<CreateUserOutputDTO>> {
     const data =
       bodyValidation<CreateUserInputDTO>(CreateUserBodySchema)(request);
 
@@ -34,7 +34,7 @@ export class CreateUserController implements ICreateUserController {
 
     const { password, ...userOutput } = createdUser;
 
-    const output: HttpResponse<CreateUserOutputDTO> = {
+    const output: PublicHttpResponse<CreateUserOutputDTO> = {
       statusCode: 200,
       body: userOutput,
     };

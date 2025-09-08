@@ -1,10 +1,13 @@
-import { HttpRequest } from "@/core/shared/types/HttpRequestResponse";
+import {
+  AuthenticatedHttpRequest,
+  PublicHttpRequest,
+} from "@/core/shared/types/HttpRequestResponse";
 import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
 import { ZodSchema } from "zod";
 
 const bodyValidation =
   <S>(schema: ZodSchema<S>) =>
-  <R>(request: HttpRequest<R>): R => {
+  <B>(request: PublicHttpRequest<B> | AuthenticatedHttpRequest<B>): B => {
     const result = schema.safeParse(request.body);
 
     if (!result.success) {

@@ -3,14 +3,14 @@ import {
   UserLoginOutputDTO,
 } from "@/application/dtos/UserLoginDTO";
 import {
-  HttpRequest,
-  HttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 
 interface IUserLoginController {
   handle(
-    request: HttpRequest<UserLoginInputDTO>
-  ): Promise<HttpResponse<UserLoginOutputDTO> | null>;
+    request: PublicHttpRequest<UserLoginInputDTO>
+  ): Promise<PublicHttpResponse<UserLoginOutputDTO> | null>;
 }
 
 export { IUserLoginController };

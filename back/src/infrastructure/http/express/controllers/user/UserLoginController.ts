@@ -4,8 +4,8 @@ import {
 } from "@/application/dtos/UserLoginDTO";
 import { UserService } from "@/application/services/user/userService";
 import {
-  HttpRequest,
-  HttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { IUserLoginController } from "@/core/usecases/user/IUserLoginController";
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
@@ -15,14 +15,14 @@ class UserLoginController implements IUserLoginController {
   constructor(private readonly service: UserService) {}
 
   public async handle(
-    request: HttpRequest<UserLoginInputDTO>
-  ): Promise<HttpResponse<UserLoginOutputDTO> | null> {
+    request: PublicHttpRequest<UserLoginInputDTO>
+  ): Promise<PublicHttpResponse<UserLoginOutputDTO> | null> {
     const data =
       bodyValidation<UserLoginInputDTO>(UserLoginBodySchema)(request);
 
     const token = await this.service.login(data);
 
-    const output: HttpResponse<UserLoginOutputDTO> = {
+    const output: PublicHttpResponse<UserLoginOutputDTO> = {
       statusCode: 200,
       body: token,
     };

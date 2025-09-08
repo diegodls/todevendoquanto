@@ -1,12 +1,12 @@
 import { JwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
-import { HttpRequest } from "@/core/shared/types/HttpRequestResponse";
+import { PublicHttpRequest } from "@/core/shared/types/HttpRequestResponse";
 import { UnauthorizedError } from "@/core/shared/utils/errors/ApiError";
 import { adminControllerErrorCodes } from "@/core/shared/utils/errors/codes/admin/adminErrorCodes";
 import { JWTAuth } from "@/infrastructure/auth/JWTAuth";
 
 const jwtHandler = new JWTAuth();
 
-const adminUserFromToken = async (request: HttpRequest) => {
+const adminUserFromToken = async (request: PublicHttpRequest) => {
   const authHeader = request.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {

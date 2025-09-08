@@ -1,20 +1,30 @@
 import { JwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
 
-interface HttpRequest<B = any, H = any, P = any, Q = any> {
+interface PublicHttpRequest<B = any, H = any, P = any, Q = any> {
   body: B;
   headers: H;
   params: P;
   query: Q;
 }
 
-interface HttpResponse<T = any> {
+interface PublicHttpResponse<T = any> {
   statusCode: number;
   body: T;
 }
 
 interface AuthenticatedHttpRequest<B = any, H = any, P = any, Q = any>
-  extends HttpRequest<B, H, P, Q> {
+  extends PublicHttpRequest<B, H, P, Q> {
   user: JwtPayload;
 }
 
-export { AuthenticatedHttpRequest, HttpRequest, HttpResponse };
+interface AuthenticatedHttpResponse<T = any> {
+  statusCode: number;
+  body: T;
+}
+
+export {
+  AuthenticatedHttpRequest,
+  AuthenticatedHttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
+};

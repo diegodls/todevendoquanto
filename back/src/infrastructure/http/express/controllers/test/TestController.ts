@@ -1,11 +1,11 @@
 import {
-  HttpRequest,
-  HttpResponse,
+  PublicHttpRequest,
+  PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { ITestController } from "@/core/usecases/test/ITestController";
 
 export class TestController implements ITestController {
-  public async handle(request: HttpRequest): Promise<HttpResponse> {
+  public async handle(request: PublicHttpRequest): Promise<PublicHttpResponse> {
     console.log("");
     console.log("🔴🔴🔴 CONTROLLER TEST ROUTE 🔴🔴🔴");
     console.log("");
