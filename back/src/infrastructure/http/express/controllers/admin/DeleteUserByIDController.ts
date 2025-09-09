@@ -8,7 +8,7 @@ import {
   AuthenticatedHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { NotModifiedError } from "@/core/shared/utils/errors/ApiError";
-import { IDeleteUserByIDController } from "@/core/usecases/admin/IDeleteUserByIDController";
+import { IDeleteUserByIDController } from "@/core/usecases/admin/user/IDeleteUserByIDController";
 
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
 import { DeleteUserByIDBodySchema } from "@/infrastructure/validation/zod/schemas/admin/DeleteUserByIDBodySchema";

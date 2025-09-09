@@ -7,7 +7,7 @@ import {
   PublicHttpRequest,
   PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
-import { IUserLoginController } from "@/core/usecases/user/IUserLoginController";
+import { IUserLoginController } from "@/core/usecases/public/user/IUserLoginController";
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
 import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserLoginBodySchema";
 

@@ -9,7 +9,7 @@ import {
 } from "@/core/shared/types/HttpRequestResponse";
 import { InternalError } from "@/core/shared/utils/errors/ApiError";
 import { userControllerErrorCodes } from "@/core/shared/utils/errors/codes/user/userErrorCodes";
-import { IUserSignInController } from "@/core/usecases/user/IUserSignInController";
+import { IUserSignInController } from "@/core/usecases/public/user/IUserSignInController";
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
 import { UserSignInBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserSignInBodySchema";
 
