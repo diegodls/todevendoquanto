@@ -1,7 +1,7 @@
 import {
-  ListUsersInputDTO,
-  ListUsersOutputDTO,
-} from "@/application/dtos/ListUsersDTO";
+  PaginationInputDTO,
+  PaginationOutputDTO,
+} from "@/application/dtos/PaginationDTO";
 import { AdminService } from "@/application/services/admin/adminService";
 import { User } from "@/core/domain/User";
 import {
@@ -16,26 +16,20 @@ class ListUsersController implements IListUsersController {
   constructor(private readonly service: AdminService) {}
 
   public async handle(
-    request: AuthenticatedHttpRequest<ListUsersInputDTO>
-  ): Promise<AuthenticatedHttpResponse<ListUsersOutputDTO>> {
+    request: AuthenticatedHttpRequest<PaginationInputDTO>
+  ): Promise<AuthenticatedHttpResponse<PaginationOutputDTO<User>>> {
     const adminUser = request.user;
 
     const body =
-      bodyValidation<ListUsersInputDTO>(ListUsersBodySchema)(request);
+      bodyValidation<PaginationInputDTO>(ListUsersBodySchema)(request);
 
-    const usersList: User[] = await this.service.listUsers(adminUser.sub, body.page);
+      PAREI AQUI, TEM QUE FAZER OS FILTROS / adminUser, ORDER E ETC
 
-    PAREI AQUI, TEM QUE FAZER O SERVICE E DEMAIS COISAS
+    const usersList = await this.service.listUsers(body);
 
-    const output: AuthenticatedHttpResponse<ListUsersOutputDTO> = {
+    const output: AuthenticatedHttpResponse<PaginationOutputDTO<User>> = {
       statusCode: 200,
-      body: {
-        page: 0,
-        page_size: 0,
-        total_items: 0,
-        total_pages: 0,
-        data: usersList,
-      },
+      body: usersList,
     };
 
     return output;

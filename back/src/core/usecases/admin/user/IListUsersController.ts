@@ -1,11 +1,11 @@
 import {
-  ListUsersInputDTO,
   ListUsersOutputDTO,
-} from "@/application/dtos/ListUsersDTO";
+  PaginationInputDTO,
+} from "@/application/dtos/PaginationDTO";
 import { AuthenticatedController } from "@/core/usecases/AuthenticatedController";
 
 type IListUsersController = AuthenticatedController<
-  ListUsersInputDTO,
+  PaginationInputDTO,
   {},
   {},
   {},

@@ -5,6 +5,10 @@ import {
 } from "@/core/shared/utils/errors/ApiError";
 import { adminServiceErrorCodes } from "@/core/shared/utils/errors/codes/admin/adminErrorCodes";
 
+import {
+  PaginationInputDTO,
+  PaginationOutputDTO,
+} from "@/application/dtos/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAdminService } from "./IAdminService";
 
@@ -54,6 +58,12 @@ class AdminService implements IAdminService {
     const output = await this.repository.deleteUserById(idToDelete);
 
     return output;
+  }
+
+  public async listUsers(
+    input: PaginationInputDTO
+  ): Promise<PaginationOutputDTO<User>> {
+    return { page: 0, page_size: 0, total_items: 0, total_pages: 0, data: [] };
   }
 }
 
