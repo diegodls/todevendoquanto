@@ -6,6 +6,7 @@ import {
 import { adminServiceErrorCodes } from "@/core/shared/utils/errors/codes/admin/adminErrorCodes";
 
 import {
+  ListUsersControllerFilters,
   PaginationInputDTO,
   PaginationOutputDTO,
 } from "@/application/dtos/PaginationDTO";
@@ -61,9 +62,11 @@ class AdminService implements IAdminService {
   }
 
   public async listUsers(
-    input: PaginationInputDTO
+    input: PaginationInputDTO<User, ListUsersControllerFilters>
   ): Promise<PaginationOutputDTO<User>> {
-    return { page: 0, page_size: 0, total_items: 0, total_pages: 0, data: [] };
+    const output = await this.repository.listUsers(input);
+
+    return output;
   }
 }
 

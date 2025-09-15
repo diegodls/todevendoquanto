@@ -1,9 +1,9 @@
 import { HttpMethod } from "@/core/shared/types/HttpMethod";
 
-interface IRouteOBJ<T> {
+interface IRouteOBJ<C> {
   method: HttpMethod;
   path: `/${string}`;
-  controller: T;
+  controller: C;
 }
 
 export { IRouteOBJ };

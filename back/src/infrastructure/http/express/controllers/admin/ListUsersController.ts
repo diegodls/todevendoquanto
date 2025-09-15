@@ -1,4 +1,5 @@
 import {
+  ListUsersControllerFilters,
   PaginationInputDTO,
   PaginationOutputDTO,
 } from "@/application/dtos/PaginationDTO";
@@ -16,16 +17,16 @@ class ListUsersController implements IListUsersController {
   constructor(private readonly service: AdminService) {}
 
   public async handle(
-    request: AuthenticatedHttpRequest<PaginationInputDTO>
+    request: AuthenticatedHttpRequest<
+      PaginationInputDTO<User, ListUsersControllerFilters>
+    >
   ): Promise<AuthenticatedHttpResponse<PaginationOutputDTO<User>>> {
-    const adminUser = request.user;
+    const input =
+      bodyValidation<PaginationInputDTO<User, ListUsersControllerFilters>>(
+        ListUsersBodySchema
+      )(request);
 
-    const body =
-      bodyValidation<PaginationInputDTO>(ListUsersBodySchema)(request);
-
-      PAREI AQUI, TEM QUE FAZER OS FILTROS / adminUser, ORDER E ETC
-
-    const usersList = await this.service.listUsers(body);
+    const usersList = await this.service.listUsers(input);
 
     const output: AuthenticatedHttpResponse<PaginationOutputDTO<User>> = {
       statusCode: 200,

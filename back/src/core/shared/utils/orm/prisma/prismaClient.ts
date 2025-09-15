@@ -1,15 +1,16 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../../../../../../generated/prisma";
+import { Prisma, PrismaClient } from "../../../../../../generated/prisma";
 
-
-export class PrismaClientGenerated extends PrismaClient {}
+class PrismaClientGenerated extends PrismaClient {}
 
 const connectionString = `${process.env.DATABASE_URL}`;
 
 const adapter = new PrismaPg({ connectionString });
-// need previewFeatures = ["driverAdapters"] on prisma schema
+// ! need previewFeatures = ["driverAdapters"] on prisma schema
 
-export const prisma = new PrismaClientGenerated({
+const prisma = new PrismaClientGenerated({
   adapter,
   log: ["query", "info", "warn", "error"],
 });
+
+export { prisma, PrismaClientGenerated, Prisma as PrismaGenerated };
