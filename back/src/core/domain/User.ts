@@ -23,8 +23,9 @@ class User {
   public email: string = "";
   public password: string = "";
   public role: UserRole = UserRole.BASIC;
-  // ! ADICIONAR O CREATED_AT
-  // ! ADICIONAR O UPDATED_AT
+  public created_at: Date = new Date();
+  public updated_at: Date = new Date();
+  public is_active: boolean = true;
 
   constructor(props: Partial<User>, id?: string) {
     Object.assign(this, props);
