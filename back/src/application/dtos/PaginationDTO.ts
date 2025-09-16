@@ -2,7 +2,7 @@ import { User } from "@/core/domain/User";
 
 type ListUsersControllerFilters = {
   role?: User["role"];
-  isActive?: boolean;
+  is_active?: boolean;
   email?: string;
 };
 
@@ -13,7 +13,6 @@ type GenericOrderBy<TModel> = {
 };
 
 type PaginationInputDTO<T, F> = {
-  id: string;
   page?: number;
   page_size?: number;
   order_by?: GenericOrderBy<T>;

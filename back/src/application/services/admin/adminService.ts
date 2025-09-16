@@ -16,11 +16,8 @@ import { IAdminService } from "./IAdminService";
 class AdminService implements IAdminService {
   constructor(private readonly repository: IAdminRepository) {}
 
-  public async deleteUserById(
-    adminId: User["id"],
-    idToDelete: User["id"]
-  ): Promise<User | null> {
-    const currentAdminUser = await this.repository.findUserById(adminId);
+  private async isAdmin(id: User["id"]) {
+    const currentAdminUser = await this.repository.findUserById(id);
 
     if (!currentAdminUser) {
       throw new UnauthorizedError(
@@ -37,6 +34,13 @@ class AdminService implements IAdminService {
         adminServiceErrorCodes.E_0_SVC_ADM_0002.code
       );
     }
+  }
+
+  public async deleteUserById(
+    adminId: User["id"],
+    idToDelete: User["id"]
+  ): Promise<User | null> {
+    this.isAdmin(adminId);
 
     const userToBeDeleted = await this.repository.findUserById(idToDelete);
 
@@ -62,8 +66,11 @@ class AdminService implements IAdminService {
   }
 
   public async listUsers(
+    adminId: User["id"],
     input: PaginationInputDTO<User, ListUsersControllerFilters>
   ): Promise<PaginationOutputDTO<User>> {
+    this.isAdmin(adminId);
+
     const output = await this.repository.listUsers(input);
 
     return output;

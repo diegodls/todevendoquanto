@@ -4,9 +4,9 @@ import {
   PaginationOutputDTO,
 } from "@/application/dtos/PaginationDTO";
 import { User } from "@/core/domain/User";
-import { AuthenticatedController } from "@/core/usecases/AuthenticatedController";
+import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 
-type IListUsersController = AuthenticatedController<
+type IListUsersController = IAuthenticatedController<
   PaginationInputDTO<User, ListUsersControllerFilters>,
   {},
   {},

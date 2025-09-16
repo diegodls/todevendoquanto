@@ -8,7 +8,6 @@ import { z, ZodType } from "zod";
 const ListUsersBodySchema: ZodType<
   PaginationInputDTO<User, ListUsersControllerFilters>
 > = z.object({
-  id: z.string(),
   page: z
     .number({
       invalid_type_error: "You must pass a valid page number",

@@ -37,7 +37,7 @@ class AdminRepository implements IAdminRepository {
   public async listUsers(
     input: PaginationInputDTO<User, ListUsersControllerFilters>
   ): Promise<PaginationOutputDTO<User>> {
-    let customWhere: PrismaGenerated.UserWhereInput = {};
+    let customWhere: PrismaGenerated.UserWhereInput = { is_active: true };
 
     const customCurrentPage = input.page || 1;
 
@@ -58,14 +58,11 @@ class AdminRepository implements IAdminRepository {
       customWhere.role = input.filters?.role;
     }
 
-    /*
-    ! FIXME: ADD "isActive" ON USER PROPS
-    if (input.filters?.isActive) {
-      customWhere.isActive = input.filters?.isActive; 
+    if (!input.filters?.is_active && input.filters?.is_active === false) {
+      customWhere.is_active = false;
     }
-    */
 
-    const [total, usersList] = await Promise.all([
+    const [total_items_count, usersList] = await Promise.all([
       this.ormClient.user.count({ where: customWhere }),
       this.ormClient.user.findMany({
         where: customWhere,
@@ -76,10 +73,10 @@ class AdminRepository implements IAdminRepository {
     ]);
 
     let output: PaginationOutputDTO<User> = {
-      page: 0,
+      page: 1,
       page_size: 0,
       next_page: 0,
-      total_items: total,
+      total_items: 0,
       total_pages: 0,
       data: [],
     };
@@ -89,12 +86,18 @@ class AdminRepository implements IAdminRepository {
         return prismaEntityUserParser(user);
       });
 
+      let new_next_page = customCurrentPage;
+
+      if (total_items_count - customCurrentPage * customCurrentPageSize > 1) {
+        new_next_page = customCurrentPage + 1;
+      }
+
       output = {
-        page: 0,
-        next_page: 0,
-        page_size: 0,
-        total_items: 0,
-        total_pages: 0,
+        page: customCurrentPage,
+        next_page: new_next_page,
+        page_size: customCurrentPageSize,
+        total_items: total_items_count,
+        total_pages: Math.ceil(total_items_count / customCurrentPageSize),
         data: parsedUsersList,
       };
 

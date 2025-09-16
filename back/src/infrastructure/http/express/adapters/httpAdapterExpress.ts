@@ -4,7 +4,7 @@ import {
   PublicHttpRequest,
   PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
-import { AuthenticatedController } from "@/core/usecases/AuthenticatedController";
+import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 import { adminUserFromToken } from "@/infrastructure/auth/adminUserFromToken";
 
 import { Request, Response } from "express";
@@ -27,14 +27,8 @@ const publicHttpAdapterExpress = (controller: any) => {
   };
 };
 
-const authenticatedHttpAdapterExpress = <
-  B = any,
-  H = any,
-  P = any,
-  Q = any,
-  R = any
->(
-  controller: AuthenticatedController<B, H, P, Q, R>
+const authenticatedHttpAdapterExpress = <B, H, P, Q, R>(
+  controller: IAuthenticatedController<B, H, P, Q, R>
 ) => {
   return async (request: Request, response: Response) => {
     const adminUser = await adminUserFromToken(request);

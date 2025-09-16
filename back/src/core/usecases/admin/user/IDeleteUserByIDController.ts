@@ -2,7 +2,7 @@ import {
   DeleteUserByIDInputDTO,
   DeleteUserByIDOutputDTO,
 } from "@/application/dtos/DeleteUserDTO";
-import { AuthenticatedController } from "@/core/usecases/AuthenticatedController";
+import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 /*
 interface IDeleteUserByIDController {
   handle(
@@ -10,7 +10,7 @@ interface IDeleteUserByIDController {
   ): Promise<HttpResponse<DeleteUserByIDOutputDTO>>;
 }
 */
-type IDeleteUserByIDController = AuthenticatedController<
+type IDeleteUserByIDController = IAuthenticatedController<
   DeleteUserByIDInputDTO,
   {},
   {},

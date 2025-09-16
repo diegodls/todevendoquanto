@@ -27,9 +27,20 @@ export class ExpressApp implements IApp {
 
   public loadAdminRoutes(adminRoutes: IAdminRoutes): void {
     adminRoutes.forEach((route) => {
-      this.registerRoute(this.app, route.method, route.path, [
-        authenticatedHttpAdapterExpress(route.controller),
-      ]);
+      let adapter: any = "";
+
+      if (route.tag === "listUser") {
+        adapter = authenticatedHttpAdapterExpress(route.controller);
+      } else if (route.tag === "deleteUser") {
+        adapter = authenticatedHttpAdapterExpress(route.controller);
+      } else {
+        //! Criar um controller genérico com mensagem de erro.
+        return;
+      }
+
+      return this.registerRoute(this.app, route.method, route.path, [adapter]);
+
+      //this.registerRoute(this.app, route.method, route.path, [adapter]);
     });
   }
 

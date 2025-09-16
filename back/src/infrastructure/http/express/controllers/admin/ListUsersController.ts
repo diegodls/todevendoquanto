@@ -21,12 +21,14 @@ class ListUsersController implements IListUsersController {
       PaginationInputDTO<User, ListUsersControllerFilters>
     >
   ): Promise<AuthenticatedHttpResponse<PaginationOutputDTO<User>>> {
+    const adminUser = request.user;
+
     const input =
       bodyValidation<PaginationInputDTO<User, ListUsersControllerFilters>>(
         ListUsersBodySchema
       )(request);
 
-    const usersList = await this.service.listUsers(input);
+    const usersList = await this.service.listUsers(adminUser.sub, input);
 
     const output: AuthenticatedHttpResponse<PaginationOutputDTO<User>> = {
       statusCode: 200,

@@ -12,6 +12,7 @@ interface IAdminService {
   ): Promise<User | null>;
 
   listUsers(
+    adminId: User["id"],
     input: PaginationInputDTO<User, ListUsersControllerFilters>
   ): Promise<PaginationOutputDTO<User>>;
 }

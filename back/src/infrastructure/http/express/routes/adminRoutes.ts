@@ -15,11 +15,13 @@ const listUsersController = new ListUsersController(adminService);
 
 const adminRoutes: IAdminRoutes = [
   {
+    tag: "deleteUser",
     path: "/admin/users/delete/id",
     method: "delete",
     controller: deleteUserController,
   },
   {
+    tag: "listUser",
     path: "/admin/users/list",
     method: "get",
     controller: listUsersController,

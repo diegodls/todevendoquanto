@@ -3,10 +3,10 @@ import {
   AuthenticatedHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 
-interface AuthenticatedController<B = any, H = any, P = any, Q = any, R = any> {
+interface IAuthenticatedController<B, H, P, Q, R> {
   handle: (
     request: AuthenticatedHttpRequest<B, H, P, Q>
   ) => Promise<AuthenticatedHttpResponse<R>>;
 }
 
-export { AuthenticatedController };
+export { IAuthenticatedController };
