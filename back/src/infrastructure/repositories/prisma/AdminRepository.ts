@@ -39,13 +39,21 @@ class AdminRepository implements IAdminRepository {
   ): Promise<PaginationOutputDTO<User>> {
     let customWhere: PrismaGenerated.UserWhereInput = { is_active: true };
 
-    const customCurrentPage = input.page || 1;
+    const custom_current_page = input.page || 1;
 
-    const customCurrentPageSize = input.page_size || 10;
+    const custom_current_page_size = input.page_size || 10;
 
-    const customCurrentOrderBy: GenericOrderBy<User> = input.order_by || {
+    let custom_current_order_by: GenericOrderBy<Omit<User, "password">> = {
       name: "asc",
     };
+
+    // ! TODO: RETURN THE REAL AMOUNT OF PAGES(AND THE META CHOSEN BY USER) AND ITEMS, HAS_PREVIOUS_PAGE(BOOLEAN) AND HAS_NEXT_PAGE(BOOLEAN) IN CASE OF ERROR
+
+    // ! TODO: VALIDATE ON ZOD IF "X" PROPS WAS SEND (ex: input.name, input.order_by [password, and on...]) TO PREVENT THE VERIFICATIONS (if's) BELLOW, PASS THE FULL VALIDATED INPUT.XXX FROM ZOD
+
+    if (input.order_by && !input.order_by.password) {
+      custom_current_order_by = input.order_by;
+    }
 
     if (input.filters?.email) {
       customWhere.email = {
@@ -66,19 +74,24 @@ class AdminRepository implements IAdminRepository {
       this.ormClient.user.count({ where: customWhere }),
       this.ormClient.user.findMany({
         where: customWhere,
-        skip: (customCurrentPage - 1) * customCurrentPageSize,
-        take: customCurrentPageSize,
-        orderBy: customCurrentOrderBy,
+        skip: (custom_current_page - 1) * custom_current_page_size,
+        take: custom_current_page_size,
+        orderBy: custom_current_order_by,
       }),
     ]);
 
     let output: PaginationOutputDTO<User> = {
-      page: 1,
-      page_size: 0,
-      next_page: 0,
-      total_items: 0,
-      total_pages: 0,
       data: [],
+      meta: {
+        page: custom_current_page,
+        page_size: custom_current_page,
+        has_previous_page: false,
+        has_next_page:
+          total_items_count - custom_current_page * custom_current_page_size >
+          0,
+        total_items: total_items_count,
+        total_pages: 0,
+      },
     };
 
     if (usersList.length > 0) {
@@ -86,22 +99,14 @@ class AdminRepository implements IAdminRepository {
         return prismaEntityUserParser(user);
       });
 
-      let new_next_page = customCurrentPage;
+      const current_total_pages = total_items_count / custom_current_page_size;
 
-      if (total_items_count - customCurrentPage * customCurrentPageSize > 1) {
-        new_next_page = customCurrentPage + 1;
-      }
+      output.data = parsedUsersList;
 
-      output = {
-        page: customCurrentPage,
-        next_page: new_next_page,
-        page_size: customCurrentPageSize,
-        total_items: total_items_count,
-        total_pages: Math.ceil(total_items_count / customCurrentPageSize),
-        data: parsedUsersList,
-      };
+      output.meta.has_previous_page =
+        custom_current_page_size < current_total_pages;
 
-      return output;
+      output.meta.total_pages = total_items_count / custom_current_page_size;
     }
 
     return output;
