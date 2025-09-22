@@ -1,7 +1,6 @@
-import { UserSignInInputDTO } from "@/application/dtos/UserSignInDTO";
-import { z, ZodType } from "zod";
+import { z } from "zod";
 
-const UserSignInBodySchema: ZodType<UserSignInInputDTO> = z.object({
+const UserSignInBodySchema = z.object({
   name: z
     .string({
       description: "Insert a name",

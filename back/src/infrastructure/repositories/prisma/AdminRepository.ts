@@ -51,6 +51,8 @@ class AdminRepository implements IAdminRepository {
 
     // ! TODO: VALIDATE ON ZOD IF "X" PROPS WAS SEND (ex: input.name, input.order_by [password, and on...]) TO PREVENT THE VERIFICATIONS (if's) BELLOW, PASS THE FULL VALIDATED INPUT.XXX FROM ZOD
 
+    // ? PAREI AQUI, TEM QUE FAZER O has_previous_page E OS ITENS ACIMA ^
+
     if (input.order_by && !input.order_by.password) {
       custom_current_order_by = input.order_by;
     }
@@ -70,7 +72,7 @@ class AdminRepository implements IAdminRepository {
       customWhere.is_active = false;
     }
 
-    const [total_items_count, usersList] = await Promise.all([
+    const [total_items, usersList] = await Promise.all([
       this.ormClient.user.count({ where: customWhere }),
       this.ormClient.user.findMany({
         where: customWhere,
@@ -80,33 +82,26 @@ class AdminRepository implements IAdminRepository {
       }),
     ]);
 
+    const total_pages = Math.ceil(total_items / custom_current_page_size);
+
     let output: PaginationOutputDTO<User> = {
       data: [],
       meta: {
         page: custom_current_page,
-        page_size: custom_current_page,
-        has_previous_page: false,
-        has_next_page:
-          total_items_count - custom_current_page * custom_current_page_size >
-          0,
-        total_items: total_items_count,
-        total_pages: 0,
+        page_size: custom_current_page_size,
+        has_previous_page: custom_current_page > 1,
+        has_next_page: custom_current_page < total_pages,
+        total_items,
+        total_pages,
       },
     };
 
     if (usersList.length > 0) {
       const parsedUsersList: User[] = usersList.map((user) => {
-        return prismaEntityUserParser(user);
+        return prismaEntityUserParser({ ...user, password: "" });
       });
 
-      const current_total_pages = total_items_count / custom_current_page_size;
-
       output.data = parsedUsersList;
-
-      output.meta.has_previous_page =
-        custom_current_page_size < current_total_pages;
-
-      output.meta.total_pages = total_items_count / custom_current_page_size;
     }
 
     return output;

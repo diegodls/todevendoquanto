@@ -1,13 +1,35 @@
-import {
-  ListUsersControllerFilters,
-  PaginationInputDTO,
-} from "@/application/dtos/PaginationDTO";
 import { User } from "@/core/domain/User";
-import { z, ZodType } from "zod";
+import { z } from "zod";
 
-const ListUsersBodySchema: ZodType<
-  PaginationInputDTO<User, ListUsersControllerFilters>
-> = z.object({
+const FORBIDDEN_SORT_FIELDS: (keyof User)[] = ["password"];
+
+const orderByZodSchema = z
+  .object({})
+  .catchall(
+    z
+      .enum(["asc", "desc"], {
+        invalid_type_error: "You must pass a valid type like asc or desc",
+        message:
+          "Error on validation order by, you need pass the order like asc or desc",
+      })
+      .optional()
+  )
+  .refine(
+    (orderBy) => {
+      const keys = Object.keys(orderBy) as (keyof User)[];
+
+      const hasForbiddenFields = keys.some((key) =>
+        FORBIDDEN_SORT_FIELDS.includes(key)
+      );
+
+      return !hasForbiddenFields;
+    },
+    {
+      message: "Unable to sort with the fields provided",
+    }
+  );
+
+const ListUsersBodySchema = z.object({
   page: z
     .number({
       invalid_type_error: "You must pass a valid page number",
@@ -21,7 +43,13 @@ const ListUsersBodySchema: ZodType<
     .min(1, "You must pass a valid page size number higher than 1.")
     .max(100, "You must pass a valid page number lower than 100.")
     .default(10),
-  filters: z.object({}).optional(),
+  order_by: orderByZodSchema.optional().default({ name: "asc" }),
+  filters: z
+    .object({
+      is_active: z.boolean().default(true),
+      email: z.string().email("You must pass a valid email").optional(),
+    })
+    .optional(),
 });
 
 export { ListUsersBodySchema };

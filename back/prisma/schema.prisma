@@ -16,7 +16,7 @@ model User {
   email      String   @unique
   role       Role     @default(BASIC)
   created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   is_active  Boolean  @default(true)
 
   @@map("users")

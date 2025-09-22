@@ -1,8 +1,6 @@
-import { UserLoginInputDTO } from '@/application/dtos/UserLoginDTO';
-import { z, ZodType } from "zod";
+import { z } from "zod";
 
-
-const UserLoginBodySchema: ZodType<UserLoginInputDTO> = z.object({
+const UserLoginBodySchema = z.object({
   email: z
     .string({
       invalid_type_error: "Must pass a valid email",
