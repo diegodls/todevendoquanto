@@ -1,9 +1,8 @@
 import { IApp } from "@/core/ports/infrastructure/http/IApp";
+import { IAnyAuthenticatedRoute } from "@/core/ports/infrastructure/http/routes/IAuthenticatedRoutes";
 import { IPublicRoutes } from "@/core/ports/infrastructure/http/routes/IPublicRoutes";
-import { IAuthenticatedRouteOBJ } from "@/core/ports/infrastructure/http/routes/IRouteOBJ";
 import { ITestRoutes } from "@/core/ports/infrastructure/http/routes/ITestRoutes";
 import { HttpMethod } from "@/core/shared/types/HttpMethod";
-import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 import {
   authenticatedHttpAdapterExpress,
   publicHttpAdapterExpress,
@@ -26,11 +25,9 @@ export class ExpressApp implements IApp {
     return app[method](path, ...handlers);
   }
 
-  public loadAuthenticatedRoutes<
-    T extends IAuthenticatedRouteOBJ<
-      IAuthenticatedController<any, any, any, any, any>
-    >
-  >(authenticatedRoutes: T[]): void {
+  public loadAuthenticatedRoutes(
+    authenticatedRoutes: IAnyAuthenticatedRoute[]
+  ): void {
     authenticatedRoutes.forEach((route) => {
       this.registerRoute(this.app, route.method, route.path, [
         authenticatedHttpAdapterExpress(route.controller),

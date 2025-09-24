@@ -1,11 +1,16 @@
 import { AdminService } from "@/application/services/admin/adminService";
-import { IAuthenticatedRoutes } from "@/core/ports/infrastructure/http/routes/IAuthenticatedRoutes";
+import {
+  IAnyAuthenticatedController,
+  IAuthenticatedAdminRoutes,
+  IAuthenticatedUserRoutes,
+} from "@/core/ports/infrastructure/http/routes/IAuthenticatedRoutes";
 import { prisma } from "@/core/shared/utils/orm/prisma/prismaClient";
 import { UserDeleteByIDController } from "@/infrastructure/http/express/controllers/authenticated/admin/DeleteUserByIDController";
 import { UserListController } from "@/infrastructure/http/express/controllers/authenticated/admin/UserListController";
 
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/authenticated/user/UserUpdateController";
 
+import { IAuthenticatedRouteOBJ } from "@/core/ports/infrastructure/http/routes/IRouteOBJ";
 import { AdminRepositoryPrisma } from "@/infrastructure/repositories/prisma/AdminRepositoryPrisma";
 
 const adminRepository = new AdminRepositoryPrisma(prisma);
@@ -18,20 +23,31 @@ const userListController = new UserListController(adminService);
 
 const userUpdateController = new UserUpdateController();
 
-const adminRoutes: IAuthenticatedRoutes = [
-  {
+const makeRoute = <C extends IAnyAuthenticatedController>(
+  route: IAuthenticatedRouteOBJ<C>
+): IAuthenticatedRouteOBJ<C> => {
+  //! REDUNDANTE, poderia ser usado em outros casos, caso fosse necessário o typescript inferir diretamente, mas o problema está lá na hora de fazer o array de rotas no "app.ts > load_XYZ_Routes()", mas fica como aprendizado.
+  return {
+    path: route.path,
+    method: route.method,
+    controller: route.controller,
+  };
+};
+
+const adminRoutes: IAuthenticatedAdminRoutes = [
+  makeRoute({
     path: "/admin/users/delete/id",
     method: "delete",
     controller: userDeleteController,
-  },
-  {
+  }),
+  makeRoute({
     path: "/admin/users/list",
     method: "get",
     controller: userListController,
-  },
+  }),
 ];
 
-const userRoutes: IAuthenticatedRoutes = [
+const userRoutes: IAuthenticatedUserRoutes = [
   {
     method: "patch",
     path: "/user/update",
@@ -39,9 +55,6 @@ const userRoutes: IAuthenticatedRoutes = [
   },
 ];
 
-const authenticatedRoutes: IAuthenticatedRoutes = [
-  ...adminRoutes,
-  ...userRoutes,
-];
+const authenticatedRoutes = [...adminRoutes, ...userRoutes];
 
 export { authenticatedRoutes };
