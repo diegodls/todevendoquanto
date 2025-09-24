@@ -1,11 +1,10 @@
-import { IAdminRoutes } from "@/core/ports/infrastructure/http/routes/IAdminRoutes";
+import { IAuthenticatedRoutes } from "@/core/ports/infrastructure/http/routes/IAuthenticatedRoutes";
+import { IPublicRoutes } from "@/core/ports/infrastructure/http/routes/IPublicRoutes";
 import { ITestRoutes } from "@/core/ports/infrastructure/http/routes/ITestRoutes";
-import { IUserRoutes } from "@/core/ports/infrastructure/http/routes/IUserRoutes";
 
 export interface IApp {
   start(PORT: number): void;
-  loadUserRoutes(userRoutes: IUserRoutes): void;
+  loadAuthenticatedRoutes(authenticatedRoutes: IAuthenticatedRoutes): void;
+  loadPublicRoutes(publicRoutes: IPublicRoutes): void;
   loadTestRoutes(testRoutes: ITestRoutes): void;
-  loadAdminRoutes(adminRoutes: IAdminRoutes): void;
-  // TODO: Maybe split routes in "Load Public/Authenticated Routes"
 }

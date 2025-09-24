@@ -29,7 +29,7 @@ const orderByZodSchema = z
     }
   );
 
-const ListUsersBodySchema = z.object({
+const UserListBodySchema = z.object({
   page: z
     .number({
       invalid_type_error: "You must pass a valid page number",
@@ -52,4 +52,4 @@ const ListUsersBodySchema = z.object({
     .optional(),
 });
 
-export { ListUsersBodySchema };
+export { UserListBodySchema };

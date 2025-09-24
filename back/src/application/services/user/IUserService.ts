@@ -1,8 +1,8 @@
 import {
   UserLoginInputDTO,
   UserLoginOutputDTO,
-} from "@/application/dtos/UserLoginDTO";
-import { UserSignInInputDTO } from "@/application/dtos/UserSignInDTO";
+} from "@/application/dtos/user/UserLoginDTO";
+import { UserSignInInputDTO } from "@/application/dtos/user/UserSignInDTO";
 import { User } from "@/core/domain/User";
 
 interface IUserService {

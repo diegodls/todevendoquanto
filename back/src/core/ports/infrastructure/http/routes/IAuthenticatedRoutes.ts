@@ -1,0 +1,32 @@
+import { IAuthenticatedRouteOBJ } from "@/core/ports/infrastructure/http/routes/IRouteOBJ";
+import { IUserDeleteByIDController } from "@/core/usecases/authenticated/user/IUserDeleteByIDController";
+import { IUserListController } from "@/core/usecases/authenticated/user/IUserListController";
+import { IUserUpdateController } from "@/core/usecases/authenticated/user/IUserUpdateController";
+
+/* //! 
+type IAdminRoutes = IAdminRouteOBJ<
+  IDeleteUserByIDController | IListUsersController
+>[];
+
+type IDeleteUserByIDRoute = IAdminRouteOBJ<IDeleteUserByIDController>;
+type IListUsersRoute = IAdminRouteOBJ<IListUsersController>;
+type IAdminRoutes = (IDeleteUserByIDRoute | IListUsersRoute)[];
+type IAdminRoutes = [
+  IAdminRouteOBJ<DeleteUserByIDController>,
+  IAdminRouteOBJ<ListUsersController>
+];
+*/
+
+type IUserDeleteByIDRoute = IAuthenticatedRouteOBJ<IUserDeleteByIDController>;
+
+type IUserListRoute = IAuthenticatedRouteOBJ<IUserListController>;
+
+type IUserUpdate = IAuthenticatedRouteOBJ<IUserUpdateController>;
+
+type IAuthenticatedRoutes = (
+  | IUserDeleteByIDRoute
+  | IUserListRoute
+  | IUserUpdate
+)[];
+
+export { IAuthenticatedRoutes };

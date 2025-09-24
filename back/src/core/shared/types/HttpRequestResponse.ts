@@ -1,4 +1,4 @@
-import { JwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
+import { IJwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
 
 interface PublicHttpRequest<B = any, H = any, P = any, Q = any> {
   body: B;
@@ -14,7 +14,7 @@ interface PublicHttpResponse<T = any> {
 
 interface AuthenticatedHttpRequest<B = any, H = any, P = any, Q = any>
   extends PublicHttpRequest<B, H, P, Q> {
-  user: JwtPayload;
+  user: IJwtPayload;
 }
 
 interface AuthenticatedHttpResponse<T = any> {

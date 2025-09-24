@@ -2,11 +2,11 @@ import {
   ListUsersControllerFilters,
   PaginationInputDTO,
   PaginationOutputDTO,
-} from "@/application/dtos/PaginationDTO";
+} from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 
-type IListUsersController = IAuthenticatedController<
+type IUserListController = IAuthenticatedController<
   PaginationInputDTO<User, ListUsersControllerFilters>,
   {},
   {},
@@ -14,4 +14,4 @@ type IListUsersController = IAuthenticatedController<
   PaginationOutputDTO<User>
 >;
 
-export { IListUsersController };
+export { IUserListController };

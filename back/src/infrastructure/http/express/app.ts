@@ -1,8 +1,9 @@
 import { IApp } from "@/core/ports/infrastructure/http/IApp";
-import { IAdminRoutes } from "@/core/ports/infrastructure/http/routes/IAdminRoutes";
+import { IPublicRoutes } from "@/core/ports/infrastructure/http/routes/IPublicRoutes";
+import { IAuthenticatedRouteOBJ } from "@/core/ports/infrastructure/http/routes/IRouteOBJ";
 import { ITestRoutes } from "@/core/ports/infrastructure/http/routes/ITestRoutes";
-import { IUserRoutes } from "@/core/ports/infrastructure/http/routes/IUserRoutes";
 import { HttpMethod } from "@/core/shared/types/HttpMethod";
+import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 import {
   authenticatedHttpAdapterExpress,
   publicHttpAdapterExpress,
@@ -25,27 +26,20 @@ export class ExpressApp implements IApp {
     return app[method](path, ...handlers);
   }
 
-  public loadAdminRoutes(adminRoutes: IAdminRoutes): void {
-    adminRoutes.forEach((route) => {
-      let adapter: any = "";
-
-      if (route.tag === "listUser") {
-        adapter = authenticatedHttpAdapterExpress(route.controller);
-      } else if (route.tag === "deleteUser") {
-        adapter = authenticatedHttpAdapterExpress(route.controller);
-      } else {
-        //! Criar um controller genérico com mensagem de erro.
-        return;
-      }
-
-      return this.registerRoute(this.app, route.method, route.path, [adapter]);
-
-      //this.registerRoute(this.app, route.method, route.path, [adapter]);
+  public loadAuthenticatedRoutes<
+    T extends IAuthenticatedRouteOBJ<
+      IAuthenticatedController<any, any, any, any, any>
+    >
+  >(authenticatedRoutes: T[]): void {
+    authenticatedRoutes.forEach((route) => {
+      this.registerRoute(this.app, route.method, route.path, [
+        authenticatedHttpAdapterExpress(route.controller),
+      ]);
     });
   }
 
-  public loadUserRoutes(userRoutes: IUserRoutes) {
-    userRoutes.forEach((route) => {
+  public loadPublicRoutes(publicRoutes: IPublicRoutes) {
+    publicRoutes.forEach((route) => {
       this.registerRoute(this.app, route.method, route.path, [
         publicHttpAdapterExpress(route.controller),
       ]);

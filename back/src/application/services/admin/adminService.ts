@@ -9,7 +9,7 @@ import {
   ListUsersControllerFilters,
   PaginationInputDTO,
   PaginationOutputDTO,
-} from "@/application/dtos/PaginationDTO";
+} from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAdminService } from "./IAdminService";
 

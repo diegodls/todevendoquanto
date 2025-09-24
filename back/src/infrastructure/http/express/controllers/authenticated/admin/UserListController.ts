@@ -2,18 +2,18 @@ import {
   ListUsersControllerFilters,
   PaginationInputDTO,
   PaginationOutputDTO,
-} from "@/application/dtos/PaginationDTO";
+} from "@/application/dtos/shared/PaginationDTO";
 import { AdminService } from "@/application/services/admin/adminService";
 import { User } from "@/core/domain/User";
 import {
   AuthenticatedHttpRequest,
   AuthenticatedHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
-import { IListUsersController } from "@/core/usecases/admin/user/IListUsersController";
+import { IUserListController } from "@/core/usecases/authenticated/user/IUserListController";
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
-import { ListUsersBodySchema } from "@/infrastructure/validation/zod/schemas/admin/ListUsersBodySchema";
+import { UserListBodySchema } from "@/infrastructure/validation/zod/schemas/admin/UserListBodySchema";
 
-class ListUsersController implements IListUsersController {
+class UserListController implements IUserListController {
   constructor(private readonly service: AdminService) {}
 
   public async handle(
@@ -25,7 +25,7 @@ class ListUsersController implements IListUsersController {
 
     const input =
       bodyValidation<PaginationInputDTO<User, ListUsersControllerFilters>>(
-        ListUsersBodySchema
+        UserListBodySchema
       )(request);
 
     const usersList = await this.service.listUsers(adminUser.sub, input);
@@ -39,4 +39,4 @@ class ListUsersController implements IListUsersController {
   }
 }
 
-export { ListUsersController };
+export { UserListController };

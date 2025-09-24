@@ -2,8 +2,8 @@ import {
   UserLoginInputDTO,
   UserLoginOutputDTO,
   UserLoginPayload,
-} from "@/application/dtos/UserLoginDTO";
-import { UserSignInInputDTO } from "@/application/dtos/UserSignInDTO";
+} from "@/application/dtos/user/UserLoginDTO";
+import { UserSignInInputDTO } from "@/application/dtos/user/UserSignInDTO";
 import { IUserService } from "@/application/services/user/IUserService";
 import { User } from "@/core/domain/User";
 import { IUserRepository } from "@/core/ports/repositories/IUserRepository";

@@ -3,7 +3,7 @@ import {
   ListUsersControllerFilters,
   PaginationInputDTO,
   PaginationOutputDTO,
-} from "@/application/dtos/PaginationDTO";
+} from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAdminRepository } from "@/core/ports/repositories/IAdminRepository";
 import {
@@ -14,7 +14,7 @@ import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prismaEnt
 //import { Prisma } from "@prisma/client";
 //import { PrismaClientGenerated } from "../../utils/orm/prisma/prismaClient";
 
-class AdminRepository implements IAdminRepository {
+class AdminRepositoryPrisma implements IAdminRepository {
   constructor(private readonly ormClient: PrismaClientGenerated) {}
 
   public async findUserById(id: User["id"]): Promise<User | null> {
@@ -46,12 +46,6 @@ class AdminRepository implements IAdminRepository {
     let custom_current_order_by: GenericOrderBy<Omit<User, "password">> = {
       name: "asc",
     };
-
-    // ! TODO: RETURN THE REAL AMOUNT OF PAGES(AND THE META CHOSEN BY USER) AND ITEMS, HAS_PREVIOUS_PAGE(BOOLEAN) AND HAS_NEXT_PAGE(BOOLEAN) IN CASE OF ERROR
-
-    // ! TODO: VALIDATE ON ZOD IF "X" PROPS WAS SEND (ex: input.name, input.order_by [password, and on...]) TO PREVENT THE VERIFICATIONS (if's) BELLOW, PASS THE FULL VALIDATED INPUT.XXX FROM ZOD
-
-    // ? PAREI AQUI, TEM QUE FAZER O has_previous_page E OS ITENS ACIMA ^
 
     if (input.order_by && !input.order_by.password) {
       custom_current_order_by = input.order_by;
@@ -108,4 +102,4 @@ class AdminRepository implements IAdminRepository {
   }
 }
 
-export { AdminRepository };
+export { AdminRepositoryPrisma };

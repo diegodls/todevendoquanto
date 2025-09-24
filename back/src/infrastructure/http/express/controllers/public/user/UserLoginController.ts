@@ -1,7 +1,7 @@
 import {
   UserLoginInputDTO,
   UserLoginOutputDTO,
-} from "@/application/dtos/UserLoginDTO";
+} from "@/application/dtos/user/UserLoginDTO";
 import { UserService } from "@/application/services/user/userService";
 import {
   PublicHttpRequest,

@@ -1,3 +1,4 @@
+import { IJwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
 import {
   AuthenticatedHttpRequest,
   AuthenticatedHttpResponse,
@@ -8,6 +9,8 @@ import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedControll
 import { adminUserFromToken } from "@/infrastructure/auth/adminUserFromToken";
 
 import { Request, Response } from "express";
+
+// TODO: Se quiser juntar tudo em um adapter, dá para receber a prop isAuth: boolean junto ao controller e fazer a lógica referente ao isAuth.
 
 const publicHttpAdapterExpress = (controller: any) => {
   //TODO: abstrair o "Controller" para um genérico (com o método handler) e trocar esse "any"
@@ -27,18 +30,21 @@ const publicHttpAdapterExpress = (controller: any) => {
   };
 };
 
+type IAuthenticatedHttpAdapterExpress = <B, H, P, Q, R>(
+  controller: IAuthenticatedController<B, H, P, Q, R>
+) => (request: Request, response: Response) => Promise<void>;
+
 const authenticatedHttpAdapterExpress = <B, H, P, Q, R>(
   controller: IAuthenticatedController<B, H, P, Q, R>
 ) => {
   return async (request: Request, response: Response) => {
-    const adminUser = await adminUserFromToken(request);
-    // TODO: Se quiser juntar tudo em um adapter, dá para receber a prop isAuth: boolean junto ao controller e fazer a lógica referente ao isAuth.
+    const adminUser: IJwtPayload = await adminUserFromToken(request);
 
     const authenticatedHttpRequest: AuthenticatedHttpRequest = {
-      body: request.body,
-      headers: request.headers,
-      params: request.params,
-      query: request.query,
+      body: request.body as B,
+      headers: request.headers as H,
+      params: request.params as P,
+      query: request.query as Q,
       user: adminUser,
     };
 
@@ -50,4 +56,8 @@ const authenticatedHttpAdapterExpress = <B, H, P, Q, R>(
   };
 };
 
-export { authenticatedHttpAdapterExpress, publicHttpAdapterExpress };
+export {
+  authenticatedHttpAdapterExpress,
+  IAuthenticatedHttpAdapterExpress,
+  publicHttpAdapterExpress,
+};

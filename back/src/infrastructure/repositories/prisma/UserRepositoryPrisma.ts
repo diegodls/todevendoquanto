@@ -2,7 +2,7 @@ import { User, UserRole } from "@/core/domain/User";
 import { IUserRepository } from "@/core/ports/repositories/IUserRepository";
 import { PrismaClientGenerated } from "@/core/shared/utils/orm/prisma/prismaClient";
 
-export class UserRepositoryPrisma implements IUserRepository {
+class UserRepositoryPrisma implements IUserRepository {
   constructor(private readonly repository: PrismaClientGenerated) {}
 
   async findByEmail(email: string): Promise<User | null> {
@@ -58,3 +58,5 @@ export class UserRepositoryPrisma implements IUserRepository {
     return userOutput;
   }
 }
+
+export { UserRepositoryPrisma };

@@ -1,26 +1,28 @@
 import {
-  DeleteUserByIDInputDTO,
-  DeleteUserByIDOutputDTO,
-} from "@/application/dtos/DeleteUserDTO";
+  UserDeleteByIDInputDTO,
+  UserDeleteByIDOutputDTO,
+} from "@/application/dtos/user/UserDeleteDTO";
 import { AdminService } from "@/application/services/admin/adminService";
 import {
   AuthenticatedHttpRequest,
   AuthenticatedHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { NotModifiedError } from "@/core/shared/utils/errors/ApiError";
-import { IDeleteUserByIDController } from "@/core/usecases/admin/user/IDeleteUserByIDController";
+import { IUserDeleteByIDController } from "@/core/usecases/authenticated/user/IUserDeleteByIDController";
 
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
-import { DeleteUserByIDBodySchema } from "@/infrastructure/validation/zod/schemas/admin/DeleteUserByIDBodySchema";
-class DeleteUserByIDController implements IDeleteUserByIDController {
+
+import { UserDeleteByIDBodySchema } from "@/infrastructure/validation/zod/schemas/admin/UserDeleteByIDBodySchema";
+
+class UserDeleteByIDController implements IUserDeleteByIDController {
   constructor(private readonly service: AdminService) {}
   public async handle(
-    request: AuthenticatedHttpRequest<DeleteUserByIDInputDTO>
-  ): Promise<AuthenticatedHttpResponse<DeleteUserByIDOutputDTO>> {
+    request: AuthenticatedHttpRequest<UserDeleteByIDInputDTO>
+  ): Promise<AuthenticatedHttpResponse<UserDeleteByIDOutputDTO>> {
     const adminUser = request.user;
 
-    const body = bodyValidation<DeleteUserByIDInputDTO>(
-      DeleteUserByIDBodySchema
+    const body = bodyValidation<UserDeleteByIDInputDTO>(
+      UserDeleteByIDBodySchema
     )(request);
 
     const deletedUser = await this.service.deleteUserById(
@@ -32,7 +34,7 @@ class DeleteUserByIDController implements IDeleteUserByIDController {
       throw new NotModifiedError("User to be deleted not found");
     }
 
-    const output: AuthenticatedHttpResponse<DeleteUserByIDOutputDTO> = {
+    const output: AuthenticatedHttpResponse<UserDeleteByIDOutputDTO> = {
       statusCode: 200,
       body: { deletedId: deletedUser.id },
     };
@@ -41,4 +43,4 @@ class DeleteUserByIDController implements IDeleteUserByIDController {
   }
 }
 
-export { DeleteUserByIDController };
+export { UserDeleteByIDController };
