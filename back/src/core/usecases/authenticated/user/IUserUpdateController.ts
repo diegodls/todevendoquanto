@@ -1,4 +1,7 @@
-import { UserUpdateInputDTO } from "@/application/dtos/user/UserUpdateDTO";
+import {
+  UserUpdateInputDTO,
+  UserUpdateOutputDTO,
+} from "@/application/dtos/user/UserUpdateDTO";
 import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 
 type IUserUpdateController = IAuthenticatedController<
@@ -6,7 +9,7 @@ type IUserUpdateController = IAuthenticatedController<
   {},
   {},
   {},
-  {}
+  UserUpdateOutputDTO
 >;
 
 export { IUserUpdateController };

@@ -4,13 +4,11 @@ import {
   IAuthenticatedAdminRoutes,
   IAuthenticatedUserRoutes,
 } from "@/core/ports/infrastructure/http/routes/IAuthenticatedRoutes";
+import { IAuthenticatedRouteOBJ } from "@/core/ports/infrastructure/http/routes/IRouteOBJ";
 import { prisma } from "@/core/shared/utils/orm/prisma/prismaClient";
 import { UserDeleteByIDController } from "@/infrastructure/http/express/controllers/authenticated/admin/DeleteUserByIDController";
 import { UserListController } from "@/infrastructure/http/express/controllers/authenticated/admin/UserListController";
-
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/authenticated/user/UserUpdateController";
-
-import { IAuthenticatedRouteOBJ } from "@/core/ports/infrastructure/http/routes/IRouteOBJ";
 import { AdminRepositoryPrisma } from "@/infrastructure/repositories/prisma/AdminRepositoryPrisma";
 
 const adminRepository = new AdminRepositoryPrisma(prisma);

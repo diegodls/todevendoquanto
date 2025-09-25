@@ -4,12 +4,19 @@ import {
   UserLoginPayload,
 } from "@/application/dtos/user/UserLoginDTO";
 import { UserSignInInputDTO } from "@/application/dtos/user/UserSignInDTO";
+import {
+  UserUpdateInputDTO,
+  UserUpdateOutputDTO,
+} from "@/application/dtos/user/UserUpdateDTO";
 import { IUserService } from "@/application/services/user/IUserService";
 import { User } from "@/core/domain/User";
+import { IJwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
 import { IUserRepository } from "@/core/ports/repositories/IUserRepository";
 import {
   AlreadyExistError,
+  BadRequestError,
   InternalError,
+  NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/utils/errors/ApiError";
 import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/userErrorCodes";
@@ -88,5 +95,41 @@ export class UserService implements IUserService {
     });
 
     return { token };
+  }
+
+  public async update(
+    data: UserUpdateInputDTO,
+    userJWT: IJwtPayload
+  ): Promise<UserUpdateOutputDTO | null> {
+    const userToUpdate: User | null = await this.repository.findByID(
+      userJWT.sub
+    );
+
+    if (!userToUpdate) {
+      throw new NotFoundError(
+        "User to update not found with logged id",
+        {},
+        userServiceErrorCodes.E_0_SVC_USR_0003.code
+      );
+    }
+
+    if (data?.email != userToUpdate.email) {
+      throw new BadRequestError(
+        "The logged email and the account email is different, logoff and try again",
+        {},
+        userServiceErrorCodes.E_0_SVC_USR_0004.code
+      );
+    }
+
+    if (data?.name != userToUpdate.name) {
+      throw new BadRequestError(
+        "The logged name and the account name is different, logoff and try again",
+        {},
+        userServiceErrorCodes.E_0_SVC_USR_0004.code
+      );
+    }
+
+    const updatedUser = await this.repository.
+
   }
 }

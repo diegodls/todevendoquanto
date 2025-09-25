@@ -25,6 +25,19 @@ const userServiceErrorCodes: IUserServiceErrorCodes = {
     actions: "Check bcrypt method",
     instance: "userService",
   },
+  E_0_SVC_USR_0003: {
+    code: "E_0_SVC_USR_0003",
+    details: "User not found with the logged user ID",
+    actions: "User must be logged with a valid user with valid ID",
+    instance: "userService",
+  },
+  E_0_SVC_USR_0004: {
+    code: "E_0_SVC_USR_0004",
+    details:
+      "Logged user tried to update his data, but passed another data, mismatch og information",
+    actions: "User must send the data of his profile",
+    instance: "userService",
+  },
 };
 
 export { userControllerErrorCodes, userServiceErrorCodes };
