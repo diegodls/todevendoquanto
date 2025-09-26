@@ -24,12 +24,7 @@ class AdminRepositoryPrisma implements IAdminRepository {
   }
 
   public async deleteUserById(id: User["id"]): Promise<User | null> {
-    console.log("");
-    console.log(`AdminRepository > Deleting user id: ${id}:`);
-
     const output = await this.ormClient.user.delete({ where: { id } });
-
-    console.log(output);
 
     return output ? prismaEntityUserParser(output) : null;
   }

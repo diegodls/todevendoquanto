@@ -159,18 +159,11 @@ export class UserService implements IUserService {
     }
 
     if (!newData || (!newData?.email && !newData.name)) {
-      console.log("");
-      console.log("HERE");
-      console.log("");
-
       let errors: any = {};
 
       !data.email && (errors["email"] = "Email are the same");
 
       !data.name && (errors["name"] = "Name are the same");
-      console.log("");
-      console.log("errors");
-      console.log(errors);
 
       throw new NotModifiedError();
     }

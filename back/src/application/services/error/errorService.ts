@@ -6,7 +6,6 @@ import { IErrorService } from "./IErrorService";
 class ErrorService implements IErrorService {
   verify(data: ErrorDTO): ErrorDTO | null {
     const { where } = data;
-    console.log("service");
 
     if (where === "service") {
       let message = "Error on Service, just for testing";

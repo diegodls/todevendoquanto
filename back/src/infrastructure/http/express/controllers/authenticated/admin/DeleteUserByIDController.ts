@@ -7,7 +7,7 @@ import {
   AuthenticatedHttpRequest,
   AuthenticatedHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
-import { NotModifiedError } from "@/core/shared/utils/errors/ApiError";
+import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
 import { IUserDeleteByIDController } from "@/core/usecases/authenticated/user/IUserDeleteByIDController";
 
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
@@ -31,7 +31,7 @@ class UserDeleteByIDController implements IUserDeleteByIDController {
     );
 
     if (!deletedUser) {
-      throw new NotModifiedError("User to be deleted not found");
+      throw new BadRequestError("User to be deleted not found");
     }
 
     const output: AuthenticatedHttpResponse<UserDeleteByIDOutputDTO> = {
