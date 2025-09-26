@@ -25,8 +25,8 @@ export class ApiError extends Error {
 class NotModifiedError extends ApiError {
   // when a requisition is OK but nothing was modified
   // no need to return/retrieve new/same data
-  constructor(message: string, errors?: Record<string, string>, code?: string) {
-    super(message, 304, errors, code);
+  constructor() {
+    super("", 304, {});
   }
 }
 

@@ -4,10 +4,10 @@ import { IJwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
 import { IUserRepository } from "@/core/ports/repositories/IUserRepository";
 import { PrismaClientGenerated } from "@/core/shared/utils/orm/prisma/prismaClient";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prismaEntityUserParser";
-import { Prisma } from '@/prisma';
 
 class UserRepositoryPrisma implements IUserRepository {
   constructor(private readonly ormClient: PrismaClientGenerated) {}
+  //! TODO: Maybe unify the findByXYZ and pass the keys of User, to prevent multiples call, like in userService > update
 
   async findByID(id: string): Promise<User | null> {
     const userExists = await this.ormClient.user.findFirst({
@@ -37,6 +37,20 @@ class UserRepositoryPrisma implements IUserRepository {
     return output;
   }
 
+  async findByName(name: string): Promise<User | null> {
+    const userExists = await this.ormClient.user.findFirst({
+      where: { name },
+    });
+
+    if (!userExists) {
+      return null;
+    }
+
+    const output = prismaEntityUserParser(userExists);
+
+    return output;
+  }
+
   async create(user: User): Promise<User | null> {
     const createdUser = await this.ormClient.user.create({ data: user });
 
@@ -53,13 +67,14 @@ class UserRepositoryPrisma implements IUserRepository {
     user: IJwtPayload,
     data: UserUpdateInputDTO
   ): Promise<User | null> {
-    const updatedUser = await this.ormClient.user.update()
+    const updatedUser = await this.ormClient.user.update({
+      where: { email: user.email },
+      data,
+    });
 
-    PAREI AQUI, TEM QUE CONTINUAR A FAZER O UPDATE COM O Prisma, SEI LÁ, CRIAR UM OBJETO COM OS CAMPS EXISTENTES:
+    const parsedUser = prismaEntityUserParser(updatedUser);
 
-    CONST FIELS = {}
-
-    E ADICIONAR O QUE VIER NO "DATA", USANDO O EMAIL DO USER PARA ALTERAR, PENSA AI
+    return parsedUser;
   }
 }
 

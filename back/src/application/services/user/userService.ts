@@ -17,6 +17,7 @@ import {
   BadRequestError,
   InternalError,
   NotFoundError,
+  NotModifiedError,
   UnauthorizedError,
 } from "@/core/shared/utils/errors/ApiError";
 import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/userErrorCodes";
@@ -98,9 +99,29 @@ export class UserService implements IUserService {
   }
 
   public async update(
-    data: UserUpdateInputDTO,
-    userJWT: IJwtPayload
+    userJWT: IJwtPayload,
+    data: UserUpdateInputDTO
   ): Promise<UserUpdateOutputDTO | null> {
+    let newData: UserUpdateInputDTO = {};
+
+    let userExists: User | null = null;
+
+    if (data?.email) {
+      userExists = await this.repository.findByEmail(data.email);
+
+      if (userExists) {
+        throw new BadRequestError("The email is already in use");
+      }
+    }
+
+    if (data?.name) {
+      userExists = await this.repository.findByName(data.name);
+
+      if (userExists) {
+        throw new BadRequestError("The name is already in use");
+      }
+    }
+
     const userToUpdate: User | null = await this.repository.findByID(
       userJWT.sub
     );
@@ -113,23 +134,49 @@ export class UserService implements IUserService {
       );
     }
 
-    if (data?.email != userToUpdate.email) {
+    if (userJWT.email !== userToUpdate.email) {
       throw new BadRequestError(
-        "The logged email and the account email is different, logoff and try again",
+        "Mismatch of data, email of accounts are different, login and try again",
         {},
         userServiceErrorCodes.E_0_SVC_USR_0004.code
       );
     }
 
-    if (data?.name != userToUpdate.name) {
+    if (userJWT.sub !== userToUpdate.id) {
       throw new BadRequestError(
-        "The logged name and the account name is different, logoff and try again",
+        "Mismatch of data, ID of accounts are different, login and try again",
         {},
         userServiceErrorCodes.E_0_SVC_USR_0004.code
       );
     }
 
-    const updatedUser = await this.repository.
+    if (data?.email !== userToUpdate.email) {
+      newData.email = data.email;
+    }
 
+    if (data?.name !== userToUpdate.name) {
+      newData.name = data.name;
+    }
+
+    if (!newData || (!newData?.email && !newData.name)) {
+      console.log("");
+      console.log("HERE");
+      console.log("");
+
+      let errors: any = {};
+
+      !data.email && (errors["email"] = "Email are the same");
+
+      !data.name && (errors["name"] = "Name are the same");
+      console.log("");
+      console.log("errors");
+      console.log(errors);
+
+      throw new NotModifiedError();
+    }
+
+    const updatedUser = await this.repository.update(userJWT, data);
+
+    return updatedUser;
   }
 }

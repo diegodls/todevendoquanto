@@ -7,6 +7,8 @@ import {
   AuthenticatedHttpRequest,
   AuthenticatedHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
+import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
+import { userControllerErrorCodes } from "@/core/shared/utils/errors/codes/user/userErrorCodes";
 import { IUserUpdateController } from "@/core/usecases/authenticated/user/IUserUpdateController";
 
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
@@ -20,20 +22,18 @@ class UserUpdateController implements IUserUpdateController {
   ): Promise<AuthenticatedHttpResponse<UserUpdateOutputDTO>> {
     const userJWT = request.user;
 
-    const body =
+    const data =
       bodyValidation<UserUpdateInputDTO>(UserUpdateBodySchema)(request);
 
-    console.log("");
-    console.log("userJWT:");
-    console.log(userJWT);
-    console.log("");
-    console.log("body:");
-    console.log(body);
-    console.log("");
+    if (!data.email && !data.name) {
+      throw new BadRequestError(
+        "No data send",
+        {},
+        userControllerErrorCodes.E_0_CTR_USR_0002.code
+      );
+    }
 
-    const updatedUser = this.service.update(body, userJWT);
-
-    //PAREI AQUI, TEM QUE FAZER O testServiceErrorCodes, REPOSITORY, RENOMEAR ALGUMAS PASTAS PARA READEQUAR AO: PUBLIC | AUTHENTICATED
+    const updatedUser = await this.service.update(userJWT, data);
 
     const output: AuthenticatedHttpResponse<UserUpdateOutputDTO> = {
       statusCode: 200,
