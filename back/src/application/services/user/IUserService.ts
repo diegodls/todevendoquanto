@@ -14,7 +14,8 @@ interface IUserService {
   create(data: UserSignInInputDTO): Promise<User | null>;
   login(data: UserLoginInputDTO): Promise<UserLoginOutputDTO>;
   update(
-    userJWT: IJwtPayload,
+    loggedUser: IJwtPayload,
+    userIDToChange: User["id"],
     data: UserUpdateInputDTO
   ): Promise<UserUpdateOutputDTO | null>;
 }

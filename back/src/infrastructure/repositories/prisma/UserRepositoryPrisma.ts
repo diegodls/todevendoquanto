@@ -1,6 +1,5 @@
 import { UserUpdateInputDTO } from "@/application/dtos/user/UserUpdateDTO";
 import { User } from "@/core/domain/User";
-import { IJwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
 import { IUserRepository } from "@/core/ports/repositories/IUserRepository";
 import { PrismaClientGenerated } from "@/core/shared/utils/orm/prisma/prismaClient";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prismaEntityUserParser";
@@ -63,12 +62,9 @@ class UserRepositoryPrisma implements IUserRepository {
     return output;
   }
 
-  async update(
-    user: IJwtPayload,
-    data: UserUpdateInputDTO
-  ): Promise<User | null> {
+  async update(id: User["id"], data: UserUpdateInputDTO): Promise<User | null> {
     const updatedUser = await this.ormClient.user.update({
-      where: { email: user.email },
+      where: { id },
       data,
     });
 

@@ -1,8 +1,10 @@
 import {
   UserUpdateInputDTO,
   UserUpdateOutputDTO,
+  UserUpdateParams,
 } from "@/application/dtos/user/UserUpdateDTO";
 import { IUserService } from "@/application/services/user/IUserService";
+import { SANITIZE_UUID_V4_REGEX } from "@/core/shared/regex/sanitize_uuid";
 import {
   AuthenticatedHttpRequest,
   AuthenticatedHttpResponse,
@@ -18,14 +20,25 @@ class UserUpdateController implements IUserUpdateController {
   constructor(readonly service: IUserService) {}
 
   public async handle(
-    request: AuthenticatedHttpRequest<UserUpdateInputDTO>
+    request: AuthenticatedHttpRequest<UserUpdateInputDTO, {}, UserUpdateParams>
   ): Promise<AuthenticatedHttpResponse<UserUpdateOutputDTO>> {
     const userJWT = request.user;
+
+    const userIDToChange = request.params.id;
+
+    if (!String(userIDToChange)) {
+      throw new BadRequestError("User ID to change was not send");
+    }
+
+    if (!SANITIZE_UUID_V4_REGEX.test(userIDToChange)) {
+      throw new BadRequestError("Invalid User ID to change");
+    }
 
     const data =
       bodyValidation<UserUpdateInputDTO>(UserUpdateBodySchema)(request);
 
     if (!data.email && !data.name) {
+      // Maybe do that thing of Partial<Pick>> | Partial<Pick>> and control this on zod
       throw new BadRequestError(
         "No data send",
         {},
@@ -33,7 +46,11 @@ class UserUpdateController implements IUserUpdateController {
       );
     }
 
-    const updatedUser = await this.service.update(userJWT, data);
+    const updatedUser = await this.service.update(
+      userJWT,
+      userIDToChange,
+      data
+    );
 
     const output: AuthenticatedHttpResponse<UserUpdateOutputDTO> = {
       statusCode: 200,

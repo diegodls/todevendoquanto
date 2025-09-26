@@ -54,7 +54,7 @@ const adminRoutes: IAuthenticatedAdminRoutes = [
 const userRoutes: IAuthenticatedUserRoutes = [
   {
     method: "patch",
-    path: "/user/update",
+    path: "/user/update/:id",
     controller: userUpdateController,
   },
 ];

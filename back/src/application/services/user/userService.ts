@@ -24,6 +24,7 @@ import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/use
 
 import bcrypt, { compare } from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";
+import { resolveHostname } from 'nodemailer/lib/shared';
 
 export class UserService implements IUserService {
   constructor(private readonly repository: IUserRepository) {}
@@ -99,31 +100,36 @@ export class UserService implements IUserService {
   }
 
   public async update(
-    userJWT: IJwtPayload,
+    loggedUser: IJwtPayload,
+    idToChange: User["id"],
     data: UserUpdateInputDTO
   ): Promise<UserUpdateOutputDTO | null> {
+
+
+    PAREI AQUI, READEQUAR O SERVICE PARA AS resolveHostname
+    
     let newData: UserUpdateInputDTO = {};
 
-    let userExists: User | null = null;
+    let userToChangeExists: User | null = null;
 
     if (data?.email) {
-      userExists = await this.repository.findByEmail(data.email);
+      userToChangeExists = await this.repository.findByEmail(data.email);
 
-      if (userExists) {
+      if (userToChangeExists) {
         throw new BadRequestError("The email is already in use");
       }
     }
 
     if (data?.name) {
-      userExists = await this.repository.findByName(data.name);
+      userToChangeExists = await this.repository.findByName(data.name);
 
-      if (userExists) {
+      if (userToChangeExists) {
         throw new BadRequestError("The name is already in use");
       }
     }
 
     const userToUpdate: User | null = await this.repository.findByID(
-      userJWT.sub
+      idToChange
     );
 
     if (!userToUpdate) {
@@ -134,7 +140,7 @@ export class UserService implements IUserService {
       );
     }
 
-    if (userJWT.email !== userToUpdate.email) {
+    if (loggedUser.email !== userToUpdate.email) {
       throw new BadRequestError(
         "Mismatch of data, email of accounts are different, login and try again",
         {},
