@@ -1,8 +1,8 @@
-import { User } from "@/core/domain/User";
+import { User, UserValidPropsToChange } from "@/core/domain/User";
 
 type UserUpdateParams = { id: User["id"] };
 
-type UserUpdateInputDTO = Partial<Pick<User, "email" | "name">>;
+type UserUpdateInputDTO = UserValidPropsToChange;
 
 type UserUpdateOutputDTO = Omit<User, "password"> | null;
 

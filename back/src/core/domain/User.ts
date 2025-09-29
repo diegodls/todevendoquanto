@@ -17,6 +17,10 @@ enum UserRole {
   ADMIN = "ADMIN",
 }
 
+type UserValidPropsToChange = Partial<
+  Pick<User, "name" | "email" | "role" | "is_active">
+>;
+
 class User {
   public readonly id: string = "";
   public name: string = "";
@@ -36,4 +40,4 @@ class User {
   }
 }
 
-export { User, UserRole };
+export { User, UserRole, UserValidPropsToChange };

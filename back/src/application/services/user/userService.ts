@@ -16,7 +16,6 @@ import {
   AlreadyExistError,
   BadRequestError,
   InternalError,
-  NotFoundError,
   NotModifiedError,
   UnauthorizedError,
 } from "@/core/shared/utils/errors/ApiError";
@@ -99,82 +98,130 @@ export class UserService implements IUserService {
   }
 
   public async update(
-    loggedUser: IJwtPayload,
-    idToChange: User["id"],
+    loggedUserJWT: IJwtPayload,
+    targetUserID: User["id"],
     data: UserUpdateInputDTO
   ): Promise<UserUpdateOutputDTO | null> {
-
-
-    PAREI AQUI, READEQUAR O SERVICE PARA AS ROLES
-    
-    let newData: UserUpdateInputDTO = {};
-
-    let userToChangeExists: User | null = null;
-
-    if (data?.email) {
-      userToChangeExists = await this.repository.findByEmail(data.email);
-
-      if (userToChangeExists) {
-        throw new BadRequestError("The email is already in use");
-      }
-    }
-
-    if (data?.name) {
-      userToChangeExists = await this.repository.findByName(data.name);
-
-      if (userToChangeExists) {
-        throw new BadRequestError("The name is already in use");
-      }
-    }
-
-    const userToUpdate: User | null = await this.repository.findByID(
-      idToChange
+    const loggedUser: User | null = await this.repository.findByID(
+      loggedUserJWT.sub
     );
 
-    if (!userToUpdate) {
-      throw new NotFoundError(
-        "User to update not found with logged id",
+    if (!loggedUser) {
+      throw new UnauthorizedError(
+        "Invalid authentication: user not found!",
         {},
         userServiceErrorCodes.E_0_SVC_USR_0003.code
       );
     }
 
-    if (loggedUser.email !== userToUpdate.email) {
+    const isLoggedUserAdmin: boolean = loggedUser.role === "ADMIN";
+
+    if (!isLoggedUserAdmin) {
+      delete data.role;
+      delete data.is_active;
+    }
+
+    const targetUser: User | null = await this.repository.findByID(
+      targetUserID
+    );
+
+    if (!targetUser) {
       throw new BadRequestError(
-        "Mismatch of data, email of accounts are different, login and try again",
-        {},
-        userServiceErrorCodes.E_0_SVC_USR_0004.code
+        "The user to be updated was not found with given ID!"
       );
     }
 
-    if (userJWT.sub !== userToUpdate.id) {
-      throw new BadRequestError(
-        "Mismatch of data, ID of accounts are different, login and try again",
-        {},
-        userServiceErrorCodes.E_0_SVC_USR_0004.code
-      );
-    }
+    this.ensureUserCanUpdate(loggedUser, targetUser);
 
-    if (data?.email !== userToUpdate.email) {
-      newData.email = data.email;
-    }
+    const sanitizedData = this.sanitizeData(loggedUser, targetUser, data);
 
-    if (data?.name !== userToUpdate.name) {
-      newData.name = data.name;
-    }
+    await this.validateUniqueFields(targetUser, sanitizedData);
 
-    if (!newData || (!newData?.email && !newData.name)) {
-      let errors: any = {};
-
-      !data.email && (errors["email"] = "Email are the same");
-
-      !data.name && (errors["name"] = "Name are the same");
-
+    if (Object.keys(sanitizedData).length <= 0) {
       throw new NotModifiedError();
     }
 
-    const updatedUser = await this.repository.update(userJWT, data);
+    const updatedUser = await this.repository.update(
+      targetUserID,
+      sanitizedData
+    );
 
-    return updatedUser;
+    console.log("");
+    console.log("🔴🔴🔴🔴🔴");
+    console.log("");
+    console.log("sanitizedData");
+    console.log(sanitizedData);
+    console.log("🔴🔴🔴🔴🔴");
+    console.log("");
+
+    const output = updatedUser ? { ...updatedUser, password: "" } : null;
+
+    return output;
+  }
+
+  private ensureUserCanUpdate(loggedUser: User, targetUser: User): void {
+    const isAdmin = loggedUser.role === "ADMIN";
+
+    if (!isAdmin && loggedUser.id !== targetUser.id) {
+      throw new UnauthorizedError(
+        "You don't have the permissions",
+        {},
+        userServiceErrorCodes.E_0_SVC_USR_0004.code
+      );
+    }
+  }
+
+  private sanitizeData(
+    loggedUser: User,
+    targetUser: User,
+    data: UserUpdateInputDTO
+  ): UserUpdateInputDTO {
+    const sanitizedData: UserUpdateInputDTO = { ...data };
+
+    const isAdmin = loggedUser.role === "ADMIN";
+
+    if (!isAdmin) {
+      delete sanitizedData.role;
+      delete sanitizedData.is_active;
+    }
+
+    if (targetUser.email === sanitizedData?.email) {
+      delete sanitizedData.email;
+    }
+
+    if (targetUser.name === sanitizedData?.name) {
+      delete sanitizedData.name;
+    }
+
+    return sanitizedData;
+  }
+
+  private async validateUniqueFields(
+    targetUser: User,
+    data: UserUpdateInputDTO
+  ): Promise<void> {
+    if (data?.name && data.name !== targetUser.name) {
+      const userToChangeExists = await this.repository.findByName(data.name);
+
+      if (userToChangeExists) {
+        throw new BadRequestError(
+          "Name already in use",
+          { name: "Name already in use" },
+          userServiceErrorCodes.E_0_SVC_USR_0005.code
+        );
+      }
+    }
+
+    if (data?.email && data.email !== targetUser.email) {
+      const userToChangeExists = await this.repository.findByEmail(data.email);
+
+      if (userToChangeExists) {
+        throw new BadRequestError(
+          "Email already in use",
+          { email: "Email already in use" },
+          userServiceErrorCodes.E_0_SVC_USR_0005.code
+        );
+      }
+    }
   }
 }

@@ -10,7 +10,6 @@ import {
   AuthenticatedHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
-import { userControllerErrorCodes } from "@/core/shared/utils/errors/codes/user/userErrorCodes";
 import { IUserUpdateController } from "@/core/usecases/authenticated/user/IUserUpdateController";
 
 import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
@@ -36,15 +35,6 @@ class UserUpdateController implements IUserUpdateController {
 
     const data =
       bodyValidation<UserUpdateInputDTO>(UserUpdateBodySchema)(request);
-
-    if (!data.email && !data.name) {
-      // Maybe do that thing of Partial<Pick>> | Partial<Pick>> and control this on zod
-      throw new BadRequestError(
-        "No data send",
-        {},
-        userControllerErrorCodes.E_0_CTR_USR_0002.code
-      );
-    }
 
     const updatedUser = await this.service.update(
       userJWT,
