@@ -24,7 +24,6 @@ import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/use
 
 import bcrypt, { compare } from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";
-import { resolveHostname } from 'nodemailer/lib/shared';
 
 export class UserService implements IUserService {
   constructor(private readonly repository: IUserRepository) {}
@@ -106,7 +105,7 @@ export class UserService implements IUserService {
   ): Promise<UserUpdateOutputDTO | null> {
 
 
-    PAREI AQUI, READEQUAR O SERVICE PARA AS resolveHostname
+    PAREI AQUI, READEQUAR O SERVICE PARA AS ROLES
     
     let newData: UserUpdateInputDTO = {};
 
