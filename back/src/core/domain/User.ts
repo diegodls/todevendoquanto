@@ -21,6 +21,10 @@ type UserValidPropsToChange = Partial<
   Pick<User, "name" | "email" | "role" | "is_active">
 >;
 
+type UserValidPropsToFilter = Partial<
+  Pick<User, "name" | "email" | "role" | "is_active">
+>;
+
 class User {
   public readonly id: string = "";
   public name: string = "";
@@ -40,4 +44,4 @@ class User {
   }
 }
 
-export { User, UserRole, UserValidPropsToChange };
+export { User, UserRole, UserValidPropsToChange, UserValidPropsToFilter };

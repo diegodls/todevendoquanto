@@ -1,4 +1,8 @@
-import { User } from "@/core/domain/User";
+import {
+  ListUsersControllerFilters,
+  PaginationInputDTO,
+} from "@/application/dtos/shared/PaginationDTO";
+import { User, UserRole } from "@/core/domain/User";
 import { z } from "zod";
 
 const FORBIDDEN_SORT_FIELDS: (keyof User)[] = ["password"];
@@ -48,8 +52,9 @@ const UserListBodySchema = z.object({
     .object({
       is_active: z.boolean().default(true),
       email: z.string().email("You must pass a valid email").optional(),
+      role: z.nativeEnum(UserRole).optional(),
     })
     .optional(),
-});
+}) satisfies z.ZodType<PaginationInputDTO<User, ListUsersControllerFilters>>;
 
 export { UserListBodySchema };

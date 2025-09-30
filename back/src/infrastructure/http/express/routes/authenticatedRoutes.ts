@@ -7,7 +7,7 @@ import {
 } from "@/core/ports/infrastructure/http/routes/IAuthenticatedRoutes";
 import { IAuthenticatedRouteOBJ } from "@/core/ports/infrastructure/http/routes/IRouteOBJ";
 import { prisma } from "@/core/shared/utils/orm/prisma/prismaClient";
-import { UserDeleteByIDController } from "@/infrastructure/http/express/controllers/authenticated/admin/DeleteUserByIDController";
+import { UserDeleteByIDController } from "@/infrastructure/http/express/controllers/authenticated/admin/UserDeleteByIDController";
 import { UserListController } from "@/infrastructure/http/express/controllers/authenticated/admin/UserListController";
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/authenticated/user/UserUpdateController";
 import { AdminRepositoryPrisma } from "@/infrastructure/repositories/prisma/AdminRepositoryPrisma";
@@ -40,7 +40,7 @@ const makeRoute = <C extends IAnyAuthenticatedController>(
 
 const adminRoutes: IAuthenticatedAdminRoutes = [
   makeRoute({
-    path: "/admin/users/delete/id",
+    path: "/admin/users/delete/id", //! TODO: TROCAR A PASSAGEM DO ID DO "BODY" PELO "PARAMS"
     method: "delete",
     controller: userDeleteController,
   }),

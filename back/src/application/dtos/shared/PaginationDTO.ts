@@ -1,10 +1,6 @@
-import { User } from "@/core/domain/User";
+import { UserValidPropsToFilter } from "@/core/domain/User";
 
-type ListUsersControllerFilters = {
-  role?: User["role"];
-  is_active?: boolean;
-  email?: string;
-};
+type ListUsersControllerFilters = UserValidPropsToFilter;
 
 type PaginationDirection = "asc" | "desc";
 
