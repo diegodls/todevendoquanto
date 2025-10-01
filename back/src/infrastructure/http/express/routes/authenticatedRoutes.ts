@@ -38,6 +38,15 @@ const makeRoute = <C extends IAnyAuthenticatedController>(
   };
 };
 
+/*
+PAREI AQUI, TEM QUE FAZER A ROTA DE LOCALIZAR PELO ID
+! MODIFICAR O requestValidation para 
+! TROCAR O ID DO BODY PELO PARAMS (ABAIXO)
+VERIFICAR SE PRECISA DE MUDAR ALGO NA ROTA "list", VISTO QUE ELA VAI SERVIR PARA LOCALIZAR TUDO (ao invés de fazer rota por rota(namespace, email, is_active))
+VERIFICAR SE COMPENSA TROCAR O FILTERS DA ROTA "list" DO BODY PARA O PARAMS (para ficar a url bonitinha cacheada)
+VER A NECESSIDADE DE UMA ROTA PARA LOCALIZAR PELO EMAIL
+*/
+
 const adminRoutes: IAuthenticatedAdminRoutes = [
   makeRoute({
     path: "/admin/users/delete/id", //! TODO: TROCAR A PASSAGEM DO ID DO "BODY" PELO "PARAMS"

@@ -10,7 +10,7 @@ import {
 import { InternalError } from "@/core/shared/utils/errors/ApiError";
 import { userControllerErrorCodes } from "@/core/shared/utils/errors/codes/user/userErrorCodes";
 import { IUserSignInController } from "@/core/usecases/public/user/IUserSignInController";
-import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
+import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserSignInBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserSignInBodySchema";
 
 export class UserSignInController implements IUserSignInController {
@@ -19,8 +19,10 @@ export class UserSignInController implements IUserSignInController {
   public async handle(
     request: PublicHttpRequest<UserSignInInputDTO>
   ): Promise<PublicHttpResponse<UserSignInOutputDTO>> {
-    const data =
-      bodyValidation<UserSignInInputDTO>(UserSignInBodySchema)(request);
+    const data = requestValidation<UserSignInInputDTO>(UserSignInBodySchema)(
+      request,
+      "body"
+    );
 
     const createdUser = await this.service.create(data);
 

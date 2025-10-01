@@ -12,7 +12,7 @@ import {
 import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
 import { IUserUpdateController } from "@/core/usecases/authenticated/user/IUserUpdateController";
 
-import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
+import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserUpdateBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserProfileUpdateBodySchema";
 
 class UserUpdateController implements IUserUpdateController {
@@ -33,8 +33,10 @@ class UserUpdateController implements IUserUpdateController {
       throw new BadRequestError("Invalid User ID to change");
     }
 
-    const data =
-      bodyValidation<UserUpdateInputDTO>(UserUpdateBodySchema)(request);
+    const data = requestValidation<UserUpdateInputDTO>(UserUpdateBodySchema)(
+      request,
+      "body"
+    );
 
     const updatedUser = await this.service.update(
       userJWT,

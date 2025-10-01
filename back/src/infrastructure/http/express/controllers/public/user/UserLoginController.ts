@@ -8,7 +8,7 @@ import {
   PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { IUserLoginController } from "@/core/usecases/public/user/IUserLoginController";
-import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
+import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserLoginBodySchema";
 
 class UserLoginController implements IUserLoginController {
@@ -17,8 +17,10 @@ class UserLoginController implements IUserLoginController {
   public async handle(
     request: PublicHttpRequest<UserLoginInputDTO>
   ): Promise<PublicHttpResponse<UserLoginOutputDTO> | null> {
-    const data =
-      bodyValidation<UserLoginInputDTO>(UserLoginBodySchema)(request);
+    const data = requestValidation<UserLoginInputDTO>(UserLoginBodySchema)(
+      request,
+      "body"
+    );
 
     const token = await this.service.login(data);
 

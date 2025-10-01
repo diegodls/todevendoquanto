@@ -5,10 +5,17 @@ import {
 import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
 import { ZodSchema } from "zod";
 
-const bodyValidation =
+type TRequestParts = "body" | "headers" | "params" | "query";
+
+const requestValidation =
   <S>(schema: ZodSchema<S>) =>
-  <B>(request: PublicHttpRequest<B> | AuthenticatedHttpRequest<B>): B => {
-    const result = schema.safeParse(request.body);
+  <B, H, P, Q>(
+    request:
+      | PublicHttpRequest<B, H, P, Q>
+      | AuthenticatedHttpRequest<B, H, P, Q>,
+    requestPart: TRequestParts
+  ): B | H | P | Q => {
+    const result = schema.safeParse(request[requestPart]);
 
     if (!result.success) {
       const errors: Record<string, string> = {};
@@ -20,7 +27,7 @@ const bodyValidation =
       });
     }
 
-    return request.body;
+    return request[requestPart];
   };
 
-export { bodyValidation };
+export { requestValidation };

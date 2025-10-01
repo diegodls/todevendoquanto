@@ -10,7 +10,7 @@ import {
   AuthenticatedHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { IUserListController } from "@/core/usecases/authenticated/user/IUserListController";
-import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
+import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserListBodySchema } from "@/infrastructure/validation/zod/schemas/admin/UserListBodySchema";
 
 class UserListController implements IUserListController {
@@ -23,10 +23,9 @@ class UserListController implements IUserListController {
   ): Promise<AuthenticatedHttpResponse<PaginationOutputDTO<User>>> {
     const adminUser = request.user;
 
-    const input =
-      bodyValidation<PaginationInputDTO<User, ListUsersControllerFilters>>(
-        UserListBodySchema
-      )(request);
+    const input = requestValidation<
+      PaginationInputDTO<User, ListUsersControllerFilters>
+    >(UserListBodySchema)(request, "body");
 
     const usersList = await this.service.listUsers(adminUser.sub, input);
 

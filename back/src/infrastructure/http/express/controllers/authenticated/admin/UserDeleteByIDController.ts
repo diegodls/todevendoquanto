@@ -10,7 +10,7 @@ import {
 import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
 import { IUserDeleteByIDController } from "@/core/usecases/authenticated/user/IUserDeleteByIDController";
 
-import { bodyValidation } from "@/infrastructure/validation/zod/BodyValidation";
+import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 
 import { UserDeleteByIDBodySchema } from "@/infrastructure/validation/zod/schemas/admin/UserDeleteByIDBodySchema";
 
@@ -21,9 +21,9 @@ class UserDeleteByIDController implements IUserDeleteByIDController {
   ): Promise<AuthenticatedHttpResponse<UserDeleteByIDOutputDTO>> {
     const adminUser = request.user;
 
-    const body = bodyValidation<UserDeleteByIDInputDTO>(
+    const body = requestValidation<UserDeleteByIDInputDTO>(
       UserDeleteByIDBodySchema
-    )(request);
+    )(request, "body");
 
     const deletedUser = await this.service.deleteUserById(
       adminUser.sub,
