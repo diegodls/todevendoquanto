@@ -7,6 +7,13 @@ import { ZodSchema } from "zod";
 
 type TRequestParts = "body" | "headers" | "params" | "query";
 
+type TRequestStructure<Part extends TRequestParts, TargetType> = {
+  body: Part extends "body" ? TargetType : {};
+  headers: Part extends "headers" ? TargetType : {};
+  params: Part extends "params" ? TargetType : {};
+  query: Part extends "query" ? TargetType : {};
+};
+
 const requestValidation =
   <S>(schema: ZodSchema<S>) =>
   <B, H, P, Q>(
