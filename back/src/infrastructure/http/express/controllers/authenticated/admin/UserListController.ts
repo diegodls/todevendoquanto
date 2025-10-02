@@ -25,7 +25,7 @@ class UserListController implements IUserListController {
 
     const input = requestValidation<
       PaginationInputDTO<User, ListUsersControllerFilters>
-    >(UserListBodySchema)(request, "body");
+    >("body", request, UserListBodySchema);
 
     const usersList = await this.service.listUsers(adminUser.sub, input);
 

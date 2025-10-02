@@ -17,12 +17,13 @@ class UserLoginController implements IUserLoginController {
   public async handle(
     request: PublicHttpRequest<UserLoginInputDTO>
   ): Promise<PublicHttpResponse<UserLoginOutputDTO> | null> {
-    const data = requestValidation<UserLoginInputDTO>(UserLoginBodySchema)(
+    const input = requestValidation<UserLoginInputDTO>(
+      "body",
       request,
-      "body"
+      UserLoginBodySchema
     );
 
-    const token = await this.service.login(data);
+    const token = await this.service.login(input);
 
     const output: PublicHttpResponse<UserLoginOutputDTO> = {
       statusCode: 200,

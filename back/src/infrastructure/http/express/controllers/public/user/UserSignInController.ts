@@ -13,18 +13,19 @@ import { IUserSignInController } from "@/core/usecases/public/user/IUserSignInCo
 import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserSignInBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserSignInBodySchema";
 
-export class UserSignInController implements IUserSignInController {
+class UserSignInController implements IUserSignInController {
   constructor(private readonly service: UserService) {}
 
   public async handle(
     request: PublicHttpRequest<UserSignInInputDTO>
   ): Promise<PublicHttpResponse<UserSignInOutputDTO>> {
-    const data = requestValidation<UserSignInInputDTO>(UserSignInBodySchema)(
+    const input = requestValidation<UserSignInInputDTO>(
+      "body",
       request,
-      "body"
+      UserSignInBodySchema
     );
 
-    const createdUser = await this.service.create(data);
+    const createdUser = await this.service.create(input);
 
     if (!createdUser) {
       throw new InternalError(
@@ -44,3 +45,5 @@ export class UserSignInController implements IUserSignInController {
     return output;
   }
 }
+
+export { UserSignInController };
