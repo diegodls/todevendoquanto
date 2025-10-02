@@ -50,7 +50,7 @@ const UserListBodySchema = z.object({
   order_by: orderByZodSchema.optional().default({ name: "asc" }),
   filters: z
     .object({
-      is_active: z.boolean().default(true),
+      is_active: z.boolean().default(true).optional(),
       email: z.string().email("You must pass a valid email").optional(),
       role: z.nativeEnum(UserRole).optional(),
     })

@@ -5,9 +5,7 @@ import {
 import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
 import { ZodSchema } from "zod";
 
-type TRequest<B, H, P, Q> =
-  | PublicHttpRequest<B, H, P, Q>
-  | AuthenticatedHttpRequest<B, H, P, Q>;
+type TRequest = PublicHttpRequest | AuthenticatedHttpRequest;
 
 type TRequestParts = "body" | "headers" | "params" | "query";
 
@@ -37,17 +35,9 @@ type CorrectTypeForPart<
 
 const requestValidation = <TargetType>(
   requestPart: TRequestParts,
-  request: CorrectTypeForPart<
-    TargetType,
-    TRequestParts,
-    TRequest<any, any, any, any>
-  >,
+  request: CorrectTypeForPart<TargetType, TRequestParts, TRequest>,
   schema: ZodSchema<TargetType>
-): CorrectTypeForPart<
-  TargetType,
-  TRequestParts,
-  TRequest<any, any, any, any>
->[TRequestParts] => {
+): CorrectTypeForPart<TargetType, TRequestParts, TRequest>[TRequestParts] => {
   const result = schema.safeParse(request[requestPart]);
 
   if (!result.success) {
