@@ -61,6 +61,14 @@ class AdminRepositoryPrisma implements IAdminRepository {
       customWhere.is_active = false;
     }
 
+    console.log("");
+    console.log("🔴🔴🔴🔴");
+    console.log("");
+    console.log("customWhere");
+    console.log(customWhere);
+    console.log("");
+    console.log("🔴🔴🔴🔴");
+
     const [total_items, usersList] = await Promise.all([
       this.ormClient.user.count({ where: customWhere }),
       this.ormClient.user.findMany({

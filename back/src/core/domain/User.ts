@@ -24,7 +24,6 @@ type UserValidPropsToChange = Partial<
 type UserValidPropsToFilter = Partial<
   Pick<User, "name" | "email" | "role" | "is_active">
 >;
-
 class User {
   public readonly id: string = "";
   public name: string = "";

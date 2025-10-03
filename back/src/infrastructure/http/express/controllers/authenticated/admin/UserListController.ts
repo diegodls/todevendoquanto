@@ -11,7 +11,7 @@ import {
 } from "@/core/shared/types/HttpRequestResponse";
 import { IUserListController } from "@/core/usecases/authenticated/user/IUserListController";
 import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
-import { UserListBodySchema } from "@/infrastructure/validation/zod/schemas/admin/UserListBodySchema";
+import { UserListQuerySchema } from "@/infrastructure/validation/zod/schemas/admin/UserListQuerySchema";
 
 class UserListController implements IUserListController {
   constructor(private readonly service: AdminService) {}
@@ -23,9 +23,15 @@ class UserListController implements IUserListController {
   ): Promise<AuthenticatedHttpResponse<PaginationOutputDTO<User>>> {
     const adminUser = request.user;
 
+    console.log("");
+    console.log("🔴🔴🔴🔴");
+    console.log("");
+    console.log("req.query");
+    console.log(request.query);
+
     const input = requestValidation<
       PaginationInputDTO<User, ListUsersControllerFilters>
-    >("body", request, UserListBodySchema);
+    >("query", request, UserListQuerySchema);
 
     const usersList = await this.service.listUsers(adminUser.sub, input);
 

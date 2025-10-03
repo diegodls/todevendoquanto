@@ -5,7 +5,7 @@ import {
 import { User, UserRole } from "@/core/domain/User";
 import { z } from "zod";
 
-const FORBIDDEN_SORT_FIELDS: (keyof User)[] = ["password"];
+const FORBIDDEN_SORT_FIELDS: [keyof User] = ["password"];
 
 const orderByZodSchema = z
   .object({})
@@ -33,20 +33,9 @@ const orderByZodSchema = z
     }
   );
 
-const UserListBodySchema = z.object({
-  page: z
-    .number({
-      invalid_type_error: "You must pass a valid page number",
-    })
-    .min(1, "You must pass a valid page number higher than 1.")
-    .default(1),
-  page_size: z
-    .number({
-      invalid_type_error: "You must pass a valid page size",
-    })
-    .min(1, "You must pass a valid page size number higher than 1.")
-    .max(100, "You must pass a valid page number lower than 100.")
-    .default(10),
+const UserListQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  page_size: z.coerce.number().int().positive().max(100).default(20),
   order_by: orderByZodSchema.optional().default({ name: "asc" }),
   filters: z
     .object({
@@ -57,4 +46,4 @@ const UserListBodySchema = z.object({
     .optional(),
 }) satisfies z.ZodType<PaginationInputDTO<User, ListUsersControllerFilters>>;
 
-export { UserListBodySchema };
+export { UserListQuerySchema };
