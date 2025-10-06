@@ -39,9 +39,10 @@ const UserListQuerySchema = z.object({
   order_by: orderByZodSchema.optional().default({ name: "asc" }),
   filters: z
     .object({
-      is_active: z.boolean().default(true).optional(),
+      name: z.string().min(1).optional(),
       email: z.string().email("You must pass a valid email").optional(),
       role: z.nativeEnum(UserRole).optional(),
+      is_active: z.boolean().default(true).optional(),
     })
     .optional(),
 }) satisfies z.ZodType<PaginationInputDTO<User, ListUsersControllerFilters>>;

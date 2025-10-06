@@ -24,14 +24,24 @@ class UserListController implements IUserListController {
     const adminUser = request.user;
 
     console.log("");
-    console.log("🔴🔴🔴🔴");
+    console.log("🔵🔵🔵🔵");
     console.log("");
-    console.log("req.query");
+    console.log("****request****");
     console.log(request.query);
 
     const input = requestValidation<
       PaginationInputDTO<User, ListUsersControllerFilters>
     >("query", request, UserListQuerySchema);
+
+    console.log("");
+    console.log("🔴🔴🔴🔴");
+    console.log("");
+    console.log("****ZOD-INPUT****");
+    for (const key in input) {
+      console.log(
+        `${key}: ${JSON.stringify(input[key as keyof typeof input])}`
+      );
+    }
 
     const usersList = await this.service.listUsers(adminUser.sub, input);
 

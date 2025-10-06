@@ -50,7 +50,7 @@ const requestValidation = <TargetType>(
     });
   }
 
-  return request[requestPart];
+  return result.data;
 };
 
 export { requestValidation };

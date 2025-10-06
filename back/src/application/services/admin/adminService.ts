@@ -71,12 +71,6 @@ class AdminService implements IAdminService {
   ): Promise<PaginationOutputDTO<User>> {
     this.isAdmin(adminId);
 
-    console.log("");
-    console.log("🔴🔴🔴🔴");
-    console.log("");
-    console.log("input");
-    console.log(input);
-
     const output = await this.repository.listUsers(input);
 
     return output;
