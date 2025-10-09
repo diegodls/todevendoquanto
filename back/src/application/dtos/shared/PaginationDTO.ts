@@ -1,7 +1,3 @@
-import { UserValidPropsToFilter } from "@/core/domain/User";
-
-type ListUsersControllerFilters = UserValidPropsToFilter;
-
 type PaginationDirection = "asc" | "desc";
 
 type GenericOrderBy<TModel> = {
@@ -12,10 +8,7 @@ type PaginationInputDTO<T, F> = {
   page?: number;
   page_size?: number;
   order_by?: GenericOrderBy<T>;
-  filters?: F;
-};
-
-// ! TALVEZ SEPARAR A PAGINAÇÃO EM UMA PROPS "META"
+} & F;
 
 type PaginationOutputMetaDTO = {
   page: number;
@@ -33,7 +26,6 @@ type PaginationOutputDTO<T> = {
 
 export {
   GenericOrderBy,
-  ListUsersControllerFilters,
   PaginationDirection,
   PaginationInputDTO,
   PaginationOutputDTO,

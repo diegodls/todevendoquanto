@@ -1,17 +1,31 @@
 import {
-  ListUsersControllerFilters,
   PaginationInputDTO,
   PaginationOutputDTO,
 } from "@/application/dtos/shared/PaginationDTO";
-import { User } from "@/core/domain/User";
+import {
+  User,
+  UserValidPropsToFilter,
+  UserValidPropsToOrderBy,
+} from "@/core/domain/User";
 import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 
+type ListUsersControllerFilters = UserValidPropsToFilter;
+
+type ListUsersControllerPaginationInput = PaginationInputDTO<
+  UserValidPropsToOrderBy,
+  ListUsersControllerFilters
+>;
+
 type IUserListController = IAuthenticatedController<
-  PaginationInputDTO<User, ListUsersControllerFilters>,
+  ListUsersControllerPaginationInput,
   {},
   {},
   {},
   PaginationOutputDTO<User>
 >;
 
-export { IUserListController };
+export {
+  IUserListController,
+  ListUsersControllerFilters,
+  ListUsersControllerPaginationInput,
+};

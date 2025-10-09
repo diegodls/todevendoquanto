@@ -1,9 +1,4 @@
-import {
-  GenericOrderBy,
-  ListUsersControllerFilters,
-  PaginationInputDTO,
-  PaginationOutputDTO,
-} from "@/application/dtos/shared/PaginationDTO";
+import { PaginationOutputDTO } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAdminRepository } from "@/core/ports/repositories/IAdminRepository";
 import {
@@ -11,6 +6,7 @@ import {
   PrismaGenerated,
 } from "@/core/shared/utils/orm/prisma/prismaClient";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prismaEntityUserParser";
+import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
 //import { Prisma } from "@prisma/client";
 //import { PrismaClientGenerated } from "../../utils/orm/prisma/prismaClient";
 
@@ -30,35 +26,42 @@ class AdminRepositoryPrisma implements IAdminRepository {
   }
 
   public async listUsers(
-    input: PaginationInputDTO<User, ListUsersControllerFilters>
+    input: ListUsersControllerPaginationInput
   ): Promise<PaginationOutputDTO<User>> {
-    let customWhere: PrismaGenerated.UserWhereInput = { is_active: true };
+    let customWhere: PrismaGenerated.UserWhereInput = {};
 
     const custom_current_page = input.page || 1;
 
     const custom_current_page_size = input.page_size || 10;
 
-    let custom_current_order_by: GenericOrderBy<Omit<User, "password">> = {
-      name: "asc",
-    };
-
-    if (input.order_by && !input.order_by.password) {
-      custom_current_order_by = input.order_by;
-    }
-
-    if (input.filters?.email) {
-      customWhere.email = {
-        contains: input.filters.email,
+    if (input.name) {
+      customWhere.name = {
+        contains: input.name,
         mode: "insensitive",
       };
     }
 
-    if (input.filters?.role) {
-      customWhere.role = input.filters?.role;
+    if (input.email) {
+      customWhere.email = {
+        contains: input.email,
+        mode: "insensitive",
+      };
     }
 
-    if (!input.filters?.is_active && input.filters?.is_active === false) {
-      customWhere.is_active = false;
+    if (input.role) {
+      customWhere.role = input.role;
+    }
+
+    if (input.created_at) {
+      customWhere.created_at = input.created_at;
+    }
+
+    if (input.updated_at) {
+      customWhere.updated_at = input.updated_at;
+    }
+
+    if (input.is_active !== undefined) {
+      customWhere.is_active = input.is_active;
     }
 
     const [total_items, usersList] = await Promise.all([
@@ -67,7 +70,7 @@ class AdminRepositoryPrisma implements IAdminRepository {
         where: customWhere,
         skip: (custom_current_page - 1) * custom_current_page_size,
         take: custom_current_page_size,
-        orderBy: custom_current_order_by,
+        orderBy: input.order_by,
       }),
     ]);
 
@@ -84,6 +87,17 @@ class AdminRepositoryPrisma implements IAdminRepository {
         total_pages,
       },
     };
+
+    console.log("");
+    console.log("🔴🔴🔴🔴");
+    console.log("");
+    console.log("****REPOSITORY****");
+    console.log("");
+    console.log(`usersList: ${usersList.length}`);
+    console.log("");
+    console.log(`total_items: ${total_items}`);
+    console.log("");
+    console.log("");
 
     if (usersList.length > 0) {
       const parsedUsersList: User[] = usersList.map((user) => {

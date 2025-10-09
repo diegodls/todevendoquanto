@@ -1,15 +1,12 @@
-import {
-  ListUsersControllerFilters,
-  PaginationInputDTO,
-  PaginationOutputDTO,
-} from "@/application/dtos/shared/PaginationDTO";
+import { PaginationOutputDTO } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
+import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
 
 interface IAdminRepository {
   findUserById(id: User["id"]): Promise<User | null>;
   deleteUserById(id: User["id"]): Promise<User | null>;
   listUsers(
-    input: PaginationInputDTO<User, ListUsersControllerFilters>
+    input: ListUsersControllerPaginationInput
   ): Promise<PaginationOutputDTO<User>>;
 }
 

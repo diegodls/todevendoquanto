@@ -1,11 +1,13 @@
-import {
-  ListUsersControllerFilters,
-  PaginationInputDTO,
-} from "@/application/dtos/shared/PaginationDTO";
-import { User, UserRole } from "@/core/domain/User";
+import { User, UserRole, UserValidPropsToOrderBy } from "@/core/domain/User";
+import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
 import { z } from "zod";
 
 const FORBIDDEN_SORT_FIELDS: [keyof User] = ["password"];
+
+const test: (keyof UserValidPropsToOrderBy)[] = ["name", "created_at"]; 
+// !USAR ISSO AQUI PARA FAZER O FORBIDDEN_SORT_FIELDS, OU COLOCAR O TYPE DELE LÁ NO USER
+
+PAREI AQUI, TEM QUE VER O POR QUE O ZO ESTÁ VALIDADNDO O is_active ERRADO, ESTÁ TRUE MESMO QUANDO PASSA FALSE
 
 const orderByZodSchema = z
   .object({})
@@ -33,18 +35,18 @@ const orderByZodSchema = z
     }
   );
 
-const UserListQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  page_size: z.coerce.number().int().positive().max(100).default(20),
-  order_by: orderByZodSchema.optional().default({ name: "asc" }),
-  filters: z
-    .object({
-      name: z.string().min(1).optional(),
-      email: z.string().email("You must pass a valid email").optional(),
-      role: z.nativeEnum(UserRole).optional(),
-      is_active: z.boolean().default(true).optional(),
-    })
-    .optional(),
-}) satisfies z.ZodType<PaginationInputDTO<User, ListUsersControllerFilters>>;
+const UserListQuerySchema = z
+  .object({
+    page: z.coerce.number().int().positive().default(1),
+    page_size: z.coerce.number().int().positive().max(100).default(20),
+    order_by: orderByZodSchema.optional().default({ name: "asc" }),
+    name: z.string().min(1).max(255).optional(),
+    email: z.string().email().max(255).optional(),
+    role: z.nativeEnum(UserRole).optional(),
+    created_at: z.coerce.date().optional(),
+    updated_at: z.coerce.date().optional(),
+    is_active: z.coerce.boolean().optional(),
+  })
+  .strip() satisfies z.ZodType<ListUsersControllerPaginationInput>;
 
 export { UserListQuerySchema };

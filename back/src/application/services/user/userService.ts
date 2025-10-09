@@ -146,14 +146,6 @@ export class UserService implements IUserService {
       sanitizedData
     );
 
-    console.log("");
-    console.log("🔴🔴🔴🔴🔴");
-    console.log("");
-    console.log("sanitizedData");
-    console.log(sanitizedData);
-    console.log("🔴🔴🔴🔴🔴");
-    console.log("");
-
     const output = updatedUser ? { ...updatedUser, password: "" } : null;
 
     return output;

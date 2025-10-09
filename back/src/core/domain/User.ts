@@ -21,9 +21,10 @@ type UserValidPropsToChange = Partial<
   Pick<User, "name" | "email" | "role" | "is_active">
 >;
 
-type UserValidPropsToFilter = Partial<
-  Pick<User, "name" | "email" | "role" | "is_active">
->;
+type UserValidPropsToFilter = Partial<Omit<User, "password">>;
+
+type UserValidPropsToOrderBy = Partial<Omit<User, "password">>;
+
 class User {
   public readonly id: string = "";
   public name: string = "";
@@ -43,4 +44,10 @@ class User {
   }
 }
 
-export { User, UserRole, UserValidPropsToChange, UserValidPropsToFilter };
+export {
+  User,
+  UserRole,
+  UserValidPropsToChange,
+  UserValidPropsToFilter,
+  UserValidPropsToOrderBy,
+};
