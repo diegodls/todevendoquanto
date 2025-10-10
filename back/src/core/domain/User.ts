@@ -21,7 +21,7 @@ type UserValidPropsToChange = Partial<
   Pick<User, "name" | "email" | "role" | "is_active">
 >;
 
-type UserValidPropsToFilter = Partial<Omit<User, "password">>;
+type UserValidPropsToFilter = Partial<Omit<User, "id" | "password">>;
 
 type UserValidPropsToOrderBy = Partial<Omit<User, "password">>;
 

@@ -1,13 +1,12 @@
 import { User, UserRole, UserValidPropsToOrderBy } from "@/core/domain/User";
 import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
+import { StringToBoolean } from "@/infrastructure/validation/zod/shared/StringToBoolean";
 import { z } from "zod";
 
 const FORBIDDEN_SORT_FIELDS: [keyof User] = ["password"];
 
-const test: (keyof UserValidPropsToOrderBy)[] = ["name", "created_at"]; 
+const test: (keyof UserValidPropsToOrderBy)[] = ["name", "created_at"];
 // !USAR ISSO AQUI PARA FAZER O FORBIDDEN_SORT_FIELDS, OU COLOCAR O TYPE DELE LÁ NO USER
-
-PAREI AQUI, TEM QUE VER O POR QUE O ZO ESTÁ VALIDADNDO O is_active ERRADO, ESTÁ TRUE MESMO QUANDO PASSA FALSE
 
 const orderByZodSchema = z
   .object({})
@@ -43,10 +42,10 @@ const UserListQuerySchema = z
     name: z.string().min(1).max(255).optional(),
     email: z.string().email().max(255).optional(),
     role: z.nativeEnum(UserRole).optional(),
-    created_at: z.coerce.date().optional(),
-    updated_at: z.coerce.date().optional(),
-    is_active: z.coerce.boolean().optional(),
+    created_at: z.date().optional(),
+    updated_at: z.date().optional(),
+    is_active: StringToBoolean.optional(),
   })
-  .strip() satisfies z.ZodType<ListUsersControllerPaginationInput>;
+  .strip() as z.ZodType<ListUsersControllerPaginationInput>;
 
 export { UserListQuerySchema };

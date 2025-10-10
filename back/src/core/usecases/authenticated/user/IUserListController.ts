@@ -16,6 +16,8 @@ type ListUsersControllerPaginationInput = PaginationInputDTO<
   ListUsersControllerFilters
 >;
 
+PAREI AQUI, TEM QUE CORRIGIR OS TIPOS DO INPUT COM PAGINATION, VERIFICAR QUAL A MELHOR SOLUÇÃO, SE É PASSAR UM TIPO PARA SERVIR TANTO PARA AS PROPS RETORNADA QUANTO PARA O ORDER_BY E ETC...
+
 type IUserListController = IAuthenticatedController<
   ListUsersControllerPaginationInput,
   {},
