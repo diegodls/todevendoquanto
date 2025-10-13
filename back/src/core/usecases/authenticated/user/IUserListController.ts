@@ -1,5 +1,5 @@
 import {
-  PaginationInputDTO,
+  PaginationInputParamsDTO,
   PaginationOutputDTO,
 } from "@/application/dtos/shared/PaginationDTO";
 import {
@@ -11,7 +11,7 @@ import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedControll
 
 type ListUsersControllerFilters = UserValidPropsToFilter;
 
-type ListUsersControllerPaginationInput = PaginationInputDTO<
+type ListUsersControllerPaginationInput = PaginationInputParamsDTO<
   UserValidPropsToOrderBy,
   ListUsersControllerFilters
 >;

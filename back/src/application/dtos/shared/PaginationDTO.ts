@@ -4,11 +4,12 @@ type GenericOrderBy<TModel> = {
   [K in keyof TModel]?: PaginationDirection;
 };
 
-type PaginationInputDTO<T> = {
+type PaginationInputParamsDTO<T extends string> = {
   page?: number;
   page_size?: number;
-  order_by?: keyof T;
-} & T;
+  order?: PaginationDirection;
+  order_by?: T;
+};
 
 type PaginationOutputMetaDTO = {
   page: number;
@@ -27,6 +28,6 @@ type PaginationOutputDTO<T> = {
 export {
   GenericOrderBy,
   PaginationDirection,
-  PaginationInputDTO,
+  PaginationInputParamsDTO,
   PaginationOutputDTO,
 };
