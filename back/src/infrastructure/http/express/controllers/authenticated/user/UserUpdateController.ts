@@ -12,8 +12,8 @@ import {
 import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
 import { IUserUpdateController } from "@/core/usecases/authenticated/user/IUserUpdateController";
 
-import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserUpdateBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserProfileUpdateBodySchema";
+import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
 
 class UserUpdateController implements IUserUpdateController {
   constructor(readonly service: IUserService) {}

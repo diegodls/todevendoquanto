@@ -10,8 +10,8 @@ import {
 import { InternalError } from "@/core/shared/utils/errors/ApiError";
 import { userControllerErrorCodes } from "@/core/shared/utils/errors/codes/user/userErrorCodes";
 import { IUserSignInController } from "@/core/usecases/public/user/IUserSignInController";
-import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserSignInBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserSignInBodySchema";
+import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
 
 class UserSignInController implements IUserSignInController {
   constructor(private readonly service: UserService) {}

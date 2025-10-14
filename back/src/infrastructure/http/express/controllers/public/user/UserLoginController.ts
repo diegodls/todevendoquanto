@@ -8,8 +8,8 @@ import {
   PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { IUserLoginController } from "@/core/usecases/public/user/IUserLoginController";
-import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserLoginBodySchema";
+import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
 
 class UserLoginController implements IUserLoginController {
   constructor(private readonly service: UserService) {}

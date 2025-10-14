@@ -1,6 +1,6 @@
 import { UserUpdateInputDTO } from "@/application/dtos/user/UserUpdateDTO";
 import { UserRole } from "@/core/domain/User";
-import { StringToBoolean } from "@/infrastructure/validation/zod/shared/StringToBoolean";
+import { StringToBoolean } from "@/infrastructure/validation/zod/shared/helpers/StringToBoolean";
 import { z } from "zod";
 
 const UserUpdateBodySchema = z.object({

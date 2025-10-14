@@ -4,8 +4,7 @@ import {
 } from "@/application/dtos/shared/PaginationDTO";
 import {
   User,
-  UserValidPropsToFilter,
-  UserValidPropsToOrderBy,
+
 } from "@/core/domain/User";
 import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 

@@ -4,7 +4,7 @@ type GenericOrderBy<TModel> = {
   [K in keyof TModel]?: PaginationDirection;
 };
 
-type PaginationInputParamsDTO<T extends string> = {
+type PaginationInputParamsDTO<T extends string = string> = {
   page?: number;
   page_size?: number;
   order?: PaginationDirection;

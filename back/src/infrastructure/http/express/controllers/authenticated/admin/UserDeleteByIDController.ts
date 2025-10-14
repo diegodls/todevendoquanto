@@ -9,8 +9,8 @@ import {
 } from "@/core/shared/types/HttpRequestResponse";
 import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
 import { IUserDeleteByIDController } from "@/core/usecases/authenticated/user/IUserDeleteByIDController";
-import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserDeleteByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/admin/UserDeleteByIDParamsSchema";
+import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
 
 class UserDeleteByIDController implements IUserDeleteByIDController {
   constructor(private readonly service: AdminService) {}

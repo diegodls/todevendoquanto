@@ -17,14 +17,6 @@ enum UserRole {
   ADMIN = "ADMIN",
 }
 
-type UserValidPropsToChange = Partial<
-  Pick<User, "name" | "email" | "role" | "is_active">
->;
-
-type UserValidPropsToFilter = Partial<Omit<User, "id" | "password">>;
-
-type UserValidPropsToOrderBy = Partial<Omit<User, "password">>;
-
 class User {
   public readonly id: string = "";
   public name: string = "";
@@ -44,10 +36,24 @@ class User {
   }
 }
 
+type UserValidProps = Partial<Omit<User, "id" | "password">>;
+
+type UserInvalidProps = Partial<Pick<User, "id" | "password">>;
+
+type UserValidKeysToChange = keyof UserValidProps;
+
+type UserValidKeysToFilter = keyof UserValidProps;
+type UserInvalidKeysToFilter = keyof UserInvalidProps;
+
+type UserValidKeysToOrderBy = keyof UserValidProps;
+type UserInvalidKeysToOrderBy = keyof UserInvalidProps;
+
 export {
   User,
+  UserInvalidKeysToFilter,
+  UserInvalidKeysToOrderBy,
   UserRole,
-  UserValidPropsToChange,
-  UserValidPropsToFilter,
-  UserValidPropsToOrderBy,
+  UserValidKeysToChange,
+  UserValidKeysToFilter,
+  UserValidKeysToOrderBy,
 };

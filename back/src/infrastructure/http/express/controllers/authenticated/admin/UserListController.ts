@@ -9,8 +9,8 @@ import {
   IUserListController,
   ListUsersControllerPaginationInput,
 } from "@/core/usecases/authenticated/user/IUserListController";
-import { requestValidation } from "@/infrastructure/validation/zod/RequestValidation";
 import { UserListQuerySchema } from "@/infrastructure/validation/zod/schemas/admin/UserListQuerySchema";
+import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
 
 class UserListController implements IUserListController {
   constructor(private readonly service: AdminService) {}
