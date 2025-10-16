@@ -1,4 +1,4 @@
-import { PaginationOutputDTO } from "@/application/dtos/shared/PaginationDTO";
+import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
 
@@ -11,7 +11,7 @@ interface IAdminService {
   listUsers(
     adminId: User["id"],
     input: ListUsersControllerPaginationInput
-  ): Promise<PaginationOutputDTO<User>>;
+  ): Promise<PaginatedResponse<User>>;
 }
 
 export { IAdminService };

@@ -1,4 +1,4 @@
-import { PaginationOutputDTO } from "@/application/dtos/shared/PaginationDTO";
+import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
 
@@ -7,7 +7,7 @@ interface IAdminRepository {
   deleteUserById(id: User["id"]): Promise<User | null>;
   listUsers(
     input: ListUsersControllerPaginationInput
-  ): Promise<PaginationOutputDTO<User>>;
+  ): Promise<PaginatedResponse<User>>;
 }
 
 export { IAdminRepository };

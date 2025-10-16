@@ -5,10 +5,10 @@ import {
 } from "@/core/shared/utils/errors/ApiError";
 import { adminServiceErrorCodes } from "@/core/shared/utils/errors/codes/admin/adminErrorCodes";
 
-import { PaginationOutputDTO } from "@/application/dtos/shared/PaginationDTO";
+import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
-import { IAdminService } from "./IAdminService";
 import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
+import { IAdminService } from "./IAdminService";
 
 class AdminService implements IAdminService {
   constructor(private readonly repository: IAdminRepository) {}
@@ -65,7 +65,7 @@ class AdminService implements IAdminService {
   public async listUsers(
     adminId: User["id"],
     input: ListUsersControllerPaginationInput
-  ): Promise<PaginationOutputDTO<User>> {
+  ): Promise<PaginatedResponse<User>> {
     this.isAdmin(adminId);
 
     const output = await this.repository.listUsers(input);

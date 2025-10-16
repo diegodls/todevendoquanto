@@ -33,7 +33,7 @@ type CorrectTypeForPart<
     : never
   : never;
 
-const requestValidation = <TargetType>(
+export const requestValidation = <TargetType>(
   requestPart: TRequestParts,
   request: CorrectTypeForPart<TargetType, TRequestParts, TRequest>,
   schema: ZodSchema<TargetType>
@@ -52,5 +52,3 @@ const requestValidation = <TargetType>(
 
   return result.data;
 };
-
-export { requestValidation };

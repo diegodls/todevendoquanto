@@ -11,18 +11,25 @@ export enum UserRole {
   ADMIN = "ADMIN",
 }
 */
-
+/*
 enum UserRole {
   BASIC = "BASIC",
   ADMIN = "ADMIN",
 }
+*/
 
+const UserRole = {
+  BASIC: "BASIC",
+  ADMIN: "ADMIN",
+} as const;
+
+type TUserRole = (typeof UserRole)[keyof typeof UserRole];
 class User {
   public readonly id: string = "";
   public name: string = "";
   public email: string = "";
   public password: string = "";
-  public role: UserRole = UserRole.BASIC;
+  public role: TUserRole = UserRole.BASIC;
   public created_at: Date = new Date();
   public updated_at: Date = new Date();
   public is_active: boolean = true;
@@ -40,20 +47,4 @@ type UserValidProps = Partial<Omit<User, "id" | "password">>;
 
 type UserInvalidProps = Partial<Pick<User, "id" | "password">>;
 
-type UserValidKeysToChange = keyof UserValidProps;
-
-type UserValidKeysToFilter = keyof UserValidProps;
-type UserInvalidKeysToFilter = keyof UserInvalidProps;
-
-type UserValidKeysToOrderBy = keyof UserValidProps;
-type UserInvalidKeysToOrderBy = keyof UserInvalidProps;
-
-export {
-  User,
-  UserInvalidKeysToFilter,
-  UserInvalidKeysToOrderBy,
-  UserRole,
-  UserValidKeysToChange,
-  UserValidKeysToFilter,
-  UserValidKeysToOrderBy,
-};
+export { User, UserInvalidProps, UserRole, UserValidProps };

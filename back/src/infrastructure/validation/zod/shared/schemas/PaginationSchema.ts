@@ -1,5 +1,7 @@
-import { BadRequestError } from "@/core/shared/utils/errors/ApiError";
-
+import {
+  PaginationProps,
+  PaginationQueryInput,
+} from "@/application/dtos/shared/PaginationDTO";
 import { z } from "zod";
 
 /* // ! 
@@ -42,7 +44,7 @@ function createPaginationSchema<
 >(
   orderByValues: TOrderByValues,
   defaultOrderBy: TOrderBy
-): z.ZodType<PaginationInputParamsDTO<TOrderBy>> {
+): z.ZodType<PaginationParams<TOrderBy>> {
   return z.object({
     page: z.coerce.number().int().positive().default(1),
     page_size: z.coerce.number().int().positive().max(100).default(20),
@@ -52,10 +54,11 @@ function createPaginationSchema<
 }
 */
 
-function createPaginationSchema<T extends z.AnyZodObject>(
+export function createPaginationSchema<T extends z.AnyZodObject, F>(
   filterSchema: T,
   defaultOrderBy: keyof z.infer<T>
 ) {
+  /*
   type FilterKeys = keyof z.infer<T>;
 
   const validKeys = Object.keys(filterSchema.shape) as [
@@ -69,14 +72,56 @@ function createPaginationSchema<T extends z.AnyZodObject>(
     );
   }
 
-  const paginationSchema = z.object({
-    page: z.coerce.number().int().positive().default(1),
-    page_size: z.coerce.number().int().positive().max(100).default(20),
-    order: z.enum(["asc", "desc"]).optional().default("desc"),
-    order_by: z.string().default(defaultOrderBy as string),
-  });
+  const validOrderKeys = validKeys as [string, ...string[]];
+*/
 
+  const stringToOptionalNumber = z
+    .string()
+    .optional()
+    .transform((s) => (s ? Number.parseInt(s, 10) : undefined));
+
+  const paginationSchema = z
+    .object({
+      page: stringToOptionalNumber,
+      /*
+      page_size: z
+        .string()
+        .transform(Number)
+        .pipe(z.number().int().positive().max(100).default(20)),
+
+      order: z.enum(["asc", "desc"]).optional().default("desc"),
+
+      order_by: z.enum(validOrderKeys).default("name"),
+
+      order_by: z.string().default(defaultOrderBy as string),
+      */
+    })
+    .strip() satisfies z.ZodType<PaginationProps, any, PaginationQueryInput>;
+  //.strip();
   return paginationSchema.merge(filterSchema);
 }
 
-export { createPaginationSchema };
+const stringToOptionalNumber = z
+  .string()
+  .optional()
+  .transform((s) => (s ? Number.parseInt(s, 10) : undefined));
+
+const PaginationSchema = z.object({
+  page: stringToOptionalNumber,
+  /*
+      page_size: z
+        .string()
+        .transform(Number)
+        .pipe(z.number().int().positive().max(100).default(20)),
+
+      order: z.enum(["asc", "desc"]).optional().default("desc"),
+
+      order_by: z.enum(validOrderKeys).default("name"),
+
+      order_by: z.string().default(defaultOrderBy as string),
+      */
+}) satisfies z.ZodObject<
+  z.infer<z.ZodType<PaginationProps>>,
+  "strip",
+  z.ZodType<PaginationQueryInput>
+>;

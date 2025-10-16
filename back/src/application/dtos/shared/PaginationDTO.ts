@@ -1,17 +1,27 @@
-type PaginationDirection = "asc" | "desc";
+import { PaginationPropsToQueryString } from "@/core/shared/types/helpers/PaginationPropsToQueryString";
 
-type GenericOrderBy<TModel> = {
-  [K in keyof TModel]?: PaginationDirection;
-};
+const PaginationDirection = {
+  asc: "asc",
+  desc: "desc",
+} as const;
 
-type PaginationInputParamsDTO<T extends string = string> = {
+export type TPaginationDirection =
+  (typeof PaginationDirection)[keyof typeof PaginationDirection];
+
+//export type PaginationParams<TOrderBy extends string = string> = {
+export type PaginationProps = {
   page?: number;
+  /*
   page_size?: number;
-  order?: PaginationDirection;
-  order_by?: T;
+  order?: TPaginationDirection;
+  order_by?: TOrderBy;
+  */
 };
 
-type PaginationOutputMetaDTO = {
+export type PaginationQueryInput =
+  PaginationPropsToQueryString<PaginationProps>;
+
+type PaginatedResponseMeta = {
   page: number;
   page_size: number;
   has_next_page: boolean;
@@ -20,14 +30,7 @@ type PaginationOutputMetaDTO = {
   total_items: number;
 };
 
-type PaginationOutputDTO<T> = {
+export type PaginatedResponse<T> = {
   data: T[];
-  meta: PaginationOutputMetaDTO;
-};
-
-export {
-  GenericOrderBy,
-  PaginationDirection,
-  PaginationInputParamsDTO,
-  PaginationOutputDTO,
+  meta: PaginatedResponseMeta;
 };

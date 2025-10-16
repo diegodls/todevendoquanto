@@ -1,4 +1,5 @@
-import { PaginationOutputDTO } from "@/application/dtos/shared/PaginationDTO";
+import { UserListRequestFiltersProps } from "@/application/dtos/admin/UserListDTO";
+import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAdminRepository } from "@/core/ports/repositories/IAdminRepository";
 import {
@@ -6,7 +7,6 @@ import {
   PrismaGenerated,
 } from "@/core/shared/utils/orm/prisma/prismaClient";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prismaEntityUserParser";
-import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
 //import { Prisma } from "@prisma/client";
 //import { PrismaClientGenerated } from "../../utils/orm/prisma/prismaClient";
 
@@ -26,8 +26,8 @@ class AdminRepositoryPrisma implements IAdminRepository {
   }
 
   public async listUsers(
-    input: ListUsersControllerPaginationInput
-  ): Promise<PaginationOutputDTO<User>> {
+    input: UserListRequestFiltersProps
+  ): Promise<PaginatedResponse<User>> {
     let customWhere: PrismaGenerated.UserWhereInput = {};
 
     const custom_current_page = input.page || 1;
@@ -70,13 +70,13 @@ class AdminRepositoryPrisma implements IAdminRepository {
         where: customWhere,
         skip: (custom_current_page - 1) * custom_current_page_size,
         take: custom_current_page_size,
-        orderBy: input.order_by,
+        orderBy: { [input.order_by]: input.order },
       }),
     ]);
 
     const total_pages = Math.ceil(total_items / custom_current_page_size);
 
-    let output: PaginationOutputDTO<User> = {
+    let output: PaginatedResponse<User> = {
       data: [],
       meta: {
         page: custom_current_page,
