@@ -2,18 +2,15 @@ import {
   PaginationProps,
   PaginationQueryInput,
 } from "@/application/dtos/shared/PaginationDTO";
-import { UserValidProps } from "@/core/domain/User";
-import { PaginationPropsToQueryString } from "@/core/shared/types/helpers/PaginationPropsToQueryString";
+import { PropsToString } from "@/core/shared/types/helpers/PropsToString";
 
-export type UserFiltersPropsInput = Pick<UserValidProps, "name">;
+export type UserFiltersPropsInput = { name?: string }; // UserFiltersPropsInput
 
 export type UserFiltersPropsKeys = keyof UserFiltersPropsInput;
 
-export type UserListRequestFiltersProps = PaginationProps &
-  UserFiltersPropsInput;
+export type UserListRequestDTO = PaginationProps & UserFiltersPropsInput;
 
-export type UserFiltersQueryInput =
-  PaginationPropsToQueryString<UserFiltersPropsInput>;
+export type UserFiltersQueryInput = PropsToString<UserFiltersPropsInput>;
 
 export type UserListRequestPaginatedQuery = PaginationQueryInput &
   UserFiltersQueryInput;

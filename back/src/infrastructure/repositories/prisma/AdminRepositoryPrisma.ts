@@ -1,4 +1,4 @@
-import { UserListRequestFiltersProps } from "@/application/dtos/admin/UserListDTO";
+import { UserListRequestDTO } from "@/application/dtos/admin/UserListDTO";
 import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAdminRepository } from "@/core/ports/repositories/IAdminRepository";
@@ -26,7 +26,7 @@ class AdminRepositoryPrisma implements IAdminRepository {
   }
 
   public async listUsers(
-    input: UserListRequestFiltersProps
+    input: UserListRequestDTO
   ): Promise<PaginatedResponse<User>> {
     let customWhere: PrismaGenerated.UserWhereInput = {};
 

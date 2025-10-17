@@ -1,4 +1,4 @@
-import { PaginationPropsToQueryString } from "@/core/shared/types/helpers/PaginationPropsToQueryString";
+import { PropsToString } from "@/core/shared/types/helpers/PropsToString";
 
 const PaginationDirection = {
   asc: "asc",
@@ -18,8 +18,7 @@ export type PaginationProps = {
   */
 };
 
-export type PaginationQueryInput =
-  PaginationPropsToQueryString<PaginationProps>;
+export type PaginationQueryInput = PropsToString<PaginationProps>;
 
 type PaginatedResponseMeta = {
   page: number;
