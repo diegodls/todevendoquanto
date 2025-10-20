@@ -7,10 +7,8 @@ import {
   AuthenticatedHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 import { IUserListController } from "@/core/usecases/authenticated/user/IUserListController";
-import { UserListQuerySchema } from "@/infrastructure/validation/zod/schemas/admin/UserListPaginationSchema";
-import { PaginationSchema } from "@/infrastructure/validation/zod/shared/schemas/PaginationSchema";
+import { FinalUserListPaginationSchema } from "@/infrastructure/validation/zod/schemas/admin/UserListPaginationSchema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
-import { PropsToString } from '@/core/shared/types/helpers/PropsToString';
 
 class UserListController implements IUserListController {
   constructor(private readonly service: AdminService) {}
@@ -25,20 +23,13 @@ class UserListController implements IUserListController {
     console.log("");
     console.log("****request****");
     console.log(request.query);
-    console.log("");
-    console.log(`page?: ${request.query?.page}`);
-    console.log("");
 
-    const inputList = requestValidation("query", request, UserListQuerySchema);
+    const input = requestValidation(
+      "query",
+      request,
+      FinalUserListPaginationSchema
+    );
 
-    const input = requestValidation("query", request, PaginationSchema);
-
-    PAREI AQUI, TEM QUE TESTAR AS MUDANÇAS NO "requestValidation", SE ESTÁ RETORNANDO AS PROPS CONVERTIDAS ("string > number")
-    E REFAZER AS PropsToString
-    E TESTAR O MERGE DOS SCHEMAS
-    E SE É UAM BOA DEIXAR O "requestValidation" DO JEITO QUE ESTÁ
-
-    
     console.log("");
     console.log("🔴🔴🔴🔴");
     console.log("");

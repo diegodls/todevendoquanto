@@ -2,9 +2,10 @@ import {
   PaginationProps,
   PaginationQueryInput,
 } from "@/application/dtos/shared/PaginationDTO";
+import { UserValidProps } from "@/core/domain/User";
 import { PropsToString } from "@/core/shared/types/helpers/PropsToString";
 
-export type UserFiltersPropsInput = { name?: string }; // UserFiltersPropsInput
+export type UserFiltersPropsInput = UserValidProps;
 
 export type UserFiltersPropsKeys = keyof UserFiltersPropsInput;
 
