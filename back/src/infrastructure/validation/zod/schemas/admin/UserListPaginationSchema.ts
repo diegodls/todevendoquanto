@@ -17,8 +17,12 @@ export const UserListQuerySchema = z
   UserFiltersQueryInput
 >;
 
-export const FinalUserListPaginationSchema =
-  mergeWithPagination(UserListQuerySchema);
+const defaultOrderKey = UserListQuerySchema.shape;
+
+export const FinalUserListPaginationSchema = mergeWithPagination(
+  UserListQuerySchema,
+  "name"
+);
 
 FinalUserListPaginationSchema satisfies z.ZodType<
   UserListRequestDTO,
