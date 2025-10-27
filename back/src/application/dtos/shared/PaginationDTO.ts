@@ -4,7 +4,6 @@ export const PaginationDirection = ["asc", "desc"] as const;
 
 export type TPaginationDirection = (typeof PaginationDirection)[number];
 
-//export type PaginationProps = {
 export type PaginationProps<TOrderBy extends string = string> = {
   page?: number;
   page_size?: number;
