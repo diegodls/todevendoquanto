@@ -7,8 +7,8 @@ import { adminServiceErrorCodes } from "@/core/shared/utils/errors/codes/admin/a
 
 import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
-import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
 import { IAdminService } from "./IAdminService";
+import { UserListRequestDTO } from "@/application/dtos/admin/UserListDTO";
 
 class AdminService implements IAdminService {
   constructor(private readonly repository: IAdminRepository) {}
@@ -64,7 +64,7 @@ class AdminService implements IAdminService {
 
   public async listUsers(
     adminId: User["id"],
-    input: ListUsersControllerPaginationInput
+    input: UserListRequestDTO
   ): Promise<PaginatedResponse<User>> {
     this.isAdmin(adminId);
 

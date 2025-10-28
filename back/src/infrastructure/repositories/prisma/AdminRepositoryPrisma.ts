@@ -30,38 +30,34 @@ class AdminRepositoryPrisma implements IAdminRepository {
   ): Promise<PaginatedResponse<User>> {
     let customWhere: PrismaGenerated.UserWhereInput = {};
 
-    const custom_current_page = input.page || 1;
+    const { page, page_size, order, order_by, ...filtersOptions } = input;
 
-    const custom_current_page_size = input.page_size || 10;
+    const paginationOptions = { page, page_size, order, order_by };
 
-    if (input.name) {
+    const custom_current_page = page || 1;
+
+    const custom_current_page_size = page_size || 10;
+
+    if (filtersOptions.name) {
       customWhere.name = {
-        contains: input.name,
+        contains: filtersOptions.name,
         mode: "insensitive",
       };
     }
 
-    if (input.email) {
+    if (filtersOptions.email) {
       customWhere.email = {
-        contains: input.email,
+        contains: filtersOptions.email,
         mode: "insensitive",
       };
     }
 
-    if (input.role) {
-      customWhere.role = input.role;
+    if (filtersOptions.role) {
+      customWhere.role = filtersOptions.role;
     }
 
-    if (input.created_at) {
-      customWhere.created_at = input.created_at;
-    }
-
-    if (input.updated_at) {
-      customWhere.updated_at = input.updated_at;
-    }
-
-    if (input.is_active !== undefined) {
-      customWhere.is_active = input.is_active;
+    if (filtersOptions.is_active !== undefined) {
+      customWhere.is_active = filtersOptions.is_active;
     }
 
     const [total_items, usersList] = await Promise.all([
@@ -70,7 +66,7 @@ class AdminRepositoryPrisma implements IAdminRepository {
         where: customWhere,
         skip: (custom_current_page - 1) * custom_current_page_size,
         take: custom_current_page_size,
-        orderBy: { [input.order_by]: input.order },
+        orderBy: { [order_by!]: order },
       }),
     ]);
 

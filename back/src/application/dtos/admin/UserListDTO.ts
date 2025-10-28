@@ -21,9 +21,8 @@ export type UserListQueryProps = UserValidQueryProps & {
 };
 
 export type UserListQueryInput = PropsToString<UserListQueryProps>;
-// ! 👆 alterar aqui, tem que vir created/updated_at_from/to
 
 export type UserListRequestPaginatedQuery = PaginationQueryInput &
   UserListQueryInput;
 
-export type UserListRequestDTO = PaginationProps & UserListOrderProps;
+export type UserListRequestDTO = PaginationProps & UserListQueryProps;
