@@ -23,7 +23,7 @@ const UserRole = {
   ADMIN: "ADMIN",
 } as const;
 
-type TUserRole = (typeof UserRole)[keyof typeof UserRole];
+export type TUserRole = (typeof UserRole)[keyof typeof UserRole];
 class User {
   public readonly id: string = "";
   public name: string = "";

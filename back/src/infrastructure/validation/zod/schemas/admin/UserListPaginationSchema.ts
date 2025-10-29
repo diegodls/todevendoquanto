@@ -21,7 +21,12 @@ const createUserSchema = createExactSchema<UserListQueryProps>();
 const UserListQuerySchema = createUserSchema({
   name: z.string().min(2).max(255).optional(),
   email: z.string().email().optional(),
-  role: z.nativeEnum(UserRole).default("BASIC").optional(),
+  roles: z
+    .string()
+    .transform((value) => value.split(","))
+    .pipe(z.array(z.nativeEnum(UserRole)))
+    .default("BASIC")
+    .optional(),
   is_active: z.string().pipe(z.coerce.boolean()).optional(),
   created_at_from: DateSchema.optional(),
   created_at_to: DateSchema.optional(),

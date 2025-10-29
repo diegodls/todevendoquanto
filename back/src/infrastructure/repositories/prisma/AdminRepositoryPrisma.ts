@@ -1,4 +1,7 @@
-import { UserListRequestDTO } from "@/application/dtos/admin/UserListDTO";
+import {
+  UserListQueryProps,
+  UserListRequestDTO,
+} from "@/application/dtos/admin/UserListDTO";
 import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAdminRepository } from "@/core/ports/repositories/IAdminRepository";
@@ -7,6 +10,7 @@ import {
   PrismaGenerated,
 } from "@/core/shared/utils/orm/prisma/prismaClient";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prismaEntityUserParser";
+import { filterMapper } from "@/infrastructure/repositories/prisma/helpers/FilterMapper";
 //import { Prisma } from "@prisma/client";
 //import { PrismaClientGenerated } from "../../utils/orm/prisma/prismaClient";
 
@@ -28,16 +32,34 @@ class AdminRepositoryPrisma implements IAdminRepository {
   public async listUsers(
     input: UserListRequestDTO
   ): Promise<PaginatedResponse<User>> {
-    let customWhere: PrismaGenerated.UserWhereInput = {};
+    const customWhere: PrismaGenerated.UserWhereInput = {};
 
     const { page, page_size, order, order_by, ...filtersOptions } = input;
 
-    const paginationOptions = { page, page_size, order, order_by };
+    //const paginationOptions = { page, page_size, order, order_by };
 
     const custom_current_page = page || 1;
 
     const custom_current_page_size = page_size || 10;
 
+    for (const [key, value] of Object.entries(filterMapper)) {
+      const filterKey = key as keyof UserListQueryProps;
+
+      if (
+        filtersOptions[filterKey] !== undefined &&
+        filtersOptions[filterKey] !== null &&
+        filtersOptions[filterKey] !== ""
+      ) {
+        const mapperFunction = filterMapper[filterKey];
+
+        if (mapperFunction) {
+          const whereClause = (mapperFunction as any)(value);
+
+          Object.assign(customWhere, whereClause);
+        }
+      }
+    }
+    /*
     if (filtersOptions.name) {
       customWhere.name = {
         contains: filtersOptions.name,
@@ -52,13 +74,16 @@ class AdminRepositoryPrisma implements IAdminRepository {
       };
     }
 
-    if (filtersOptions.role) {
-      customWhere.role = filtersOptions.role;
+    if (filtersOptions.roles) {
+      customWhere.role = {
+        in: filtersOptions.roles,
+      };
     }
 
     if (filtersOptions.is_active !== undefined) {
       customWhere.is_active = filtersOptions.is_active;
     }
+*/
 
     const [total_items, usersList] = await Promise.all([
       this.ormClient.user.count({ where: customWhere }),

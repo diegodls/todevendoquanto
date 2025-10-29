@@ -2,16 +2,16 @@ import {
   PaginationProps,
   PaginationQueryInput,
 } from "@/application/dtos/shared/PaginationDTO";
-import { UserValidProps } from "@/core/domain/User";
+import { TUserRole, UserValidProps } from "@/core/domain/User";
 import { PropsToString } from "@/core/shared/types/helpers/PropsToString";
 
 export type UserListOrderProps = UserValidProps;
 
-export type UserValidQueryProps = Partial<
-  Pick<UserValidProps, "name" | "email" | "is_active" | "role">
->;
-
 export type UserListOrderPropsKeys = keyof UserListOrderProps;
+
+export type UserValidQueryProps = Partial<
+  Pick<UserValidProps, "name" | "email" | "is_active"> & { roles?: TUserRole[] }
+>;
 
 export type UserListQueryProps = UserValidQueryProps & {
   created_at_from?: Date;
