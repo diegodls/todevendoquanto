@@ -42,7 +42,7 @@ class AdminRepositoryPrisma implements IAdminRepository {
 
     const custom_current_page_size = page_size || 10;
 
-    for (const [key, value] of Object.entries(filterMapper)) {
+    for (const key in filterMapper) {
       const filterKey = key as keyof UserListQueryProps;
 
       if (
@@ -50,40 +50,27 @@ class AdminRepositoryPrisma implements IAdminRepository {
         filtersOptions[filterKey] !== null &&
         filtersOptions[filterKey] !== ""
       ) {
+        const value = filtersOptions[filterKey];
         const mapperFunction = filterMapper[filterKey];
+
+        console.log(`${key}: ${value}`);
 
         if (mapperFunction) {
           const whereClause = (mapperFunction as any)(value);
-
+          console.log("");
+          console.log(`where_clause_valid: ${filterKey} : ${value}`);
+          console.log(`${whereClause}`);
           Object.assign(customWhere, whereClause);
         }
       }
     }
-    /*
-    if (filtersOptions.name) {
-      customWhere.name = {
-        contains: filtersOptions.name,
-        mode: "insensitive",
-      };
-    }
 
-    if (filtersOptions.email) {
-      customWhere.email = {
-        contains: filtersOptions.email,
-        mode: "insensitive",
-      };
-    }
-
-    if (filtersOptions.roles) {
-      customWhere.role = {
-        in: filtersOptions.roles,
-      };
-    }
-
-    if (filtersOptions.is_active !== undefined) {
-      customWhere.is_active = filtersOptions.is_active;
-    }
-*/
+    console.log("");
+    console.log("customWhere");
+    console.log(customWhere);
+    console.log("");
+    console.log(customWhere.role);
+    console.log("");
 
     const [total_items, usersList] = await Promise.all([
       this.ormClient.user.count({ where: customWhere }),

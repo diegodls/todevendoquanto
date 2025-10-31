@@ -1,14 +1,6 @@
 import { UserListQueryProps } from "@/application/dtos/admin/UserListDTO";
 import { PrismaGenerated } from "@/core/shared/utils/orm/prisma/prismaClient";
 
-/*
-type TFilterMapper = {
-  [K in keyof UserListQueryProps]?: (
-    value: NonNullable<UserListQueryProps[K]>
-  ) => PrismaGenerated.UserWhereInput;
-};
-*/
-
 type TFilterMapper = {
   [K in keyof UserListQueryProps]?: (
     value: NonNullable<UserListQueryProps[K]>
@@ -33,9 +25,5 @@ export const filterMapper: TFilterMapper = {
       in: value,
     },
   }),
-  is_active: (value) => ({
-    is_active: {
-      equals: value,
-    },
-  }),
+  is_active: (is_active) => ({ is_active }),
 };

@@ -1,19 +1,18 @@
 import { z } from "zod";
 
-const trulyFields = ["true", "yes", "on", "1"];
+const trulyFields = new Set(["true", "yes", "on", "1"]);
 
 // ! only work with "as", "satisfies" throw error
 
-const StringToBoolean = z
-  .union([z.string(), z.boolean()])
+export const StringToBoolean = z
+  .string()
   .transform((val) => {
     if (typeof val == "boolean") return val;
 
-    if (trulyFields.includes(val.toLowerCase())) {
+    if (trulyFields.has(val.toLowerCase())) {
       return true;
     }
     return false;
   })
-  .pipe(z.boolean());
-
-export { StringToBoolean };
+  .pipe(z.boolean())
+  .optional();
