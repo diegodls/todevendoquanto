@@ -15,6 +15,8 @@ import { userListFilterMapper } from "@/infrastructure/repositories/prisma/utils
 //import { Prisma } from "@prisma/client";
 //import { PrismaClientGenerated } from "../../utils/orm/prisma/prismaClient";
 
+type PrismaUserWhereInput = PrismaGenerated.UserWhereInput;
+
 class AdminRepositoryPrisma implements IAdminRepository {
   constructor(private readonly ormClient: PrismaClientGenerated) {}
 
@@ -39,9 +41,9 @@ class AdminRepositoryPrisma implements IAdminRepository {
 
     const custom_current_page_size = page_size || 10;
 
-    const customWhere: PrismaGenerated.UserWhereInput = mapFiltersToPrisma<
+    const customWhere: PrismaUserWhereInput = mapFiltersToPrisma<
       UserListQueryProps,
-      PrismaGenerated.UserWhereInput
+      PrismaUserWhereInput
     >(filtersOptions, userListFilterMapper);
 
     const [total_items, usersList] = await Promise.all([
