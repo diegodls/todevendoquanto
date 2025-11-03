@@ -1,3 +1,8 @@
+/**
+ * Function to make the prisma "where" over the filters object
+ * No need to use IF to check if a props exists to add on where
+ */
+
 export type GenericFilterMapper<
   TFilterObject extends object,
   TPrismaWhere extends object
