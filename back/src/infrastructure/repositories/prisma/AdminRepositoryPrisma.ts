@@ -10,7 +10,8 @@ import {
   PrismaGenerated,
 } from "@/core/shared/utils/orm/prisma/prismaClient";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prismaEntityUserParser";
-import { filterMapper } from "@/infrastructure/repositories/prisma/helpers/FilterMapper";
+import { mapFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils/mapFilterToPrismaWhere";
+import { userListFilterMapper } from "@/infrastructure/repositories/prisma/utils/mappers/UserListFilterMapper";
 //import { Prisma } from "@prisma/client";
 //import { PrismaClientGenerated } from "../../utils/orm/prisma/prismaClient";
 
@@ -32,45 +33,16 @@ class AdminRepositoryPrisma implements IAdminRepository {
   public async listUsers(
     input: UserListRequestDTO
   ): Promise<PaginatedResponse<User>> {
-    const customWhere: PrismaGenerated.UserWhereInput = {};
-
     const { page, page_size, order, order_by, ...filtersOptions } = input;
-
-    //const paginationOptions = { page, page_size, order, order_by };
 
     const custom_current_page = page || 1;
 
     const custom_current_page_size = page_size || 10;
 
-    for (const key in filterMapper) {
-      const filterKey = key as keyof UserListQueryProps;
-
-      if (
-        filtersOptions[filterKey] !== undefined &&
-        filtersOptions[filterKey] !== null &&
-        filtersOptions[filterKey] !== ""
-      ) {
-        const value = filtersOptions[filterKey];
-        const mapperFunction = filterMapper[filterKey];
-
-        console.log(`${key}: ${value}`);
-
-        if (mapperFunction) {
-          const whereClause = (mapperFunction as any)(value);
-          console.log("");
-          console.log(`where_clause_valid: ${filterKey} : ${value}`);
-          console.log(`${whereClause}`);
-          Object.assign(customWhere, whereClause);
-        }
-      }
-    }
-
-    console.log("");
-    console.log("customWhere");
-    console.log(customWhere);
-    console.log("");
-    console.log(customWhere.role);
-    console.log("");
+    const customWhere: PrismaGenerated.UserWhereInput = mapFiltersToPrisma<
+      UserListQueryProps,
+      PrismaGenerated.UserWhereInput
+    >(filtersOptions, userListFilterMapper);
 
     const [total_items, usersList] = await Promise.all([
       this.ormClient.user.count({ where: customWhere }),
@@ -78,7 +50,7 @@ class AdminRepositoryPrisma implements IAdminRepository {
         where: customWhere,
         skip: (custom_current_page - 1) * custom_current_page_size,
         take: custom_current_page_size,
-        orderBy: { [order_by!]: order },
+        orderBy: { [order_by || "name"]: order },
       }),
     ]);
 
@@ -95,17 +67,6 @@ class AdminRepositoryPrisma implements IAdminRepository {
         total_pages,
       },
     };
-
-    console.log("");
-    console.log("🔴🔴🔴🔴");
-    console.log("");
-    console.log("****REPOSITORY****");
-    console.log("");
-    console.log(`usersList: ${usersList.length}`);
-    console.log("");
-    console.log(`total_items: ${total_items}`);
-    console.log("");
-    console.log("");
 
     if (usersList.length > 0) {
       const parsedUsersList: User[] = usersList.map((user) => {

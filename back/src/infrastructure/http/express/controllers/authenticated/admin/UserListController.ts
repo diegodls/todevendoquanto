@@ -18,29 +18,11 @@ class UserListController implements IUserListController {
   ): Promise<AuthenticatedHttpResponse<PaginatedResponse<User>>> {
     const adminUser = request.user;
 
-    console.log("");
-    console.log("🔵🔵🔵🔵");
-    console.log("");
-    console.log("****request****");
-    console.log(request.query);
-
     const input = requestValidation(
       "query",
       request,
       FinalUserListPaginationSchema
     );
-
-    console.log("");
-    console.log("🔴🔴🔴🔴");
-    console.log("");
-    console.log("****ZOD-INPUT****");
-    for (const key in input) {
-      console.log(
-        `${key}: ${JSON.stringify(input[key as keyof typeof input])}`
-      );
-    }
-    console.log("");
-    console.log("");
 
     const usersList = await this.service.listUsers(adminUser.sub, input);
 

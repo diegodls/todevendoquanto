@@ -13,12 +13,14 @@ export type UserValidQueryProps = Partial<
   Pick<UserValidProps, "name" | "email" | "is_active"> & { roles?: TUserRole[] }
 >;
 
-export type UserListQueryProps = UserValidQueryProps & {
-  created_at_from?: Date;
-  created_at_to?: Date;
-  updated_at_from?: Date;
-  updated_at_to?: Date;
+type DateFilterProps = {
+  created_after?: Date;
+  created_before?: Date;
+  updated_after?: Date;
+  updated_before?: Date;
 };
+
+export type UserListQueryProps = UserValidQueryProps & DateFilterProps;
 
 export type UserListQueryInput = PropsToString<UserListQueryProps>;
 

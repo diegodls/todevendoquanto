@@ -29,10 +29,10 @@ const UserListQuerySchema = createUserSchema({
     .default("BASIC")
     .optional(),
   is_active: StringToBoolean.optional(),
-  created_at_from: DateSchema.optional(),
-  created_at_to: DateSchema.optional(),
-  updated_at_from: DateSchema.optional(),
-  updated_at_to: DateSchema.optional(),
+  created_after: DateSchema.optional(),
+  created_before: DateSchema.optional(),
+  updated_after: DateSchema.optional(),
+  updated_before: DateSchema.optional(),
 }).strip() satisfies z.ZodType<UserListQueryProps, any, UserListQueryInput>;
 
 export const FinalUserListPaginationSchema = mergeWithPagination(
