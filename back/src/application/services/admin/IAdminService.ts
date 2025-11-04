@@ -1,6 +1,6 @@
+import { UserListRequestDTO } from "@/application/dtos/admin/UserListDTO";
 import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
-import { ListUsersControllerPaginationInput } from "@/core/usecases/authenticated/user/IUserListController";
 
 interface IAdminService {
   deleteUserById(
@@ -10,7 +10,7 @@ interface IAdminService {
 
   listUsers(
     adminId: User["id"],
-    input: ListUsersControllerPaginationInput
+    input: UserListRequestDTO
   ): Promise<PaginatedResponse<User>>;
 }
 

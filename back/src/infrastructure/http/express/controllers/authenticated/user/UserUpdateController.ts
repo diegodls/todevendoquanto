@@ -33,11 +33,7 @@ class UserUpdateController implements IUserUpdateController {
       throw new BadRequestError("Invalid User ID to change");
     }
 
-    const input = requestValidation<UserUpdateInputDTO>(
-      "body",
-      request,
-      UserUpdateBodySchema
-    );
+    const input = requestValidation("body", request, UserUpdateBodySchema);
 
     const updatedUser = await this.service.update(
       userJWT,

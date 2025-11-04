@@ -52,7 +52,7 @@ class AdminRepositoryPrisma implements IAdminRepository {
         where: customWhere,
         skip: (custom_current_page - 1) * custom_current_page_size,
         take: custom_current_page_size,
-        orderBy: { [order_by || "name"]: order },
+        orderBy: { [order_by || "name"]: order || "asc" },
       }),
     ]);
 

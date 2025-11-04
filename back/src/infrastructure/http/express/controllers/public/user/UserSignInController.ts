@@ -19,11 +19,7 @@ class UserSignInController implements IUserSignInController {
   public async handle(
     request: PublicHttpRequest<UserSignInInputDTO>
   ): Promise<PublicHttpResponse<UserSignInOutputDTO>> {
-    const input = requestValidation<UserSignInInputDTO>(
-      "body",
-      request,
-      UserSignInBodySchema
-    );
+    const input = requestValidation("body", request, UserSignInBodySchema);
 
     const createdUser = await this.service.create(input);
 

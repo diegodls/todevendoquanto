@@ -19,7 +19,7 @@ class UserDeleteByIDController implements IUserDeleteByIDController {
   ): Promise<AuthenticatedHttpResponse<UserDeleteByIDOutputDTO>> {
     const adminUser = request.user;
 
-    const input = requestValidation<UserDeleteByIDInputDTO>(
+    const input = requestValidation(
       "params",
       request,
       UserDeleteByIDParamsSchema

@@ -17,11 +17,7 @@ class UserLoginController implements IUserLoginController {
   public async handle(
     request: PublicHttpRequest<UserLoginInputDTO>
   ): Promise<PublicHttpResponse<UserLoginOutputDTO> | null> {
-    const input = requestValidation<UserLoginInputDTO>(
-      "body",
-      request,
-      UserLoginBodySchema
-    );
+    const input = requestValidation("body", request, UserLoginBodySchema);
 
     const token = await this.service.login(input);
 

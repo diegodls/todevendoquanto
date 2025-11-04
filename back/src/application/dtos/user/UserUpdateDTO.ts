@@ -1,8 +1,8 @@
-import { User, UserValidPropsToChange } from "@/core/domain/User";
+import { User, UserValidProps } from "@/core/domain/User";
 
 type UserUpdateParams = { id: User["id"] };
 
-type UserUpdateInputDTO = UserValidPropsToChange;
+type UserUpdateInputDTO = UserValidProps;
 
 type UserUpdateOutputDTO = Omit<User, "password"> | null;
 
