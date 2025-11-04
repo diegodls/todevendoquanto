@@ -5,12 +5,10 @@ import {
 } from "@/application/dtos/user/UserUpdateDTO";
 import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 
-type IUserUpdateController = IAuthenticatedController<
+export type IUserUpdateController = IAuthenticatedController<
   UserUpdateInputDTO,
   {},
   UserUpdateParams,
   {},
   UserUpdateOutputDTO
 >;
-
-export { IUserUpdateController };

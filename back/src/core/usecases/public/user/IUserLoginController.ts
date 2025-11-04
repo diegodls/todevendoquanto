@@ -7,10 +7,8 @@ import {
   PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 
-interface IUserLoginController {
+export interface IUserLoginController {
   handle(
     request: PublicHttpRequest<UserLoginInputDTO>
   ): Promise<PublicHttpResponse<UserLoginOutputDTO> | null>;
 }
-
-export { IUserLoginController };

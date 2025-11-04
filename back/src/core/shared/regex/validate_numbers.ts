@@ -1,3 +1,1 @@
-const VALIDATE_POSITIVE_NUMBERS = /^\d+$/;
-
-export { VALIDATE_POSITIVE_NUMBERS };
+export const VALIDATE_POSITIVE_NUMBERS = /^\d+$/;

@@ -4,7 +4,7 @@ import { IUserRepository } from "@/core/ports/repositories/IUserRepository";
 import { PrismaClientGenerated } from "@/core/shared/utils/orm/prisma/prismaClient";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prismaEntityUserParser";
 
-class UserRepositoryPrisma implements IUserRepository {
+export class UserRepositoryPrisma implements IUserRepository {
   constructor(private readonly ormClient: PrismaClientGenerated) {}
   //! TODO: Maybe unify the findByXYZ and pass the keys of User, to prevent multiples call, like in userService > update
 
@@ -73,5 +73,3 @@ class UserRepositoryPrisma implements IUserRepository {
     return parsedUser;
   }
 }
-
-export { UserRepositoryPrisma };

@@ -12,7 +12,7 @@ import { IUserDeleteByIDController } from "@/core/usecases/authenticated/user/IU
 import { UserDeleteByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/admin/UserDeleteByIDParamsSchema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
 
-class UserDeleteByIDController implements IUserDeleteByIDController {
+export class UserDeleteByIDController implements IUserDeleteByIDController {
   constructor(private readonly service: AdminService) {}
   public async handle(
     request: AuthenticatedHttpRequest<UserDeleteByIDInputDTO>
@@ -42,5 +42,3 @@ class UserDeleteByIDController implements IUserDeleteByIDController {
     return output;
   }
 }
-
-export { UserDeleteByIDController };

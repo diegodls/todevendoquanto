@@ -11,7 +11,7 @@ import {
 import { ApiError } from "@/core/shared/utils/errors/ApiError";
 import { MiddlewareErrorHandler } from "@/core/shared/utils/errors/codes/middleware/middlewareErrorHandler";
 
-const errorHandler: TErrorHandler = (error: TypedError) => {
+export const errorHandler: TErrorHandler = (error: TypedError) => {
   const status = error.status ?? 500;
   let message = error.message ?? "Internal Server Error";
   const errors = error.errors;
@@ -48,5 +48,3 @@ const errorHandler: TErrorHandler = (error: TypedError) => {
 
   return returnError;
 };
-
-export { errorHandler };

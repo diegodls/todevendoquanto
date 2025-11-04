@@ -3,7 +3,7 @@ import { testServiceErrorCodes } from "@/core/shared/utils/errors/codes/error/te
 import { ErrorDTO } from "@/core/usecases/error/IErrorController";
 import { IErrorService } from "./IErrorService";
 
-class ErrorService implements IErrorService {
+export class ErrorService implements IErrorService {
   verify(data: ErrorDTO): ErrorDTO | null {
     const { where } = data;
 
@@ -19,5 +19,3 @@ class ErrorService implements IErrorService {
     return data;
   }
 }
-
-export { ErrorService };

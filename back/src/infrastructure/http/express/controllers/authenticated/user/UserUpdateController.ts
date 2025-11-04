@@ -15,7 +15,7 @@ import { IUserUpdateController } from "@/core/usecases/authenticated/user/IUserU
 import { UserUpdateBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserProfileUpdateBodySchema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
 
-class UserUpdateController implements IUserUpdateController {
+export class UserUpdateController implements IUserUpdateController {
   constructor(readonly service: IUserService) {}
 
   public async handle(
@@ -49,5 +49,3 @@ class UserUpdateController implements IUserUpdateController {
     return output;
   }
 }
-
-export { UserUpdateController };

@@ -4,7 +4,7 @@
 // import { adminControllerErrorCodes } from "@/core/shared/utils/errors/codes/admin/adminErrorCodes";
 // import { NextFunction, Request, Response } from "express";
 
-// const IsAdminMiddleware = (jwtAuth: IJWTAuth) => {
+// export  const IsAdminMiddleware = (jwtAuth: IJWTAuth) => {
 //   return async (request: Request, _response: Response, next: NextFunction) => {
 //     const authHeader = request.headers.authorization;
 
@@ -44,5 +44,3 @@
 //     next();
 //   };
 // };
-
-// export { IsAdminMiddleware };

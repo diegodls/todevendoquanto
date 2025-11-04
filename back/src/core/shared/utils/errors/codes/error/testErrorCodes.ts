@@ -3,7 +3,7 @@ import {
   IErrorServiceErrorCodes,
 } from "./ITestErrorCodes";
 
-const testControllerErrorCodes: IErrorControllerErrorCodes = {
+export const testControllerErrorCodes: IErrorControllerErrorCodes = {
   E_0_CTR_ERR_0001: {
     code: "E_0_CTR_ERR_0001",
     actions: "Nothing, just testing...",
@@ -12,7 +12,7 @@ const testControllerErrorCodes: IErrorControllerErrorCodes = {
   },
 };
 
-const testServiceErrorCodes: IErrorServiceErrorCodes = {
+export const testServiceErrorCodes: IErrorServiceErrorCodes = {
   E_0_SVC_ERR_0001: {
     code: "E_0_SVC_TST_0001",
     actions: "Nothing, just testing...",
@@ -20,5 +20,3 @@ const testServiceErrorCodes: IErrorServiceErrorCodes = {
     instance: "errorService",
   },
 };
-
-export { testControllerErrorCodes, testServiceErrorCodes };

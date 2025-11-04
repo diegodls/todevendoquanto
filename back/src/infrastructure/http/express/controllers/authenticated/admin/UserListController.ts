@@ -10,7 +10,7 @@ import { IUserListController } from "@/core/usecases/authenticated/user/IUserLis
 import { FinalUserListPaginationSchema } from "@/infrastructure/validation/zod/schemas/admin/UserListPaginationSchema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
 
-class UserListController implements IUserListController {
+export class UserListController implements IUserListController {
   constructor(private readonly service: AdminService) {}
 
   public async handle(
@@ -34,5 +34,3 @@ class UserListController implements IUserListController {
     return output;
   }
 }
-
-export { UserListController };

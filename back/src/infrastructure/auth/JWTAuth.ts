@@ -3,7 +3,7 @@ import { UnauthorizedError } from "@/core/shared/utils/errors/ApiError";
 import { MiddlewareJWTAuthCodes } from "@/core/shared/utils/errors/codes/middleware/middlewareJWTAuth";
 import jwt from "jsonwebtoken";
 
-class JWTAuth implements IJWTAuth {
+export class JWTAuth implements IJWTAuth {
   async verifyToken<T>(token: string): Promise<T> {
     return new Promise((resolve, reject) => {
       const jwtSecret = process.env.JWT_PASS ?? "";
@@ -22,5 +22,3 @@ class JWTAuth implements IJWTAuth {
     });
   }
 }
-
-export { JWTAuth };

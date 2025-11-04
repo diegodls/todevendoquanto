@@ -3,7 +3,7 @@ import {
   IAdminServiceErrorCodes,
 } from "./IAdminErrorCodes";
 
-const adminControllerErrorCodes: IAdminControllerErrorCodes = {
+export const adminControllerErrorCodes: IAdminControllerErrorCodes = {
   E_0_CTR_ADM_0001: {
     code: "E_0_CTR_ADM_0001",
     details: "Auth header not send",
@@ -18,7 +18,7 @@ const adminControllerErrorCodes: IAdminControllerErrorCodes = {
   },
 };
 
-const adminServiceErrorCodes: IAdminServiceErrorCodes = {
+export const adminServiceErrorCodes: IAdminServiceErrorCodes = {
   E_0_SVC_ADM_0001: {
     code: "E_0_SVC_ADM_0001",
     details: "Admin User not found with the given id",
@@ -44,5 +44,3 @@ const adminServiceErrorCodes: IAdminServiceErrorCodes = {
     instance: "adminService",
   },
 };
-
-export { adminControllerErrorCodes, adminServiceErrorCodes };

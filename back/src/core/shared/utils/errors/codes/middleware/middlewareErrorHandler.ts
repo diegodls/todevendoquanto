@@ -1,6 +1,6 @@
 import { IMiddlewareErrorHandler } from "./IMiddlewareErrorHandlerCodes";
 
-const MiddlewareErrorHandler: IMiddlewareErrorHandler = {
+export const MiddlewareErrorHandler: IMiddlewareErrorHandler = {
   E_0_MW_ADM_0001: {
     code: "E_0_MW_ADM_0001",
     details: "Token expired",
@@ -20,5 +20,3 @@ const MiddlewareErrorHandler: IMiddlewareErrorHandler = {
     instance: "UserService",
   },
 };
-
-export { MiddlewareErrorHandler };

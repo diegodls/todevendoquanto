@@ -3,7 +3,7 @@ import {
   IUserServiceErrorCodes,
 } from "./IUserErrorCodes";
 
-const userControllerErrorCodes: IUserControllerErrorCodes = {
+export const userControllerErrorCodes: IUserControllerErrorCodes = {
   E_0_CTR_USR_0001: {
     code: "E_0_CTR_USR_0001",
     details: "Error on create new user",
@@ -18,7 +18,7 @@ const userControllerErrorCodes: IUserControllerErrorCodes = {
   },
 };
 
-const userServiceErrorCodes: IUserServiceErrorCodes = {
+export const userServiceErrorCodes: IUserServiceErrorCodes = {
   E_0_SVC_USR_0001: {
     code: "E_0_SVC_USR_0001",
     details: "Error fetch JWT SECRET environment variable",
@@ -51,5 +51,3 @@ const userServiceErrorCodes: IUserServiceErrorCodes = {
     instance: "userService",
   },
 };
-
-export { userControllerErrorCodes, userServiceErrorCodes };

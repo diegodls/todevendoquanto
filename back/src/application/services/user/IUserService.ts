@@ -10,7 +10,7 @@ import {
 import { User } from "@/core/domain/User";
 import { IJwtPayload } from "@/core/ports/infrastructure/auth/IJWTAuth";
 
-interface IUserService {
+export interface IUserService {
   create(data: UserSignInInputDTO): Promise<User | null>;
   login(data: UserLoginInputDTO): Promise<UserLoginOutputDTO>;
   update(
@@ -19,5 +19,3 @@ interface IUserService {
     data: UserUpdateInputDTO
   ): Promise<UserUpdateOutputDTO | null>;
 }
-
-export { IUserService };

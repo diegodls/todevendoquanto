@@ -10,7 +10,7 @@ import {
   IErrorController,
 } from "@/core/usecases/error/IErrorController";
 
-class ErrorController implements IErrorController {
+export class ErrorController implements IErrorController {
   constructor(private readonly service: ErrorService) {}
 
   handle(request: PublicHttpRequest<ErrorDTO>): PublicHttpResponse | void {
@@ -41,5 +41,3 @@ class ErrorController implements IErrorController {
     return { body: { data }, statusCode: 200 };
   }
 }
-
-export { ErrorController };

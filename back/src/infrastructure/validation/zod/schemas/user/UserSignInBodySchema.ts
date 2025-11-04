@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const UserSignInBodySchema = z.object({
+export const UserSignInBodySchema = z.object({
   name: z
     .string({
       description: "Insert a name",
@@ -20,5 +20,3 @@ const UserSignInBodySchema = z.object({
     .nonempty("Must pass a valid password!")
     .min(6, "Password must have 6 or more caracteres"),
 });
-
-export { UserSignInBodySchema };

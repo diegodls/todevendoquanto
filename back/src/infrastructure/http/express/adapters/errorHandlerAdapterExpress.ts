@@ -3,7 +3,7 @@ import { errorHandler } from "@/infrastructure/errors/ErrorsHandler";
 
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 
-const errorHandlerAdapterExpress: ErrorRequestHandler = (
+export const errorHandlerAdapterExpress: ErrorRequestHandler = (
   error: TypedError,
   _request: Request,
   response: Response,
@@ -13,5 +13,3 @@ const errorHandlerAdapterExpress: ErrorRequestHandler = (
 
   response.status(status).json({ message, errors, code, timestamp });
 };
-
-export { errorHandlerAdapterExpress };

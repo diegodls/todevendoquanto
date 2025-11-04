@@ -1,15 +1,13 @@
 import { HttpMethod } from "@/core/shared/types/HttpMethod";
 
-interface IPublicRouteOBJ<C> {
+export interface IPublicRouteOBJ<C> {
   method: HttpMethod;
   path: `/${string}`;
   controller: C;
 }
 
-interface IAuthenticatedRouteOBJ<C> {
+export interface IAuthenticatedRouteOBJ<C> {
   method: HttpMethod;
   path: `/${string}`;
   controller: C;
 }
-
-export { IAuthenticatedRouteOBJ, IPublicRouteOBJ };

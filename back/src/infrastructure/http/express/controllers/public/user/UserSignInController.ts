@@ -13,7 +13,7 @@ import { IUserSignInController } from "@/core/usecases/public/user/IUserSignInCo
 import { UserSignInBodySchema } from "@/infrastructure/validation/zod/schemas/user/UserSignInBodySchema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/RequestValidation";
 
-class UserSignInController implements IUserSignInController {
+export class UserSignInController implements IUserSignInController {
   constructor(private readonly service: UserService) {}
 
   public async handle(
@@ -41,5 +41,3 @@ class UserSignInController implements IUserSignInController {
     return output;
   }
 }
-
-export { UserSignInController };

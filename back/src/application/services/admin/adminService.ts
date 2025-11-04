@@ -5,12 +5,12 @@ import {
 } from "@/core/shared/utils/errors/ApiError";
 import { adminServiceErrorCodes } from "@/core/shared/utils/errors/codes/admin/adminErrorCodes";
 
+import { UserListRequestDTO } from "@/application/dtos/admin/UserListDTO";
 import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAdminService } from "./IAdminService";
-import { UserListRequestDTO } from "@/application/dtos/admin/UserListDTO";
 
-class AdminService implements IAdminService {
+export class AdminService implements IAdminService {
   constructor(private readonly repository: IAdminRepository) {}
 
   private async isAdmin(id: User["id"]) {
@@ -73,5 +73,3 @@ class AdminService implements IAdminService {
     return output;
   }
 }
-
-export { AdminService };

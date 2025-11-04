@@ -7,7 +7,7 @@ const testController = new TestController();
 const errorService = new ErrorService();
 const errorController = new ErrorController(errorService);
 
-const testRoutes: ITestRoutes = [
+export const testRoutes: ITestRoutes = [
   {
     path: "/test",
     method: "get",
@@ -19,5 +19,3 @@ const testRoutes: ITestRoutes = [
     controller: errorController,
   },
 ];
-
-export { testRoutes };

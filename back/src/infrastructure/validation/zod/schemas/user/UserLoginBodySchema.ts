@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const UserLoginBodySchema = z.object({
+export const UserLoginBodySchema = z.object({
   email: z
     .string({
       invalid_type_error: "Must pass a valid email",
@@ -12,5 +12,3 @@ const UserLoginBodySchema = z.object({
     invalid_type_error: "Must pass a valid password",
   }),
 });
-
-export { UserLoginBodySchema };

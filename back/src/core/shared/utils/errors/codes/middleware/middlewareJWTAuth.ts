@@ -1,6 +1,6 @@
 import { IMiddlewareJWTAuthCodes } from "./IMiddlewareJWTAuthCodes";
 
-const MiddlewareJWTAuthCodes: IMiddlewareJWTAuthCodes = {
+export const MiddlewareJWTAuthCodes: IMiddlewareJWTAuthCodes = {
   E_0_MW_JWT_0001: {
     code: "E_0_MW_JWT_0001",
     details: "Invalid Token",
@@ -8,5 +8,3 @@ const MiddlewareJWTAuthCodes: IMiddlewareJWTAuthCodes = {
     instance: "JWTAuth",
   },
 };
-
-export { MiddlewareJWTAuthCodes };

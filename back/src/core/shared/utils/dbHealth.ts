@@ -1,6 +1,6 @@
 import { prisma } from "./orm/prisma/prismaClient";
 
-async function testDb(timeToThrow = 3000) {
+export async function testDb(timeToThrow = 3000) {
   //TODO: Maybe transform this into a "APP class" function
 
   console.log("");
@@ -31,5 +31,3 @@ async function testDb(timeToThrow = 3000) {
     process.exit(1);
   }
 }
-
-export { testDb };

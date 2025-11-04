@@ -1,11 +1,9 @@
 import { User } from "@/core/domain/User";
 
-type UserSignInInputDTO = {
+export type UserSignInInputDTO = {
   name: string;
   email: string;
   password: string;
 };
 
-type UserSignInOutputDTO = Omit<User, "password">;
-
-export { UserSignInInputDTO, UserSignInOutputDTO };
+export type UserSignInOutputDTO = Omit<User, "password">;

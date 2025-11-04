@@ -1,17 +1,15 @@
 import { User } from "@/core/domain/User";
 
-type UserLoginInputDTO = {
+export type UserLoginInputDTO = {
   email: string;
   password: string;
 };
 
-type UserLoginOutputDTO = {
+export type UserLoginOutputDTO = {
   token: string;
 };
 
-interface UserLoginPayload {
+export interface UserLoginPayload {
   email: User["email"];
   role: User["role"];
 }
-
-export { UserLoginInputDTO, UserLoginOutputDTO, UserLoginPayload };

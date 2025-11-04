@@ -3,14 +3,12 @@ import {
   PublicHttpResponse,
 } from "@/core/shared/types/HttpRequestResponse";
 
-type ErrorDTOWhere = "controller" | "service";
+export type ErrorDTOWhere = "controller" | "service";
 
-interface ErrorDTO {
+export interface ErrorDTO {
   where: ErrorDTOWhere;
 }
 
-interface IErrorController {
+export interface IErrorController {
   handle(request: PublicHttpRequest<ErrorDTO>): PublicHttpResponse | void;
 }
-
-export { ErrorDTO, ErrorDTOWhere, IErrorController };

@@ -59,6 +59,4 @@ const userRoutes: IAuthenticatedUserRoutes = [
   },
 ];
 
-const authenticatedRoutes = [...adminRoutes, ...userRoutes];
-
-export { authenticatedRoutes };
+export const authenticatedRoutes = [...adminRoutes, ...userRoutes];

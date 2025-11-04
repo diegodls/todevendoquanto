@@ -17,7 +17,7 @@ import { userListFilterMapper } from "@/infrastructure/repositories/prisma/utils
 
 type PrismaUserWhereInput = PrismaGenerated.UserWhereInput;
 
-class AdminRepositoryPrisma implements IAdminRepository {
+export class AdminRepositoryPrisma implements IAdminRepository {
   constructor(private readonly ormClient: PrismaClientGenerated) {}
 
   public async findUserById(id: User["id"]): Promise<User | null> {
@@ -81,5 +81,3 @@ class AdminRepositoryPrisma implements IAdminRepository {
     return output;
   }
 }
-
-export { AdminRepositoryPrisma };

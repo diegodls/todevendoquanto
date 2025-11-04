@@ -3,12 +3,10 @@ import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 import { IAuthenticatedController } from "@/core/usecases/IAuthenticatedController";
 
-type IUserListController = IAuthenticatedController<
+export type IUserListController = IAuthenticatedController<
   UserListRequestPaginatedQuery,
   {},
   {},
   {},
   PaginatedResponse<User>
 >;
-
-export { IUserListController };

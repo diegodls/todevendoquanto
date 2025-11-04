@@ -18,13 +18,13 @@ enum UserRole {
 }
 */
 
-const UserRole = {
+export const UserRole = {
   BASIC: "BASIC",
   ADMIN: "ADMIN",
 } as const;
 
 export type TUserRole = (typeof UserRole)[keyof typeof UserRole];
-class User {
+export class User {
   public readonly id: string = "";
   public name: string = "";
   public email: string = "";
@@ -43,8 +43,6 @@ class User {
   }
 }
 
-type UserValidProps = Partial<Omit<User, "id" | "password">>;
+export type UserValidProps = Partial<Omit<User, "id" | "password">>;
 
-type UserInvalidProps = Partial<Pick<User, "id" | "password">>;
-
-export { User, UserInvalidProps, UserRole, UserValidProps };
+export type UserInvalidProps = Partial<Pick<User, "id" | "password">>;

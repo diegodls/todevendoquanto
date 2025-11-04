@@ -1,7 +1,5 @@
-type UserDeleteByIDInputDTO = {
+export type UserDeleteByIDInputDTO = {
   id: string;
 };
 
-type UserDeleteByIDOutputDTO = { deletedId: string };
-
-export { UserDeleteByIDInputDTO, UserDeleteByIDOutputDTO };
+export type UserDeleteByIDOutputDTO = { deletedId: string };

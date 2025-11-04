@@ -1,6 +1,6 @@
 import { User } from "../../../domain/User";
 
-interface IJwtPayload {
+export interface IJwtPayload {
   email: User["email"];
   role: User["role"];
   sub: User["id"];
@@ -8,8 +8,6 @@ interface IJwtPayload {
   exp: number;
 }
 
-interface IJWTAuth {
+export interface IJWTAuth {
   verifyToken<T>(token: string): Promise<T>;
 }
-
-export { IJWTAuth, IJwtPayload };

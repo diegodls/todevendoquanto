@@ -2,7 +2,7 @@ import { UserListRequestDTO } from "@/application/dtos/admin/UserListDTO";
 import { PaginatedResponse } from "@/application/dtos/shared/PaginationDTO";
 import { User } from "@/core/domain/User";
 
-interface IAdminService {
+export interface IAdminService {
   deleteUserById(
     adminId: User["id"],
     idToDelete: User["id"]
@@ -13,5 +13,3 @@ interface IAdminService {
     input: UserListRequestDTO
   ): Promise<PaginatedResponse<User>>;
 }
-
-export { IAdminService };

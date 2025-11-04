@@ -6,7 +6,7 @@ import { JWTAuth } from "@/infrastructure/auth/JWTAuth";
 
 const jwtHandler = new JWTAuth();
 
-const adminUserFromToken = async (request: PublicHttpRequest) => {
+export const adminUserFromToken = async (request: PublicHttpRequest) => {
   const authHeader = request.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
@@ -21,8 +21,6 @@ const adminUserFromToken = async (request: PublicHttpRequest) => {
 
   // TODO: verificar o expiration date
 
-  //const [bearer, token] = authHeader.split(" ");
-
   const user = await jwtHandler.verifyToken<IJwtPayload>(token);
 
   if (user?.role !== "ADMIN") {
@@ -35,5 +33,3 @@ const adminUserFromToken = async (request: PublicHttpRequest) => {
 
   return user;
 };
-
-export { adminUserFromToken };

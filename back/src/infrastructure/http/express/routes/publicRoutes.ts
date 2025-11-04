@@ -11,9 +11,7 @@ const userService = new UserService(userRepository);
 const signInUserController = new UserSignInController(userService);
 const loginUserController = new UserLoginController(userService);
 
-const publicRoutes: IPublicRoutes = [
+export const publicRoutes: IPublicRoutes = [
   { method: "post", path: "/user/signin", controller: signInUserController },
   { method: "post", path: "/user/login", controller: loginUserController },
 ];
-
-export { publicRoutes };
