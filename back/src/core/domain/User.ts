@@ -10,8 +10,7 @@ export enum UserRole {
   BASIC = "BASIC",
   ADMIN = "ADMIN",
 }
-*/
-/*
+
 enum UserRole {
   BASIC = "BASIC",
   ADMIN = "ADMIN",

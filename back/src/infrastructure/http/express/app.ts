@@ -1,19 +1,19 @@
-import { IApp } from "@/core/ports/infrastructure/http/IApp";
-import { IAnyAuthenticatedRoute } from "@/core/ports/infrastructure/http/routes/IAuthenticatedRoutes";
-import { IPublicRoutes } from "@/core/ports/infrastructure/http/routes/IPublicRoutes";
-import { ITestRoutes } from "@/core/ports/infrastructure/http/routes/ITestRoutes";
-import { HttpMethod } from "@/core/shared/types/HttpMethod";
+import { AppInterface } from "@/core/ports/infrastructure/http/app-interface";
+import { AnyAuthenticatedRouteType } from "@/core/ports/infrastructure/http/routes/authenticated-routes-type";
+import { PublicRoutesType } from "@/core/ports/infrastructure/http/routes/public-routes-type";
+import { TestRoutesType } from "@/core/ports/infrastructure/http/routes/test-routes-type";
+import { HttpMethod } from "@/core/shared/types/http-method";
 import {
   authenticatedHttpAdapterExpress,
   publicHttpAdapterExpress,
-} from "@/infrastructure/http/express/adapters/httpAdapterExpress";
+} from "@/infrastructure/http/express/adapters/http-adapter-express";
 import express, { ErrorRequestHandler, Express, RequestHandler } from "express";
 
 type ExpressHttpMethod = keyof Pick<Express, HttpMethod>;
 
 type Middleware = RequestHandler | ErrorRequestHandler;
 
-export class ExpressApp implements IApp {
+export class ExpressApp implements AppInterface {
   private constructor(readonly app: Express) {}
 
   private registerRoute(
@@ -26,7 +26,7 @@ export class ExpressApp implements IApp {
   }
 
   public loadAuthenticatedRoutes(
-    authenticatedRoutes: IAnyAuthenticatedRoute[]
+    authenticatedRoutes: AnyAuthenticatedRouteType[]
   ): void {
     authenticatedRoutes.forEach((route) => {
       this.registerRoute(this.app, route.method, route.path, [
@@ -35,7 +35,7 @@ export class ExpressApp implements IApp {
     });
   }
 
-  public loadPublicRoutes(publicRoutes: IPublicRoutes) {
+  public loadPublicRoutes(publicRoutes: PublicRoutesType) {
     publicRoutes.forEach((route) => {
       this.registerRoute(this.app, route.method, route.path, [
         publicHttpAdapterExpress(route.controller),
@@ -43,7 +43,7 @@ export class ExpressApp implements IApp {
     });
   }
 
-  public loadTestRoutes(testRoutes: ITestRoutes): void {
+  public loadTestRoutes(testRoutes: TestRoutesType): void {
     testRoutes.forEach((route) => {
       this.registerRoute(this.app, route.method, route.path, [
         publicHttpAdapterExpress(route.controller),
