@@ -1,4 +1,4 @@
-import { User, UserValidProps } from "@/core/domain/user";
+import { User, UserValidProps } from "@/core/entities/user";
 
 export type UserUpdateParams = { id: User["id"] };
 

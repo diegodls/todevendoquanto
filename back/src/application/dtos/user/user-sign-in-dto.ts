@@ -1,4 +1,4 @@
-import { User } from "@/core/domain/user";
+import { User } from "@/core/entities/user";
 
 export type UserSignInInputDTO = {
   name: string;

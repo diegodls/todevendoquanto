@@ -1,5 +1,5 @@
 import { UserUpdateInputDTO } from "@/application/dtos/user/user-update-dto";
-import { User } from "@/core/domain/user";
+import { User } from "@/core/entities/user";
 
 export interface UserRepositoryInterface {
   findByID(id: User["id"]): Promise<User | null>;

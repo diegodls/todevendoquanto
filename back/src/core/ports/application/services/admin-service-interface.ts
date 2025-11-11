@@ -1,6 +1,6 @@
 import { UserListRequestDTO } from "@/application/dtos/admin/user-list-dto";
 import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
-import { User } from "@/core/domain/user";
+import { User } from "@/core/entities/user";
 
 export interface AdminServiceInterface {
   deleteUserById(

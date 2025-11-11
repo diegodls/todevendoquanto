@@ -7,7 +7,7 @@ import {
   UserUpdateInputDTO,
   UserUpdateOutputDTO,
 } from "@/application/dtos/user/user-update-dto";
-import { User } from "@/core/domain/user";
+import { User } from "@/core/entities/user";
 import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-auth-interface";
 
 export interface UserServiceInterface {

@@ -1,5 +1,5 @@
 import { UserUpdateInputDTO } from "@/application/dtos/user/user-update-dto";
-import { User } from "@/core/domain/user";
+import { User } from "@/core/entities/user";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import { PrismaClientGenerated } from "@/core/shared/utils/orm/prisma/prisma-client";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prisma-entity-user-parser";

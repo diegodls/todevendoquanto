@@ -1,4 +1,4 @@
-import { User } from "../../../domain/user";
+import { User } from "../../../entities/user";
 
 export interface JwtPayloadInterface {
   email: User["email"];
