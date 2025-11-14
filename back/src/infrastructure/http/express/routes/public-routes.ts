@@ -11,6 +11,6 @@ const signInUserController = new UserSignInController(userService);
 const loginUserController = new UserLoginController(userService);
 
 export const publicRoutes: PublicRoutesType = [
-  { method: "post", path: "/user/signin", controller: signInUserController },
-  { method: "post", path: "/user/login", controller: loginUserController },
+  { method: "post", path: "/signin", controller: signInUserController },
+  { method: "post", path: "/login", controller: loginUserController },
 ];

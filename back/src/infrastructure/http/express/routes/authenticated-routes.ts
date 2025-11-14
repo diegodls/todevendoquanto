@@ -40,12 +40,12 @@ const makeRoute = <C extends AnyAuthenticatedControllerType>(
 
 const adminRoutes: AuthenticatedAdminRoutesType = [
   makeRoute({
-    path: "/admin/users/delete/:id",
+    path: "/users/delete/:id",
     method: "delete",
     controller: userDeleteController,
   }),
   makeRoute({
-    path: "/admin/users/list",
+    path: "/users",
     method: "get",
     controller: userListController,
   }),
@@ -54,7 +54,7 @@ const adminRoutes: AuthenticatedAdminRoutesType = [
 const userRoutes: AuthenticatedUserRoutesType = [
   {
     method: "patch",
-    path: "/user/update/:id",
+    path: "/users/update/:id",
     controller: userUpdateController,
   },
 ];
