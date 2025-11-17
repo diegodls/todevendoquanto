@@ -1,29 +1,29 @@
 import {
-  UserUpdateInputDTO,
-  UserUpdateParams,
-  UserUpdateOutputDTO,
-} from "@/application/dtos/user/user-update-dto";
-import { UserServiceInterface } from "@/core/ports/application/services/user-service-interface";
+  UpdateUserInputDTO,
+  UpdateUserOutputDTO,
+  UpdateUserParams,
+} from "@/application/dtos/user/update-dto";
+import { UserUpdateControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-update-controller-type";
 import { SANITIZE_UUID_V4_REGEX } from "@/core/shared/regex/sanitize-uuid";
 import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
 import { BadRequestError } from "@/core/shared/utils/errors/api-error";
-import { UserUpdateControllerType } from "@/core/usecases/authenticated/user/user-update-controller-type";
+import { UpdateUserUseCaseInterface } from "@/core/usecases/user/update-user-usecase-interface";
 import { UserUpdateBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-profile-update-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
 
 export class UserUpdateController implements UserUpdateControllerType {
-  constructor(readonly service: UserServiceInterface) {}
+  constructor(readonly service: UpdateUserUseCaseInterface) {}
 
   public async handle(
     request: AuthenticatedHttpRequestInterface<
-      UserUpdateInputDTO,
+      UpdateUserInputDTO,
       {},
-      UserUpdateParams
+      UpdateUserParams
     >
-  ): Promise<AuthenticatedHttpResponseInterface<UserUpdateOutputDTO>> {
+  ): Promise<AuthenticatedHttpResponseInterface<UpdateUserOutputDTO>> {
     const userJWT = request.user;
 
     const userIDToChange = request.params.id;
@@ -44,7 +44,7 @@ export class UserUpdateController implements UserUpdateControllerType {
       input
     );
 
-    const output: AuthenticatedHttpResponseInterface<UserUpdateOutputDTO> = {
+    const output: AuthenticatedHttpResponseInterface<UpdateUserOutputDTO> = {
       statusCode: 200,
       body: updatedUser,
     };

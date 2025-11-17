@@ -1,24 +1,24 @@
 import {
-  UserSignInInputDTO,
-  UserSignInOutputDTO,
-} from "@/application/dtos/user/user-sign-in-dto";
-import { UserService } from "@/application/services/user-service";
+  SignInUserInputDTO,
+  SignInUserOutputDTO,
+} from "@/application/dtos/user/sign-in-dto";
+import { UserSignInControllerInterface } from "@/core/ports/infrastructure/http/controllers/public/user/user-sign-in-controller-interface";
 import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
 import { InternalError } from "@/core/shared/utils/errors/api-error";
 import { userControllerErrorCodes } from "@/core/shared/utils/errors/codes/user/user-error-codes";
-import { UserSignInControllerInterface } from "@/core/usecases/public/user/user-sign-in-controller-interface";
+import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
 import { UserSignInBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-sign-in-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
 
 export class UserSignInController implements UserSignInControllerInterface {
-  constructor(private readonly service: UserService) {}
+  constructor(private readonly service: UpdateUserUseCase) {}
 
   public async handle(
-    request: PublicHttpRequestInterface<UserSignInInputDTO>
-  ): Promise<PublicHttpResponseInterface<UserSignInOutputDTO>> {
+    request: PublicHttpRequestInterface<SignInUserInputDTO>
+  ): Promise<PublicHttpResponseInterface<SignInUserOutputDTO>> {
     const input = requestValidation("body", request, UserSignInBodySchema);
 
     const createdUser = await this.service.create(input);
@@ -33,7 +33,7 @@ export class UserSignInController implements UserSignInControllerInterface {
 
     const { password, ...userOutput } = createdUser;
 
-    const output: PublicHttpResponseInterface<UserSignInOutputDTO> = {
+    const output: PublicHttpResponseInterface<SignInUserOutputDTO> = {
       statusCode: 200,
       body: userOutput,
     };

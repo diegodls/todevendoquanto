@@ -1,9 +1,9 @@
 import {
-  UserListQueryInput,
-  UserListQueryProps,
-  UserListRequestDTO,
+  ListUsersQueryInput,
+  ListUsersQueryProps,
+  ListUsersRequestDTO,
   UserListRequestPaginatedQuery,
-} from "@/application/dtos/admin/user-list-dto";
+} from "@/application/dtos/admin/list-dto";
 import { UserRole } from "@/core/entities/user";
 import { mergeWithPagination } from "@/infrastructure/validation/zod/schemas/shared/pagination-schema";
 import { createExactSchema } from "@/infrastructure/validation/zod/shared/helpers/create-exact-schema";
@@ -17,7 +17,7 @@ const DateSchema = z
     message: "Invalid date format. Please, use ISO 8601 format.",
   });
 
-const createUserSchema = createExactSchema<UserListQueryProps>();
+const createUserSchema = createExactSchema<ListUsersQueryProps>();
 
 const UserListQuerySchema = createUserSchema({
   name: z.string().min(2).max(255).optional(),
@@ -33,7 +33,7 @@ const UserListQuerySchema = createUserSchema({
   created_before: DateSchema.optional(),
   updated_after: DateSchema.optional(),
   updated_before: DateSchema.optional(),
-}).strip() satisfies z.ZodType<UserListQueryProps, any, UserListQueryInput>;
+}).strip() satisfies z.ZodType<ListUsersQueryProps, any, ListUsersQueryInput>;
 
 export const FinalUserListPaginationSchema = mergeWithPagination(
   UserListQuerySchema,
@@ -41,7 +41,7 @@ export const FinalUserListPaginationSchema = mergeWithPagination(
 );
 
 FinalUserListPaginationSchema satisfies z.ZodType<
-  UserListRequestDTO,
+  ListUsersRequestDTO,
   any,
   UserListRequestPaginatedQuery
 >;

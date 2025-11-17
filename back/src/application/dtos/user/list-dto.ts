@@ -20,11 +20,11 @@ type DateFilterProps = {
   updated_before?: Date;
 };
 
-export type UserListQueryProps = UserValidQueryProps & DateFilterProps;
+export type ListUsersQueryProps = UserValidQueryProps & DateFilterProps;
 
-export type UserListQueryInput = PropsToString<UserListQueryProps>;
+export type ListUsersQueryInput = PropsToString<ListUsersQueryProps>;
 
 export type UserListRequestPaginatedQuery = PaginationQueryInput &
-  UserListQueryInput;
+  ListUsersQueryInput;
 
-export type UserListRequestDTO = PaginationProps & UserListQueryProps;
+export type ListUsersRequestDTO = PaginationProps & ListUsersQueryProps;

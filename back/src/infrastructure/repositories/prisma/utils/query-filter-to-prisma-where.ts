@@ -12,22 +12,22 @@ export type GenericFilterMapper<
   ) => TPrismaWhere;
 };
 
-export const mapFiltersToPrisma = <
+export const queryFiltersToPrisma = <
   TFilters extends object,
   TPrismaWhere extends object
 >(
   filters: TFilters,
-  mapper: GenericFilterMapper<TFilters, TPrismaWhere>
+  query: GenericFilterMapper<TFilters, TPrismaWhere>
 ): TPrismaWhere => {
   const where = {} as TPrismaWhere;
 
-  for (const key in mapper) {
+  for (const key in query) {
     const filterKey = key as keyof TFilters;
 
     const inputValue = filters[filterKey];
 
     if (inputValue !== undefined && inputValue !== null && inputValue !== "") {
-      const mapperFunction = mapper[filterKey];
+      const mapperFunction = query[filterKey];
 
       if (mapperFunction) {
         const whereClause = (mapperFunction as any)(inputValue);

@@ -1,11 +1,11 @@
 import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-auth-interface";
+import { AuthenticatedControllerInterface } from "@/core/ports/infrastructure/http/controllers/authenticated-controller-interface";
 import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
-import { AuthenticatedControllerInterface } from "@/core/usecases/authenticated-controller-interface";
 import { adminUserFromToken } from "@/infrastructure/auth/admin-user-from-token";
 import { Request, Response } from "express";
 

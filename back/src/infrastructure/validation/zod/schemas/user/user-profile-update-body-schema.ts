@@ -1,4 +1,4 @@
-import { UserUpdateInputDTO } from "@/application/dtos/user/user-update-dto";
+import { UpdateUserInputDTO } from "@/application/dtos/user/update-dto";
 import { UserRole } from "@/core/entities/user";
 import { StringToBoolean } from "@/infrastructure/validation/zod/shared/helpers/string-to-boolean";
 import { z } from "zod";
@@ -11,4 +11,4 @@ export const UserUpdateBodySchema = z.object({
     .transform((value) => value.toUpperCase())
     .pipe(z.nativeEnum(UserRole)),
   is_active: StringToBoolean.optional(),
-}) as z.ZodType<UserUpdateInputDTO>;
+}) as z.ZodType<UpdateUserInputDTO>;

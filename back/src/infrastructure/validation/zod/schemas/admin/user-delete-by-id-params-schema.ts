@@ -1,4 +1,4 @@
-import { UserDeleteByIDInputDTO } from "@/application/dtos/user/user-delete-dto";
+import { DeleteUserByIDInputDTO } from "@/application/dtos/user/delete-dto";
 import { z, ZodType } from "zod";
 
 export const UserDeleteByIDParamsSchema = z
@@ -8,4 +8,4 @@ export const UserDeleteByIDParamsSchema = z
       invalid_type_error: "You must pass a valid ID",
     }),
   })
-  .strip() satisfies ZodType<UserDeleteByIDInputDTO>;
+  .strip() satisfies ZodType<DeleteUserByIDInputDTO>;

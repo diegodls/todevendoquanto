@@ -1,10 +1,10 @@
-import { ErrorServiceInterface } from "@/core/ports/application/services/error-service-interface";
+import { ErrorDTOInterface } from "@/core/ports/infrastructure/http/controllers/error/error-controller-interface";
 import { InternalError } from "@/core/shared/utils/errors/api-error";
 import { testServiceErrorCodes } from "@/core/shared/utils/errors/codes/error/test-error-codes";
-import { ErrorDTOInterface } from "@/core/usecases/error/error-controller-interface";
+import { ErrorServiceInterface } from "@/core/usecases/api/error-usecase-interface";
 
 export class ErrorService implements ErrorServiceInterface {
-  verify(data: ErrorDTOInterface): ErrorDTOInterface | null {
+  execute(data: ErrorDTOInterface): ErrorDTOInterface | null {
     const { where } = data;
 
     if (where === "service") {

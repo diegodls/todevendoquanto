@@ -1,23 +1,23 @@
 import {
-  UserDeleteByIDInputDTO,
-  UserDeleteByIDOutputDTO,
-} from "@/application/dtos/user/user-delete-dto";
-import { AdminService } from "@/application/services/admin-service";
+  DeleteUserByIDInputDTO,
+  DeleteUserByIDOutputDTO,
+} from "@/application/dtos/user/delete-dto";
 import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
+import { AdminService } from "@/core/usecases/admin-service";
 
+import { UserDeleteByIDControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-delete-by-id-controller-type";
 import { BadRequestError } from "@/core/shared/utils/errors/api-error";
-import { UserDeleteByIDControllerType } from "@/core/usecases/authenticated/user/user-delete-by-id-controller-type";
 import { UserDeleteByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/admin/user-delete-by-id-params-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
 
 export class UserDeleteByIDController implements UserDeleteByIDControllerType {
   constructor(private readonly service: AdminService) {}
   public async handle(
-    request: AuthenticatedHttpRequestInterface<UserDeleteByIDInputDTO>
-  ): Promise<AuthenticatedHttpResponseInterface<UserDeleteByIDOutputDTO>> {
+    request: AuthenticatedHttpRequestInterface<DeleteUserByIDInputDTO>
+  ): Promise<AuthenticatedHttpResponseInterface<DeleteUserByIDOutputDTO>> {
     const adminUser = request.user;
 
     const input = requestValidation(
@@ -43,7 +43,7 @@ export class UserDeleteByIDController implements UserDeleteByIDControllerType {
       throw new BadRequestError("User to be deleted not found");
     }
 
-    const output: AuthenticatedHttpResponseInterface<UserDeleteByIDOutputDTO> =
+    const output: AuthenticatedHttpResponseInterface<DeleteUserByIDOutputDTO> =
       {
         statusCode: 200,
         body: { deletedId: deletedUser.id },

@@ -1,15 +1,15 @@
-import { ErrorService } from "@/application/services/error-service";
 import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
+import { ErrorService } from "@/core/usecases/api/error-usecase";
 
-import { InternalError } from "@/core/shared/utils/errors/api-error";
-import { testControllerErrorCodes } from "@/core/shared/utils/errors/codes/error/test-error-codes";
 import {
   ErrorControllerInterface,
   ErrorDTOInterface,
-} from "@/core/usecases/error/error-controller-interface";
+} from "@/core/ports/infrastructure/http/controllers/error/error-controller-interface";
+import { InternalError } from "@/core/shared/utils/errors/api-error";
+import { testControllerErrorCodes } from "@/core/shared/utils/errors/codes/error/test-error-codes";
 
 export class ErrorController implements ErrorControllerInterface {
   constructor(private readonly service: ErrorService) {}

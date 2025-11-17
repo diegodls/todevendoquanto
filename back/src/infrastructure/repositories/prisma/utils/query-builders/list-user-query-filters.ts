@@ -1,9 +1,9 @@
-import { UserListQueryProps } from "@/application/dtos/admin/user-list-dto";
+import { ListUsersQueryProps } from "@/application/dtos/admin/list-dto";
 import { PrismaGenerated } from "@/core/shared/utils/orm/prisma/prisma-client";
-import { GenericFilterMapper } from "@/infrastructure/repositories/prisma/utils/map-filter-to-prisma-where";
+import { GenericFilterMapper } from "@/infrastructure/repositories/prisma/utils/query-filter-to-prisma-where";
 
-export const userListFilterMapper: GenericFilterMapper<
-  UserListQueryProps,
+export const listUsersFilters: GenericFilterMapper<
+  ListUsersQueryProps,
   PrismaGenerated.UserWhereInput
 > = {
   name: (value) => ({

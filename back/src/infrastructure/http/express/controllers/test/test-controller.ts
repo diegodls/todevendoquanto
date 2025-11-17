@@ -1,8 +1,8 @@
+import { TestControllerInterface } from "@/core/ports/infrastructure/http/controllers/test/test-controller-interface";
 import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
-import { TestControllerInterface } from "@/core/usecases/test/test-controller-interface";
 
 export class TestController implements TestControllerInterface {
   public async handle(

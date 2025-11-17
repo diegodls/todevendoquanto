@@ -1,5 +1,3 @@
-import { AdminService } from "@/application/services/admin-service";
-import { UserService } from "@/application/services/user-service";
 import {
   AnyAuthenticatedControllerType,
   AuthenticatedAdminRoutesType,
@@ -7,6 +5,8 @@ import {
 } from "@/core/ports/infrastructure/http/routes/authenticated-routes-type";
 import { AuthenticatedRouteObjInterface } from "@/core/ports/infrastructure/http/routes/route-obj-interface";
 import { prisma } from "@/core/shared/utils/orm/prisma/prisma-client";
+import { AdminService } from "@/core/usecases/admin-service";
+import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
 import { UserDeleteByIDController } from "@/infrastructure/http/express/controllers/authenticated/admin/user-delete-by-idcontroller";
 import { UserListController } from "@/infrastructure/http/express/controllers/authenticated/admin/user-list-controller";
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/authenticated/user/user-update-controller";
@@ -19,7 +19,7 @@ const userRepository = new UserRepositoryPrisma(prisma);
 
 const adminService = new AdminService(adminRepository);
 
-const userService = new UserService(userRepository);
+const userService = new UpdateUserUseCase(userRepository);
 
 const userDeleteController = new UserDeleteByIDController(adminService);
 
