@@ -1,14 +1,14 @@
 import {
-  SignInUserInputDTO,
-  SignInUserOutputDTO,
-} from "@/application/dtos/user/sign-in-dto";
-import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
+import {
+  CreateUserInputDTO,
+  CreateUserOutputDTO,
+} from "@/core/usecases/user/create-user-dto";
 
-export interface UserSignInControllerInterface {
+export interface CreateUserControllerInterface {
   handle(
-    request: PublicHttpRequestInterface<SignInUserInputDTO>
-  ): Promise<PublicHttpResponseInterface<SignInUserOutputDTO>>;
+    request: PublicHttpRequestInterface<CreateUserInputDTO>
+  ): Promise<PublicHttpResponseInterface<CreateUserOutputDTO>>;
 }

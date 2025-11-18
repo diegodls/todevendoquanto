@@ -1,7 +1,7 @@
-import { ListUsersRequestDTO } from "@/application/dtos/admin/list-dto";
 import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
-import { UpdateUserInputDTO } from "@/application/dtos/user/update-dto";
 import { User } from "@/core/entities/user";
+import { ListUsersRequestDTO } from "@/core/usecases/user/list-user-dto";
+import { UpdateUserInputDTO } from "@/core/usecases/user/update-user-dto";
 
 export interface UserRepositoryInterface {
   list(filters: ListUsersRequestDTO): Promise<PaginatedResponse<User>>;

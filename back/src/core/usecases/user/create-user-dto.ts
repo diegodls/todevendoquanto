@@ -1,9 +1,9 @@
 import { User } from "@/core/entities/user";
 
-export type SignInUserInputDTO = {
+export type CreateUserInputDTO = {
   name: string;
   email: string;
   password: string;
 };
 
-export type SignInUserOutputDTO = Omit<User, "password">;
+export type CreateUserOutputDTO = Omit<User, "password">;

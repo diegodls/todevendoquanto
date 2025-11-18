@@ -2,7 +2,7 @@ import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
-import { ErrorService } from "@/core/usecases/api/error-usecase";
+import { ErrorService } from "@/core/usecases/tests/error-usecase";
 
 import {
   ErrorControllerInterface,

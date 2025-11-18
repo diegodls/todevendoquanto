@@ -1,9 +1,4 @@
-import {
-  ListUsersQueryProps,
-  ListUsersRequestDTO,
-} from "@/application/dtos/admin/list-dto";
 import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
-import { UpdateUserInputDTO } from "@/application/dtos/user/update-dto";
 import { User } from "@/core/entities/user";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
@@ -11,6 +6,11 @@ import {
   PrismaGenerated,
 } from "@/core/shared/utils/orm/prisma/prisma-client";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prisma-entity-user-parser";
+import {
+  ListUsersRequestDTO,
+  ListUsersQueryProps,
+} from "@/core/usecases/user/list-user-dto";
+import { UpdateUserInputDTO } from "@/core/usecases/user/update-user-dto";
 import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
 import { queryFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils/query-filter-to-prisma-where";
 

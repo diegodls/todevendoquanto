@@ -1,9 +1,9 @@
+import { AuthenticatedControllerInterface } from "@/core/ports/infrastructure/http/controllers/authenticated-controller-interface";
 import {
   UpdateUserInputDTO,
   UpdateUserOutputDTO,
   UpdateUserParams,
-} from "@/application/dtos/user/update-dto";
-import { AuthenticatedControllerInterface } from "@/core/ports/infrastructure/http/controllers/authenticated-controller-interface";
+} from "@/core/usecases/user/update-user-dto";
 
 export type UserUpdateControllerType = AuthenticatedControllerInterface<
   UpdateUserInputDTO,

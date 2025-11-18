@@ -1,4 +1,3 @@
-import { SignInUserInputDTO } from "@/application/dtos/user/sign-in-dto";
 import { User } from "@/core/entities/user";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
@@ -6,13 +5,14 @@ import {
   InternalError,
 } from "@/core/shared/utils/errors/api-error";
 import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/user-error-codes";
+import { CreateUserInputDTO } from "@/core/usecases/user/create-user-dto";
 import { CreateUserUseCaseInterface } from "@/core/usecases/user/create-user-usecase-interface";
 import bcrypt from "bcrypt";
 
 export class CreateUserUseCase implements CreateUserUseCaseInterface {
   constructor(private readonly repository: UserRepositoryInterface) {}
 
-  public async execute(data: SignInUserInputDTO): Promise<User | null> {
+  public async execute(data: CreateUserInputDTO): Promise<User | null> {
     const { name, email, password } = data;
 
     const userAlreadyExists = await this.repository.findByEmail(email);

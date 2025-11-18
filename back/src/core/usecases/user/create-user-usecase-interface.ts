@@ -1,6 +1,6 @@
-import { SignInUserInputDTO } from "@/application/dtos/user/sign-in-dto";
+import { CreateUserInputDTO } from "@/core/usecases/user/create-user-dto";
 import { User } from "@/prisma";
 
 export interface CreateUserUseCaseInterface {
-  execute(data: SignInUserInputDTO): Promise<User | null>;
+  execute(data: CreateUserInputDTO): Promise<User | null>;
 }

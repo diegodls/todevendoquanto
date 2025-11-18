@@ -1,7 +1,3 @@
-import {
-  UpdateUserInputDTO,
-  UpdateUserOutputDTO,
-} from "@/application/dtos/user/update-dto";
 import { User } from "@/core/entities/user";
 import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-auth-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
@@ -11,6 +7,10 @@ import {
   UnauthorizedError,
 } from "@/core/shared/utils/errors/api-error";
 import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/user-error-codes";
+import {
+  UpdateUserInputDTO,
+  UpdateUserOutputDTO,
+} from "@/core/usecases/user/update-user-dto";
 import { UpdateUserUseCaseInterface } from "@/core/usecases/user/update-user-usecase-interface";
 
 export class UpdateUserUseCase implements UpdateUserUseCaseInterface {

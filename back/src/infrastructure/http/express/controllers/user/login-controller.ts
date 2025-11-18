@@ -7,19 +7,19 @@ import {
   LoginUserInputDTO,
   LoginUserOutputDTO,
 } from "@/core/usecases/user/login-dto";
-import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
+import { LoginUseCase } from "@/core/usecases/user/login-usecase";
 import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-login-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
 
 export class UserLoginController implements UserLoginControllerInterface {
-  constructor(private readonly service: UpdateUserUseCase) {}
+  constructor(private readonly usecase: LoginUseCase) {}
 
   public async handle(
     request: PublicHttpRequestInterface<LoginUserInputDTO>
   ): Promise<PublicHttpResponseInterface<LoginUserOutputDTO> | null> {
     const input = requestValidation("body", request, UserLoginBodySchema);
 
-    const token = await this.service.login(input);
+    const token = await this.usecase.execute(input);
 
     const output: PublicHttpResponseInterface<LoginUserOutputDTO> = {
       statusCode: 200,

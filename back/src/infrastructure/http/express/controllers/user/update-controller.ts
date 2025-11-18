@@ -1,8 +1,3 @@
-import {
-  UpdateUserInputDTO,
-  UpdateUserOutputDTO,
-  UpdateUserParams,
-} from "@/application/dtos/user/update-dto";
 import { UserUpdateControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-update-controller-type";
 import { SANITIZE_UUID_V4_REGEX } from "@/core/shared/regex/sanitize-uuid";
 import {
@@ -10,6 +5,11 @@ import {
   AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
 import { BadRequestError } from "@/core/shared/utils/errors/api-error";
+import {
+  UpdateUserInputDTO,
+  UpdateUserOutputDTO,
+  UpdateUserParams,
+} from "@/core/usecases/user/update-user-dto";
 import { UpdateUserUseCaseInterface } from "@/core/usecases/user/update-user-usecase-interface";
 import { UserUpdateBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-profile-update-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";

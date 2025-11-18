@@ -1,9 +1,9 @@
+import { User } from "@/core/entities/user";
+import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-auth-interface";
 import {
   UpdateUserInputDTO,
   UpdateUserOutputDTO,
-} from "@/application/dtos/user/update-dto";
-import { User } from "@/core/entities/user";
-import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-auth-interface";
+} from "@/core/usecases/user/update-user-dto";
 
 export interface UpdateUserUseCaseInterface {
   execute(

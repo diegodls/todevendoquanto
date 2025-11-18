@@ -1,5 +1,5 @@
-import { UpdateUserInputDTO } from "@/application/dtos/user/update-dto";
 import { UserRole } from "@/core/entities/user";
+import { UpdateUserInputDTO } from "@/core/usecases/user/update-user-dto";
 import { StringToBoolean } from "@/infrastructure/validation/zod/shared/helpers/string-to-boolean";
 import { z } from "zod";
 

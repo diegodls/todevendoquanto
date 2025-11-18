@@ -3,9 +3,9 @@
 import { testDb } from "@/core/shared/utils/db-health";
 import { errorHandlerAdapterExpress } from "@/infrastructure/http/express/adapters/error-handler-adapter-express";
 import { ExpressApp } from "@/infrastructure/http/express/app";
-import { authenticatedRoutes } from "@/infrastructure/http/express/routes/authenticated-routes";
-import { publicRoutes } from "@/infrastructure/http/express/routes/public-routes";
-import { testRoutes } from "@/infrastructure/http/express/routes/test-routes";
+import { authenticatedRoutes } from "@/infrastructure/http/express/routes/old/authenticated-routes";
+import { publicRoutes } from "@/infrastructure/http/express/routes/old/public-routes";
+import { testRoutes } from "@/infrastructure/http/express/routes/old/test-routes";
 
 testDb();
 

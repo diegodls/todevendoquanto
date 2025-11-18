@@ -7,9 +7,9 @@ import { AuthenticatedRouteObjInterface } from "@/core/ports/infrastructure/http
 import { prisma } from "@/core/shared/utils/orm/prisma/prisma-client";
 import { AdminService } from "@/core/usecases/admin-service";
 import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
-import { UserDeleteByIDController } from "@/infrastructure/http/express/controllers/authenticated/admin/user-delete-by-idcontroller";
-import { UserListController } from "@/infrastructure/http/express/controllers/authenticated/admin/user-list-controller";
-import { UserUpdateController } from "@/infrastructure/http/express/controllers/authenticated/user/user-update-controller";
+import { UserDeleteByIDController } from "@/infrastructure/http/express/controllers/user/delete-by-id-controller";
+import { UserListController } from "@/infrastructure/http/express/controllers/user/list-controller";
+import { UserUpdateController } from "@/infrastructure/http/express/controllers/user/update-controller";
 import { AdminRepositoryPrisma } from "@/infrastructure/repositories/prisma/admin-repository-prisma";
 import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-repository-prisma";
 
