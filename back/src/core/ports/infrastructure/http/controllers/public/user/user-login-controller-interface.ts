@@ -1,11 +1,11 @@
 import {
-  LoginUserInputDTO,
-  LoginUserOutputDTO,
-} from "@/application/dtos/user/login-dto";
-import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
+import {
+  LoginUserInputDTO,
+  LoginUserOutputDTO,
+} from "@/core/usecases/user/login-dto";
 
 export interface UserLoginControllerInterface {
   handle(

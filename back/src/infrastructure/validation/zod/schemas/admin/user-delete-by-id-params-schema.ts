@@ -1,4 +1,4 @@
-import { DeleteUserByIDInputDTO } from "@/application/dtos/user/delete-dto";
+import { DeleteUserByIDInputDTO } from "@/core/usecases/user/delete-user-dto";
 import { z, ZodType } from "zod";
 
 export const UserDeleteByIDParamsSchema = z

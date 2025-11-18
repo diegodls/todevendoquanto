@@ -1,6 +1,6 @@
 import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
-import { ListUsersRequestDTO } from "@/application/dtos/user/list-dto";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
+import { ListUsersRequestDTO } from "@/core/usecases/user/list-user-dto";
 import { ListUserUseCaseInterface } from "@/core/usecases/user/list-user-usecase-interface";
 import { User } from "@/prisma";
 

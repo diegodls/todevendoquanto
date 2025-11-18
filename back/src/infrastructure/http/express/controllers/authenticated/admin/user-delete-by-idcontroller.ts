@@ -1,12 +1,12 @@
 import {
-  DeleteUserByIDInputDTO,
-  DeleteUserByIDOutputDTO,
-} from "@/application/dtos/user/delete-dto";
-import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
 import { AdminService } from "@/core/usecases/admin-service";
+import {
+  DeleteUserByIDInputDTO,
+  DeleteUserByIDOutputDTO,
+} from "@/core/usecases/user/delete-user-dto";
 
 import { UserDeleteByIDControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-delete-by-id-controller-type";
 import { BadRequestError } from "@/core/shared/utils/errors/api-error";

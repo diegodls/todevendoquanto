@@ -1,14 +1,14 @@
-import {
-  LoginUserInputDTO,
-  LoginUserOutputDTO,
-  LoginUserPayload,
-} from "@/application/dtos/user/login-dto";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
   InternalError,
   UnauthorizedError,
 } from "@/core/shared/utils/errors/api-error";
 import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/user-error-codes";
+import {
+  LoginUserInputDTO,
+  LoginUserOutputDTO,
+  LoginUserPayload,
+} from "@/core/usecases/user/login-dto";
 import { LoginUseCaseInterface } from "@/core/usecases/user/login-usecase-interface";
 import { compare } from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";

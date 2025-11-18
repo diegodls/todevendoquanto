@@ -1,12 +1,12 @@
-import {
-  LoginUserInputDTO,
-  LoginUserOutputDTO,
-} from "@/application/dtos/user/login-dto";
 import { UserLoginControllerInterface } from "@/core/ports/infrastructure/http/controllers/public/user/user-login-controller-interface";
 import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
+import {
+  LoginUserInputDTO,
+  LoginUserOutputDTO,
+} from "@/core/usecases/user/login-dto";
 import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
 import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-login-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";

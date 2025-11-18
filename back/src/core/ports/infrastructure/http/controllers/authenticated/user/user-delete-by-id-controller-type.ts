@@ -1,8 +1,8 @@
+import { AuthenticatedControllerInterface } from "@/core/ports/infrastructure/http/controllers/authenticated-controller-interface";
 import {
   DeleteUserByIDInputDTO,
   DeleteUserByIDOutputDTO,
-} from "@/application/dtos/user/delete-dto";
-import { AuthenticatedControllerInterface } from "@/core/ports/infrastructure/http/controllers/authenticated-controller-interface";
+} from "@/core/usecases/user/delete-user-dto";
 
 export type UserDeleteByIDControllerType = AuthenticatedControllerInterface<
   DeleteUserByIDInputDTO,
