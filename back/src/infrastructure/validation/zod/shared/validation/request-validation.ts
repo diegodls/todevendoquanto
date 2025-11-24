@@ -1,10 +1,9 @@
+import { BadRequestError } from "@/core/shared/errors/api-errors";
 import {
   AuthenticatedHttpRequestInterface,
   PublicHttpRequestInterface,
 } from "@/core/shared/types/http-request-response";
-import { BadRequestError } from "@/core/shared/utils/errors/api-error";
 import { requestValidationErrorCodes } from "@/infrastructure/validation/zod/shared/errors/requestValidation/request-validation-error-codes";
-
 import { z, ZodSchema } from "zod";
 
 type RequestTypes =

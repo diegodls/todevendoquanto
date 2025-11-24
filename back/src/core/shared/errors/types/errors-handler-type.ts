@@ -1,4 +1,4 @@
-import { ApiError } from "@/core/shared/utils/errors/api-error";
+import { ApiError } from "@/core/shared/errors/api-errors";
 
 export type ErrorType = Error & Partial<ApiError>;
 

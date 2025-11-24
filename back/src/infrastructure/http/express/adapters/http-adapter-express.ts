@@ -1,4 +1,3 @@
-import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-auth-interface";
 import { AuthenticatedControllerInterface } from "@/core/ports/infrastructure/http/controllers/authenticated-controller-interface";
 import {
   AuthenticatedHttpRequestInterface,
@@ -6,7 +5,7 @@ import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
-import { adminUserFromToken } from "@/infrastructure/auth/admin-user-from-token";
+
 import { Request, Response } from "express";
 
 // TODO: Se quiser juntar tudo em um adapter, dá para receber a prop isAuth: boolean junto ao controller e fazer a lógica referente ao isAuth.
@@ -37,14 +36,12 @@ export const authenticatedHttpAdapterExpress = <B, H, P, Q, R>(
   controller: AuthenticatedControllerInterface<B, H, P, Q, R>
 ) => {
   return async (request: Request, response: Response) => {
-    const adminUser: JwtPayloadInterface = await adminUserFromToken(request);
-
     const authenticatedHttpRequest: AuthenticatedHttpRequestInterface = {
       body: request.body as B,
       headers: request.headers as H,
       params: request.params as P,
       query: request.query as Q,
-      user: adminUser,
+      user: request.user!, // TODO: remover o user daqui, provavelmente quando trocar o authenticated...
     };
 
     const httpResponse: AuthenticatedHttpResponseInterface<R> =

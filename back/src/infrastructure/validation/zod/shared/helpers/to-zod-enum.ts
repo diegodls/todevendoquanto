@@ -1,4 +1,4 @@
-import { BadRequestError } from "@/core/shared/utils/errors/api-error";
+import { BadRequestError } from "@/core/shared/errors/api-errors";
 
 export function toZodEnum<T extends readonly string[]>(
   values: T

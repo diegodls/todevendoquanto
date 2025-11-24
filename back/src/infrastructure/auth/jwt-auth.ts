@@ -1,9 +1,12 @@
 import { JWTAuthInterface } from "@/core/ports/infrastructure/auth/jwt-auth-interface";
-import { UnauthorizedError } from "@/core/shared/utils/errors/api-error";
-import { MiddlewareJWTAuthCodes } from "@/core/shared/utils/errors/codes/middleware/middleware-jwtauth";
+import { UnauthorizedError } from "@/core/shared/errors/api-errors";
+import { jwtAuthErrorCodes } from "@/infrastructure/errors/codes/auth/jwt-auth-errors";
+
 import jwt from "jsonwebtoken";
 
 export class JWTAuth implements JWTAuthInterface {
+  // TODO: make this class like " encrypt" and another like "decrypt"
+  // or make the two methods in here (SRP goes BOOM)
   async verifyToken<T>(token: string): Promise<T> {
     return new Promise((resolve, reject) => {
       const jwtSecret = process.env.JWT_PASS ?? "";
@@ -14,7 +17,7 @@ export class JWTAuth implements JWTAuthInterface {
             new UnauthorizedError(
               "Not authorized",
               {},
-              MiddlewareJWTAuthCodes.E_0_MW_JWT_0001.code
+              jwtAuthErrorCodes.E_0_MW_JWT_0001.code
             )
           );
         resolve(decoded as T);

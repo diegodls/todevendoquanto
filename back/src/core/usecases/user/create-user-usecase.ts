@@ -3,10 +3,11 @@ import { UserRepositoryInterface } from "@/core/ports/repositories/user-reposito
 import {
   AlreadyExistError,
   InternalError,
-} from "@/core/shared/utils/errors/api-error";
-import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/user-error-codes";
+} from "@/core/shared/errors/api-errors";
+import { useCasesErrorsCodes } from "@/core/shared/errors/usecases/user-usecase-errors";
 import { CreateUserInputDTO } from "@/core/usecases/user/create-user-dto";
 import { CreateUserUseCaseInterface } from "@/core/usecases/user/create-user-usecase-interface";
+
 import bcrypt from "bcrypt";
 
 export class CreateUserUseCase implements CreateUserUseCaseInterface {
@@ -24,12 +25,13 @@ export class CreateUserUseCase implements CreateUserUseCaseInterface {
     const saltRounds = 10;
 
     const encryptedPassword = await bcrypt.hash(password, saltRounds);
+    // TODO: remover o bcrypt lá para o auth/encrypt/decrypt e passar pra cá junto ao "repository"
 
     if (!encryptedPassword) {
       throw new InternalError(
         "Internal Server Error!",
         {},
-        userServiceErrorCodes.E_0_SVC_USR_0002.code
+        useCasesErrorsCodes.E_0_USC_USR_0002.code
       );
     }
 

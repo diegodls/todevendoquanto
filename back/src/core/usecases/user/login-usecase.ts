@@ -2,8 +2,8 @@ import { UserRepositoryInterface } from "@/core/ports/repositories/user-reposito
 import {
   InternalError,
   UnauthorizedError,
-} from "@/core/shared/utils/errors/api-error";
-import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/user-error-codes";
+} from "@/core/shared/errors/api-errors";
+import { useCasesErrorsCodes } from "@/core/shared/errors/usecases/user-usecase-errors";
 import {
   LoginUserInputDTO,
   LoginUserOutputDTO,
@@ -37,7 +37,7 @@ export class LoginUseCase implements LoginUseCaseInterface {
       throw new InternalError(
         "Internal Server Error, try again latter",
         {},
-        userServiceErrorCodes.E_0_SVC_USR_0001.code
+        useCasesErrorsCodes.E_0_USC_USR_0001.code
       );
     }
 

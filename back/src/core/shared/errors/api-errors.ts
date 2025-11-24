@@ -1,7 +1,7 @@
 export class ApiError extends Error {
-  public readonly status: number;
+  public readonly statusCode: number;
   public readonly errors?: Record<string, string>;
-  public readonly code?: string;
+  public readonly appCode?: string;
   public readonly timestamp?: string;
   // ! VERIFICAR SE O ZOD ESTÁ RETORNANDO OS ERROS COMO "Record<string, string>[];"
   // ! TROCAR OU FAZER UM ADAPTER PARA O ZOD RETORNAR OS ERROS COMO "Record<string, string>[];"
@@ -11,15 +11,15 @@ export class ApiError extends Error {
 
   constructor(
     message: string,
-    status: number,
+    statusCode: number,
     errors?: Record<string, string>,
-    code?: string,
+    appCode?: string,
     timestamp?: string
   ) {
     super(message);
-    this.status = status;
+    this.statusCode = statusCode;
     this.errors = errors;
-    this.code = code;
+    this.appCode = appCode;
     this.timestamp = timestamp;
   }
 }
@@ -33,47 +33,75 @@ export class NotModifiedError extends ApiError {
 }
 
 export class BadRequestError extends ApiError {
-  constructor(message: string, errors?: Record<string, string>, code?: string) {
-    super(message, 400, errors, code);
+  constructor(
+    message: string,
+    errors?: Record<string, string>,
+    appCode?: string
+  ) {
+    super(message, 400, errors, appCode);
   }
 }
 
 export class NotAuthenticatedError extends ApiError {
   // not authenticated
-  constructor(message: string, errors?: Record<string, string>, code?: string) {
-    super(message, 401, errors, code);
+  constructor(
+    message: string,
+    errors?: Record<string, string>,
+    appCode?: string
+  ) {
+    super(message, 401, errors, appCode);
   }
 }
 
 export class UnauthorizedError extends ApiError {
   // authenticated, without permissions to do
-  constructor(message: string, errors?: Record<string, string>, code?: string) {
-    super(message, 403, errors, code);
+  constructor(
+    message: string,
+    errors?: Record<string, string>,
+    appCode?: string
+  ) {
+    super(message, 403, errors, appCode);
   }
 }
 
 export class NotFoundError extends ApiError {
-  constructor(message: string, errors?: Record<string, string>, code?: string) {
-    super(message, 404, errors, code);
+  constructor(
+    message: string,
+    errors?: Record<string, string>,
+    appCode?: string
+  ) {
+    super(message, 404, errors, appCode);
   }
 }
 
 export class ConflictError extends ApiError {
   // when the db resource don't have the props passed
   // sell: 2, props have 1
-  constructor(message: string, errors?: Record<string, string>, code?: string) {
-    super(message, 409, errors, code);
+  constructor(
+    message: string,
+    errors?: Record<string, string>,
+    appCode?: string
+  ) {
+    super(message, 409, errors, appCode);
   }
 }
 
 export class AlreadyExistError extends ApiError {
-  constructor(message: string, errors?: Record<string, string>, code?: string) {
-    super(message, 422, errors, code);
+  constructor(
+    message: string,
+    errors?: Record<string, string>,
+    appCode?: string
+  ) {
+    super(message, 422, errors, appCode);
   }
 }
 
 export class InternalError extends ApiError {
-  constructor(message: string, errors?: Record<string, string>, code?: string) {
-    super(message, 500, errors, code);
+  constructor(
+    message: string,
+    errors?: Record<string, string>,
+    appCode?: string
+  ) {
+    super(message, 500, errors, appCode);
   }
 }

@@ -1,7 +1,7 @@
 import { ErrorDTOInterface } from "@/core/ports/infrastructure/http/controllers/error/error-controller-interface";
-import { InternalError } from "@/core/shared/utils/errors/api-error";
-import { testServiceErrorCodes } from "@/core/shared/utils/errors/codes/error/test-error-codes";
-import { ErrorServiceInterface } from "@/core/usecases/tests/error-usecase-interface";
+import { InternalError } from "@/core/shared/errors/api-errors";
+import { ErrorServiceInterface } from "@/core/usecases/api/error-usecase-interface";
+import { testServiceErrorCodes } from "@/infrastructure/errors/codes/controllers/api/test-error-codes";
 
 export class ErrorService implements ErrorServiceInterface {
   execute(data: ErrorDTOInterface): ErrorDTOInterface | null {

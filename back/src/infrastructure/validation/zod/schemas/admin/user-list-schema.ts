@@ -1,10 +1,10 @@
+import { UserRole } from "@/core/entities/user";
 import {
-  ListUsersQueryInput,
   ListUsersQueryProps,
+  ListUsersQueryInput,
   ListUsersRequestDTO,
   UserListRequestPaginatedQuery,
-} from "@/application/dtos/admin/list-dto";
-import { UserRole } from "@/core/entities/user";
+} from "@/core/usecases/user/list-user-dto";
 import { mergeWithPagination } from "@/infrastructure/validation/zod/schemas/shared/pagination-schema";
 import { createExactSchema } from "@/infrastructure/validation/zod/shared/helpers/create-exact-schema";
 import { StringToBoolean } from "@/infrastructure/validation/zod/shared/helpers/string-to-boolean";

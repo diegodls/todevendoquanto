@@ -4,7 +4,7 @@ import {
   DeleteUserByIDOutputDTO,
 } from "@/core/usecases/user/delete-user-dto";
 
-export type UserDeleteByIDControllerType = AuthenticatedControllerInterface<
+export type DeleteUserByIDControllerType = AuthenticatedControllerInterface<
   DeleteUserByIDInputDTO,
   {},
   {},

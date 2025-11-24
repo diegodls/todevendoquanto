@@ -2,14 +2,14 @@ import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
-import { ErrorService } from "@/core/usecases/tests/error-usecase";
 
 import {
   ErrorControllerInterface,
   ErrorDTOInterface,
 } from "@/core/ports/infrastructure/http/controllers/error/error-controller-interface";
-import { InternalError } from "@/core/shared/utils/errors/api-error";
-import { testControllerErrorCodes } from "@/core/shared/utils/errors/codes/error/test-error-codes";
+import { InternalError } from "@/core/shared/errors/api-errors";
+import { ErrorService } from "@/core/usecases/api/error-usecase";
+import { testControllerErrorCodes } from "@/infrastructure/errors/codes/controllers/api/test-error-codes";
 
 export class ErrorController implements ErrorControllerInterface {
   constructor(private readonly service: ErrorService) {}
@@ -39,7 +39,7 @@ export class ErrorController implements ErrorControllerInterface {
       throw new InternalError(message, errors, code);
     }
 
-    const data = this.service.verify({ where });
+    const data = this.service.execute({ where });
 
     return { body: { data }, statusCode: 200 };
   }

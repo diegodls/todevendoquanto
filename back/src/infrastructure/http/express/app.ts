@@ -1,13 +1,11 @@
 import { AppInterface } from "@/core/ports/infrastructure/http/app-interface";
-import { AnyAuthenticatedRouteType } from "@/core/ports/infrastructure/http/routes/authenticated-routes-type";
-import { PublicRoutesType } from "@/core/ports/infrastructure/http/routes/public-routes-type";
-import { TestRoutesType } from "@/core/ports/infrastructure/http/routes/test-routes-type";
 import { HttpMethod } from "@/core/shared/types/http-method";
-import {
-  authenticatedHttpAdapterExpress,
-  publicHttpAdapterExpress,
-} from "@/infrastructure/http/express/adapters/http-adapter-express";
-import express, { ErrorRequestHandler, Express, RequestHandler } from "express";
+import express, {
+  ErrorRequestHandler,
+  Express,
+  RequestHandler,
+  Router,
+} from "express";
 
 type ExpressHttpMethod = keyof Pick<Express, HttpMethod>;
 
@@ -16,39 +14,8 @@ type Middleware = RequestHandler | ErrorRequestHandler;
 export class ExpressApp implements AppInterface {
   private constructor(readonly app: Express) {}
 
-  private registerRoute(
-    app: Express,
-    method: ExpressHttpMethod,
-    path: string,
-    handlers: RequestHandler[]
-  ) {
-    return app[method](path, ...handlers);
-  }
-
-  public loadAuthenticatedRoutes(
-    authenticatedRoutes: AnyAuthenticatedRouteType[]
-  ): void {
-    authenticatedRoutes.forEach((route) => {
-      this.registerRoute(this.app, route.method, route.path, [
-        authenticatedHttpAdapterExpress(route.controller),
-      ]);
-    });
-  }
-
-  public loadPublicRoutes(publicRoutes: PublicRoutesType) {
-    publicRoutes.forEach((route) => {
-      this.registerRoute(this.app, route.method, route.path, [
-        publicHttpAdapterExpress(route.controller),
-      ]);
-    });
-  }
-
-  public loadTestRoutes(testRoutes: TestRoutesType): void {
-    testRoutes.forEach((route) => {
-      this.registerRoute(this.app, route.method, route.path, [
-        publicHttpAdapterExpress(route.controller),
-      ]);
-    });
+  public loadRoutes(routes: Router): void {
+    this.app.use("/api/v1", routes);
   }
 
   public loadMiddleware(middleware: Middleware): void {
@@ -64,6 +31,13 @@ export class ExpressApp implements AppInterface {
   }
 
   private printRoutes() {
+    console.log("");
+    console.log("⚠️⚠️⚠️⚠️⚠️");
+    console.log("");
+    console.log(`🛣️ ROTAS: ${this.app.router.stack.length}`);
+    console.log("");
+    console.log(this.app.router.stack[1].handle);
+    console.log("");
     const routes = this.app.router.stack
       .filter((layer: any) => layer.route)
       .map((route: any) => {

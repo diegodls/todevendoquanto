@@ -7,13 +7,13 @@ import {
   DeleteUserByIDOutputDTO,
 } from "@/core/usecases/user/delete-user-dto";
 
-import { UserDeleteByIDControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-delete-by-id-controller-type";
-import { BadRequestError } from "@/core/shared/utils/errors/api-error";
+import { DeleteUserByIDControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-delete-by-id-controller-type";
+import { BadRequestError } from "@/core/shared/errors/api-errors";
 import { DeleteUserUseCaseInterface } from "@/core/usecases/user/delete-user-usecase-interface";
 import { UserDeleteByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/admin/user-delete-by-id-params-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
 
-export class UserDeleteByIDController implements UserDeleteByIDControllerType {
+export class DeleteUserByIDController implements DeleteUserByIDControllerType {
   constructor(private readonly usecase: DeleteUserUseCaseInterface) {}
   public async handle(
     request: AuthenticatedHttpRequestInterface<DeleteUserByIDInputDTO>

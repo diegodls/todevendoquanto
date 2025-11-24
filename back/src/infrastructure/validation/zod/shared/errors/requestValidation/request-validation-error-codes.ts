@@ -1,4 +1,8 @@
-import { RequestValidationErrorCodesInterface } from "@/infrastructure/validation/zod/shared/errors/requestValidation/request-validation-error-codes-interface";
+import { ErrorsCodeType } from "@/core/shared/errors/types/error-codes-type";
+
+export interface RequestValidationErrorCodesInterface {
+  E_0_REQ_ZVL_0001: ErrorsCodeType;
+}
 
 export const requestValidationErrorCodes: RequestValidationErrorCodesInterface =
   {

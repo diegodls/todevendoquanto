@@ -3,8 +3,9 @@ import { UserRepositoryInterface } from "@/core/ports/repositories/user-reposito
 import {
   NotFoundError,
   UnauthorizedError,
-} from "@/core/shared/utils/errors/api-error";
-import { adminServiceErrorCodes } from "@/core/shared/utils/errors/codes/admin/admin-error-codes";
+} from "@/core/shared/errors/api-errors";
+import { useCasesErrorsCodes } from "@/core/shared/errors/usecases/user-usecase-errors";
+
 import { DeleteUserUseCaseInterface } from "@/core/usecases/user/delete-user-usecase-interface";
 
 export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
@@ -17,7 +18,7 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
       throw new NotFoundError(
         "User not found",
         {},
-        adminServiceErrorCodes.E_0_SVC_ADM_0003.code
+        useCasesErrorsCodes.E_0_USC_USR_0008.code
       );
     }
 
@@ -25,7 +26,7 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
       throw new UnauthorizedError(
         "You cannot perform this action",
         {},
-        adminServiceErrorCodes.E_0_SVC_ADM_0004.code
+        useCasesErrorsCodes.E_0_USC_USR_0009.code
       );
     }
 

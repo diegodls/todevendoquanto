@@ -1,10 +1,10 @@
-import { InternalError } from "@/core/shared/utils/errors/api-error";
-import { userControllerErrorCodes } from "@/core/shared/utils/errors/codes/user/user-error-codes";
+import { InternalError } from "@/core/shared/errors/api-errors";
 import {
   CreateUserInputDTO,
   CreateUserOutputDTO,
 } from "@/core/usecases/user/create-user-dto";
 import { CreateUserUseCase } from "@/core/usecases/user/create-user-usecase";
+import { userControllerErrorCodes } from "@/infrastructure/errors/codes/controllers/user/user-error-codes";
 import { UserSignInBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-sign-in-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
 import { Request, Response } from "express";

@@ -3,7 +3,8 @@ import {
   PaginationProps,
   PaginationQueryInput,
 } from "@/application/dtos/shared/pagination-dto";
-import { BadRequestError } from "@/core/shared/utils/errors/api-error";
+import { BadRequestError } from "@/core/shared/errors/api-errors";
+
 import { toZodEnum } from "@/infrastructure/validation/zod/shared/helpers/to-zod-enum";
 import { z } from "zod";
 

@@ -1,9 +1,10 @@
+import { ApiError } from "@/core/shared/errors/api-errors";
 import {
   ErrorHandlerType,
   ErrorType,
-} from "@/core/ports/infrastructure/errors/errors-handler-type";
-import { ApiError } from "@/core/shared/utils/errors/api-error";
-import { MiddlewareErrorHandler } from "@/core/shared/utils/errors/codes/middleware/middleware-error-handler";
+} from "@/core/shared/errors/types/errors-handler-type";
+import { errorHandlerErrorCodes } from "@/infrastructure/errors/codes/error-handler-errors";
+
 import {
   JsonWebTokenError,
   NotBeforeError,
@@ -11,10 +12,10 @@ import {
 } from "jsonwebtoken";
 
 export const errorHandler: ErrorHandlerType = (error: ErrorType) => {
-  const status = error.status ?? 500;
+  const status = error.statusCode ?? 500;
   let message = error.message ?? "Internal Server Error";
   const errors = error.errors;
-  let code = error.code;
+  let code = error.appCode;
 
   const timestamp = new Date().toLocaleString("pt-BR", {
     year: "numeric",
@@ -30,17 +31,17 @@ export const errorHandler: ErrorHandlerType = (error: ErrorType) => {
 
   if (error instanceof TokenExpiredError) {
     message = "Internal Server Error";
-    code = MiddlewareErrorHandler.E_0_MW_ADM_0001.code;
+    code = errorHandlerErrorCodes.E_0_HAN_JWT_0001.code;
   }
 
   if (error instanceof JsonWebTokenError) {
     message = "Internal Server Error";
-    code = MiddlewareErrorHandler.E_0_MW_ADM_0002.code;
+    code = errorHandlerErrorCodes.E_0_HAN_JWT_0002.code;
   }
 
   if (error instanceof NotBeforeError) {
     message = "Internal Server Error";
-    code = MiddlewareErrorHandler.E_0_MW_ADM_0003.code;
+    code = errorHandlerErrorCodes.E_0_HAN_JWT_0003.code;
   }
 
   const returnError = new ApiError(message, status, errors, code, timestamp);

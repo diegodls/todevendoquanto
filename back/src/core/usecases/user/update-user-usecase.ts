@@ -5,8 +5,8 @@ import {
   BadRequestError,
   NotModifiedError,
   UnauthorizedError,
-} from "@/core/shared/utils/errors/api-error";
-import { userServiceErrorCodes } from "@/core/shared/utils/errors/codes/user/user-error-codes";
+} from "@/core/shared/errors/api-errors";
+import { useCasesErrorsCodes } from "@/core/shared/errors/usecases/user-usecase-errors";
 import {
   UpdateUserInputDTO,
   UpdateUserOutputDTO,
@@ -29,7 +29,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
       throw new UnauthorizedError(
         "Invalid authentication: user not found!",
         {},
-        userServiceErrorCodes.E_0_SVC_USR_0003.code
+        useCasesErrorsCodes.E_0_USC_USR_0003.code
       );
     }
 
@@ -54,7 +54,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
       throw new UnauthorizedError(
         "You don't have the permissions",
         {},
-        userServiceErrorCodes.E_0_SVC_USR_0004.code
+        useCasesErrorsCodes.E_0_USC_USR_0004.code
       );
     }
 
@@ -112,7 +112,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
         throw new BadRequestError(
           "Name already in use",
           { name: "Name already in use" },
-          userServiceErrorCodes.E_0_SVC_USR_0005.code
+          useCasesErrorsCodes.E_0_USC_USR_0005.code
         );
       }
     }
@@ -124,7 +124,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
         throw new BadRequestError(
           "Email already in use",
           { email: "Email already in use" },
-          userServiceErrorCodes.E_0_SVC_USR_0005.code
+          useCasesErrorsCodes.E_0_USC_USR_0005.code
         );
       }
     }

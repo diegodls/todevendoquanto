@@ -1,10 +1,10 @@
 import { UserUpdateControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-update-controller-type";
+import { BadRequestError } from "@/core/shared/errors/api-errors";
 import { SANITIZE_UUID_V4_REGEX } from "@/core/shared/regex/sanitize-uuid";
 import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
-import { BadRequestError } from "@/core/shared/utils/errors/api-error";
 import {
   UpdateUserInputDTO,
   UpdateUserOutputDTO,
@@ -38,7 +38,7 @@ export class UserUpdateController implements UserUpdateControllerType {
 
     const input = requestValidation("body", request, UserUpdateBodySchema);
 
-    const updatedUser = await this.service.update(
+    const updatedUser = await this.service.execute(
       userJWT,
       userIDToChange,
       input

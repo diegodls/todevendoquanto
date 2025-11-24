@@ -1,4 +1,4 @@
-import { ErrorType } from "@/core/ports/infrastructure/errors/errors-handler-type";
+import { ErrorType } from "@/core/shared/errors/types/errors-handler-type";
 import { errorHandler } from "@/infrastructure/errors/errors-handler";
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 
@@ -8,7 +8,8 @@ export const errorHandlerAdapterExpress: ErrorRequestHandler = (
   response: Response,
   _next: NextFunction
 ) => {
-  const { message, status, errors, code, timestamp } = errorHandler(error);
+  const { message, statusCode, errors, appCode, timestamp } =
+    errorHandler(error);
 
-  response.status(status).json({ message, errors, code, timestamp });
+  response.status(statusCode).json({ message, errors, appCode, timestamp });
 };

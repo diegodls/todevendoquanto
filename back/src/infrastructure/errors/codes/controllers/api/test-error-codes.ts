@@ -1,7 +1,12 @@
-import {
-  ErrorControllerErrorCodesInterface,
-  ErrorServiceErrorCodesInterface,
-} from "@/core/shared/utils/errors/codes/error/test-error-codes-interface";
+import { ErrorsCodeType } from "@/core/shared/errors/types/error-codes-type";
+
+export interface ErrorControllerErrorCodesInterface {
+  E_0_CTR_ERR_0001: ErrorsCodeType;
+}
+
+export interface ErrorServiceErrorCodesInterface {
+  E_0_SVC_ERR_0001: ErrorsCodeType;
+}
 
 export const testControllerErrorCodes: ErrorControllerErrorCodesInterface = {
   E_0_CTR_ERR_0001: {
