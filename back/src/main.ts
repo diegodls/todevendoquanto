@@ -1,9 +1,7 @@
-//import { testDb } from "@/core/shared/utils/dbHealth";
-
 import { testDb } from "@/core/shared/utils/db-health";
 import { errorHandlerAdapterExpress } from "@/infrastructure/http/express/adapters/error-handler-adapter-express";
 import { ExpressApp } from "@/infrastructure/http/express/app";
-import { routes } from "@/infrastructure/http/express/routes/routes";
+import { routesHub } from "@/infrastructure/http/express/routes/routes-hub";
 
 testDb();
 
@@ -11,7 +9,7 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 3333;
 
 const app = ExpressApp.build();
 
-app.loadRoutes(routes);
+app.loadRoutes(routesHub);
 
 app.loadMiddleware(errorHandlerAdapterExpress);
 

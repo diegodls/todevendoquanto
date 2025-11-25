@@ -22,8 +22,6 @@ export class ListUserController implements UserListControllerType {
       UserListRequestPaginatedQuery
     >
   ): Promise<AuthenticatedHttpResponseInterface<PaginatedResponse<User>>> {
-    const adminUser = request.user;
-
     const input = requestValidation(
       "query",
       request,

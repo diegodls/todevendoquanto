@@ -50,7 +50,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
       );
     }
 
-    if (loggedUser.id !== targetUser.id) {
+    if (!isLoggedUserAdmin && loggedUser.id !== targetUser.id) {
       throw new UnauthorizedError(
         "You don't have the permissions",
         {},

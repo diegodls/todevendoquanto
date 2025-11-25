@@ -4,7 +4,7 @@ import { AuthenticatedHttpRequestInterface } from "@/core/shared/types/http-requ
 import { ensureIsAuthenticatedErrors } from "@/infrastructure/errors/codes/middlewares/ensure-is-authenticated-errors";
 import { NextFunction, Request, Response } from "express";
 
-export const ensureAuthenticated = (jwtAuth: JWTAuthInterface) => {
+export const ensureIsAuthenticated = (jwtAuth: JWTAuthInterface) => {
   return async (request: Request, _response: Response, next: NextFunction) => {
     const authHeader = request.headers.authorization;
 
@@ -23,15 +23,6 @@ export const ensureAuthenticated = (jwtAuth: JWTAuthInterface) => {
     const decoded = await jwtAuth.verifyToken<JwtPayloadInterface>(token);
 
     (request as unknown as AuthenticatedHttpRequestInterface).user = decoded;
-    // request.user = decoded as AuthenticatedHttpRequest<Request>;
-
-    console.log("");
-    console.log("⚠️⚠️⚠️⚠️⚠️");
-    console.log("decoded:");
-    console.log(decoded);
-    console.log("");
-    console.log("request:");
-    console.log(request);
 
     next();
   };

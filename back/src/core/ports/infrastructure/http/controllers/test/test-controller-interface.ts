@@ -1,10 +1,14 @@
 import {
-  PublicHttpRequestInterface,
-  PublicHttpResponseInterface,
+  AuthenticatedHttpRequestInterface,
+  AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
+
+export type TestControllerOutputDTO = {
+  message: string;
+};
 
 export interface TestControllerInterface {
   handle(
-    request: PublicHttpRequestInterface
-  ): Promise<PublicHttpResponseInterface>;
+    request: AuthenticatedHttpRequestInterface
+  ): Promise<AuthenticatedHttpResponseInterface<TestControllerOutputDTO>>;
 }

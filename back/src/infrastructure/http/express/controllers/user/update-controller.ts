@@ -24,7 +24,10 @@ export class UserUpdateController implements UserUpdateControllerType {
       UpdateUserParams
     >
   ): Promise<AuthenticatedHttpResponseInterface<UpdateUserOutputDTO>> {
-    const userJWT = request.user;
+    const jwtUser = request.user;
+
+    console.log("UPDATE-CONTROLLER");
+    console.log(jwtUser);
 
     const userIDToChange = request.params.id;
 
@@ -39,7 +42,7 @@ export class UserUpdateController implements UserUpdateControllerType {
     const input = requestValidation("body", request, UserUpdateBodySchema);
 
     const updatedUser = await this.service.execute(
-      userJWT,
+      jwtUser,
       userIDToChange,
       input
     );

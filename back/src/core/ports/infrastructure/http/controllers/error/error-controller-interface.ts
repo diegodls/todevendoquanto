@@ -1,16 +1,20 @@
 import {
-  PublicHttpRequestInterface,
-  PublicHttpResponseInterface,
+  AuthenticatedHttpRequestInterface,
+  AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
 
 export type ErrorDTOWhereType = "controller" | "service";
 
-export interface ErrorDTOInterface {
+export interface ApiErrorInputDTO {
+  where: ErrorDTOWhereType;
+}
+
+export interface ApiErrorOutputDTO {
   where: ErrorDTOWhereType;
 }
 
 export interface ErrorControllerInterface {
   handle(
-    request: PublicHttpRequestInterface<ErrorDTOInterface>
-  ): PublicHttpResponseInterface | void;
+    request: AuthenticatedHttpRequestInterface<ApiErrorInputDTO>
+  ): Promise<AuthenticatedHttpResponseInterface<ApiErrorOutputDTO>>;
 }

@@ -16,7 +16,7 @@ export class UserLoginController implements UserLoginControllerInterface {
 
   public async handle(
     request: PublicHttpRequestInterface<LoginUserInputDTO>
-  ): Promise<PublicHttpResponseInterface<LoginUserOutputDTO> | null> {
+  ): Promise<PublicHttpResponseInterface<LoginUserOutputDTO>> {
     const input = requestValidation("body", request, UserLoginBodySchema);
 
     const token = await this.usecase.execute(input);

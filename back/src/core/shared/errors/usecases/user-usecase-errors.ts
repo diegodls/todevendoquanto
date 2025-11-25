@@ -1,8 +1,8 @@
 import { ErrorsCodeType } from "@/core/shared/errors/types/error-codes-type";
 
-export interface useCasesErrorsCodesInterface {
+export interface UseCasesErrorsCodesInterface {
   E_0_USC_USR_0001: ErrorsCodeType;
-  E_0_USC_USR_0002: ErrorsCodeType;
+  E_0_USC_USR_0002: {};
   E_0_USC_USR_0003: ErrorsCodeType;
   E_0_USC_USR_0004: ErrorsCodeType;
   E_0_USC_USR_0005: ErrorsCodeType;
@@ -12,19 +12,14 @@ export interface useCasesErrorsCodesInterface {
   E_0_USC_USR_0009: ErrorsCodeType;
 }
 
-export const useCasesErrorsCodes: useCasesErrorsCodesInterface = {
+export const useCasesErrorsCodes: UseCasesErrorsCodesInterface = {
   E_0_USC_USR_0001: {
     code: "E_0_USC_USR_0001",
     details: "Error fetch JWT SECRET environment variable",
     actions: "Check environment variable or app folder....",
     instance: "userService",
   },
-  E_0_USC_USR_0002: {
-    code: "E_0_USC_USR_0002",
-    details: "Error when generate encrypted password",
-    actions: "Check bcrypt method",
-    instance: "create-user-usecase",
-  },
+  E_0_USC_USR_0002: {},
   E_0_USC_USR_0003: {
     code: "E_0_USC_USR_0003",
     details: "User not found with the logged user ID",

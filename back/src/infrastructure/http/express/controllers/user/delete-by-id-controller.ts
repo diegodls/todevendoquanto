@@ -18,15 +18,13 @@ export class DeleteUserByIDController implements DeleteUserByIDControllerType {
   public async handle(
     request: AuthenticatedHttpRequestInterface<DeleteUserByIDInputDTO>
   ): Promise<AuthenticatedHttpResponseInterface<DeleteUserByIDOutputDTO>> {
-    const adminUser = request.user;
-
-    const input = requestValidation(
+    const { id } = requestValidation(
       "params",
       request,
       UserDeleteByIDParamsSchema
     );
 
-    const deletedUser = await this.usecase.execute(adminUser.sub);
+    const deletedUser = await this.usecase.execute(id);
 
     if (!deletedUser) {
       throw new BadRequestError("User to be deleted not found");

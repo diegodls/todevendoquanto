@@ -5,22 +5,28 @@ import { ListUserUseCase } from "@/core/usecases/user/list-user-usecase";
 import { LoginUseCase } from "@/core/usecases/user/login-usecase";
 import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
 import { JWTAuth } from "@/infrastructure/auth/jwt-auth";
-import { publicHttpAdapterExpress } from "@/infrastructure/http/express/adapters/http-adapter-express";
+import { Encrypt } from "@/infrastructure/encryption/encrypt";
+import {
+  authenticatedExpressHttpAdapter,
+  publicExpressHttpAdapter,
+} from "@/infrastructure/http/express/adapters/http-adapter-express";
 import { CreateUserController } from "@/infrastructure/http/express/controllers/user/create-controller";
 import { DeleteUserByIDController } from "@/infrastructure/http/express/controllers/user/delete-by-id-controller";
 import { ListUserController } from "@/infrastructure/http/express/controllers/user/list-controller";
 import { UserLoginController } from "@/infrastructure/http/express/controllers/user/login-controller";
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/user/update-controller";
 import { ensureIsAdmin } from "@/infrastructure/http/express/middleware/ensure-is-admin";
-import { ensureAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
+import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
 import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-repository-prisma";
 import { Router } from "express";
 
 const jwtService = new JWTAuth();
 
+const encrypt = new Encrypt();
+
 const userRepository = new UserRepositoryPrisma(prisma);
 
-const createUserUseCase = new CreateUserUseCase(userRepository);
+const createUserUseCase = new CreateUserUseCase(userRepository, encrypt);
 const createUserController = new CreateUserController(createUserUseCase);
 
 const listUsersUseCase = new ListUserUseCase(userRepository);
@@ -39,27 +45,30 @@ const usersRouter = Router();
 
 const publicUsersRouter = Router();
 
+publicUsersRouter.post("/login", publicExpressHttpAdapter(loginController));
+
 const authenticatedUserRouter = Router();
-authenticatedUserRouter.use(ensureAuthenticated(jwtService));
-
-const adminUserRouter = Router();
-adminUserRouter.use(ensureAuthenticated(jwtService), ensureIsAdmin());
-
-adminUserRouter.get("/", publicHttpAdapterExpress(listUserController));
-
-adminUserRouter.post("/create", publicHttpAdapterExpress(createUserController));
-
-publicUsersRouter.post("/login", publicHttpAdapterExpress(loginController));
-
-adminUserRouter.delete(
-  "/delete/:id",
-  publicHttpAdapterExpress(deleteController)
-);
+authenticatedUserRouter.use(ensureIsAuthenticated(jwtService));
 
 authenticatedUserRouter.patch(
   "/update/:id",
-  ensureAuthenticated(jwtService),
-  publicHttpAdapterExpress(updateController)
+  ensureIsAuthenticated(jwtService),
+  authenticatedExpressHttpAdapter(updateController)
+);
+
+const adminUserRouter = Router();
+adminUserRouter.use(ensureIsAuthenticated(jwtService), ensureIsAdmin());
+
+adminUserRouter.get("/", authenticatedExpressHttpAdapter(listUserController));
+
+adminUserRouter.post(
+  "/create",
+  authenticatedExpressHttpAdapter(createUserController)
+);
+
+adminUserRouter.delete(
+  "/delete/:id",
+  authenticatedExpressHttpAdapter(deleteController)
 );
 
 usersRouter.use(publicUsersRouter);

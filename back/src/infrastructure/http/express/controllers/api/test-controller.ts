@@ -1,17 +1,26 @@
-import { TestControllerInterface } from "@/core/ports/infrastructure/http/controllers/test/test-controller-interface";
 import {
-  PublicHttpRequestInterface,
-  PublicHttpResponseInterface,
+  TestControllerInterface,
+  TestControllerOutputDTO,
+} from "@/core/ports/infrastructure/http/controllers/test/test-controller-interface";
+import {
+  AuthenticatedHttpRequestInterface,
+  AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
 
 export class TestController implements TestControllerInterface {
   public async handle(
-    request: PublicHttpRequestInterface
-  ): Promise<PublicHttpResponseInterface> {
+    _request: AuthenticatedHttpRequestInterface
+  ): Promise<AuthenticatedHttpResponseInterface<TestControllerOutputDTO>> {
     console.log("");
     console.log("🔴🔴🔴 CONTROLLER TEST ROUTE 🔴🔴🔴");
     console.log("");
 
-    return { body: { message: "CONTROLLER TEST ROUTE" }, statusCode: 200 };
+    const output: AuthenticatedHttpResponseInterface<TestControllerOutputDTO> =
+      {
+        body: { message: "CONTROLLER TEST ROUTE" },
+        statusCode: 200,
+      };
+
+    return output;
   }
 }

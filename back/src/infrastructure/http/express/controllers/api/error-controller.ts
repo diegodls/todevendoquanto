@@ -1,22 +1,23 @@
 import {
-  PublicHttpRequestInterface,
-  PublicHttpResponseInterface,
+  AuthenticatedHttpRequestInterface,
+  AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
 
 import {
+  ApiErrorInputDTO,
+  ApiErrorOutputDTO,
   ErrorControllerInterface,
-  ErrorDTOInterface,
 } from "@/core/ports/infrastructure/http/controllers/error/error-controller-interface";
 import { InternalError } from "@/core/shared/errors/api-errors";
-import { ErrorService } from "@/core/usecases/api/error-usecase";
+import { ErrorUseCase } from "@/core/usecases/api/error-usecase";
 import { testControllerErrorCodes } from "@/infrastructure/errors/codes/controllers/api/test-error-codes";
 
 export class ErrorController implements ErrorControllerInterface {
-  constructor(private readonly service: ErrorService) {}
+  constructor(private readonly usecase: ErrorUseCase) {}
 
-  handle(
-    request: PublicHttpRequestInterface<ErrorDTOInterface>
-  ): PublicHttpResponseInterface | void {
+  async handle(
+    request: AuthenticatedHttpRequestInterface<ApiErrorInputDTO>
+  ): Promise<AuthenticatedHttpResponseInterface<ApiErrorOutputDTO>> {
     const { where } = request.body;
 
     if (!where) {
@@ -39,8 +40,13 @@ export class ErrorController implements ErrorControllerInterface {
       throw new InternalError(message, errors, code);
     }
 
-    const data = this.service.execute({ where });
+    const data = this.usecase.execute({ where });
 
-    return { body: { data }, statusCode: 200 };
+    const output: AuthenticatedHttpResponseInterface<ApiErrorOutputDTO> = {
+      statusCode: 200,
+      body: data,
+    };
+
+    return output;
   }
 }
