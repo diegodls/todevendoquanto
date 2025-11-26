@@ -7,8 +7,8 @@ import {
 } from "@/core/shared/utils/orm/prisma/prisma-client";
 import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prisma-entity-user-parser";
 import {
-  ListUsersRequestDTO,
   ListUsersQueryProps,
+  ListUsersRequestDTO,
 } from "@/core/usecases/user/list-user-dto";
 import { UpdateUserInputDTO } from "@/core/usecases/user/update-user-dto";
 import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
@@ -17,7 +17,6 @@ import { queryFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils
 type PrismaUserWhereInput = PrismaGenerated.UserWhereInput;
 export class UserRepositoryPrisma implements UserRepositoryInterface {
   constructor(private readonly ormClient: PrismaClientGenerated) {}
-  //! TODO: Maybe unify the findByXYZ and pass the keys of User, to prevent multiples call, like in userService > update
 
   async findById(id: string): Promise<User | null> {
     const userExists = await this.ormClient.user.findFirst({
