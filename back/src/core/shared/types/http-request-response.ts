@@ -1,4 +1,4 @@
-import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-auth-interface";
+import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-verify-token-interface";
 
 export interface PublicHttpRequestInterface<
   B = any,

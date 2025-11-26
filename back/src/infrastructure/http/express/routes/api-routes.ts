@@ -1,5 +1,5 @@
 import { ErrorUseCase } from "@/core/usecases/api/error-usecase";
-import { JWTAuth } from "@/infrastructure/auth/jwt-auth";
+import { JwtVerifyToken } from "@/infrastructure/auth/jwt-verify-token";
 import { authenticatedExpressHttpAdapter } from "@/infrastructure/http/express/adapters/http-adapter-express";
 import { ErrorController } from "@/infrastructure/http/express/controllers/api/error-controller";
 import { TestController } from "@/infrastructure/http/express/controllers/api/test-controller";
@@ -12,7 +12,7 @@ const testController = new TestController();
 const errorService = new ErrorUseCase();
 const errorController = new ErrorController(errorService);
 
-const jwtService = new JWTAuth();
+const jwtService = new JwtVerifyToken();
 
 const apiRouter = Router();
 

@@ -4,7 +4,9 @@ import { DeleteUserUseCase } from "@/core/usecases/user/delete-user-usecase";
 import { ListUserUseCase } from "@/core/usecases/user/list-user-usecase";
 import { LoginUseCase } from "@/core/usecases/user/login-usecase";
 import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
-import { JWTAuth } from "@/infrastructure/auth/jwt-auth";
+import { JwtGenerateToken } from "@/infrastructure/auth/jwt-generate-token";
+import { JwtVerifyToken } from "@/infrastructure/auth/jwt-verify-token";
+import { Compare } from "@/infrastructure/encryption/compare";
 import { Encrypt } from "@/infrastructure/encryption/encrypt";
 import {
   authenticatedExpressHttpAdapter,
@@ -20,9 +22,11 @@ import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/
 import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-repository-prisma";
 import { Router } from "express";
 
-const jwtService = new JWTAuth();
+const jwtVerifyToken = new JwtVerifyToken();
+const jwtGenerateToken = new JwtGenerateToken();
 
 const encrypt = new Encrypt();
+const compare = new Compare();
 
 const userRepository = new UserRepositoryPrisma(prisma);
 
@@ -32,7 +36,11 @@ const createUserController = new CreateUserController(createUserUseCase);
 const listUsersUseCase = new ListUserUseCase(userRepository);
 const listUserController = new ListUserController(listUsersUseCase);
 
-const loginUseCase = new LoginUseCase(userRepository);
+const loginUseCase = new LoginUseCase(
+  userRepository,
+  compare,
+  jwtGenerateToken
+);
 const loginController = new UserLoginController(loginUseCase);
 
 const deleteUseCase = new DeleteUserUseCase(userRepository);
@@ -48,16 +56,16 @@ const publicUsersRouter = Router();
 publicUsersRouter.post("/login", publicExpressHttpAdapter(loginController));
 
 const authenticatedUserRouter = Router();
-authenticatedUserRouter.use(ensureIsAuthenticated(jwtService));
+authenticatedUserRouter.use(ensureIsAuthenticated(jwtVerifyToken));
 
 authenticatedUserRouter.patch(
   "/update/:id",
-  ensureIsAuthenticated(jwtService),
+  ensureIsAuthenticated(jwtVerifyToken),
   authenticatedExpressHttpAdapter(updateController)
 );
 
 const adminUserRouter = Router();
-adminUserRouter.use(ensureIsAuthenticated(jwtService), ensureIsAdmin());
+adminUserRouter.use(ensureIsAuthenticated(jwtVerifyToken), ensureIsAdmin());
 
 adminUserRouter.get("/", authenticatedExpressHttpAdapter(listUserController));
 

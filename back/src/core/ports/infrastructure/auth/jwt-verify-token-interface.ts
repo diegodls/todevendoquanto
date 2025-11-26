@@ -6,8 +6,9 @@ export interface JwtPayloadInterface {
   sub: User["id"];
   iat: number;
   exp: number;
+  // when change, need change the express type in "./@types/express/index.ts"
 }
 
-export interface JWTAuthInterface {
-  verifyToken<T>(token: string): Promise<T>;
+export interface JwtVerifyTokenInterface {
+  execute<T>(token: string): Promise<T>;
 }

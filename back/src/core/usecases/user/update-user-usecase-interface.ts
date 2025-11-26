@@ -1,5 +1,5 @@
 import { User } from "@/core/entities/user";
-import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-auth-interface";
+import { JwtPayloadInterface } from "@/core/ports/infrastructure/auth/jwt-verify-token-interface";
 import {
   UpdateUserInputDTO,
   UpdateUserOutputDTO,
