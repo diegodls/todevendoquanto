@@ -1,6 +1,6 @@
 import { JwtVerifyTokenInterface } from "@/core/ports/infrastructure/auth/jwt-verify-token-interface";
 import { UnauthorizedError } from "@/core/shared/errors/api-errors";
-import { jwtAuthErrorCodes } from "@/infrastructure/errors/codes/auth/jwt-auth-errors";
+import { jwtAuthErrorCodes } from "@/infrastructure/errors/codes/auth/jwt-errors";
 
 import jwt from "jsonwebtoken";
 

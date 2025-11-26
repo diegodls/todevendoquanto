@@ -7,7 +7,7 @@ import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
-import { jwtAuthErrorCodes } from "@/infrastructure/errors/codes/auth/jwt-auth-errors";
+import { jwtAuthErrorCodes } from "@/infrastructure/errors/codes/auth/jwt-errors";
 
 import { Request, Response } from "express";
 

@@ -1,6 +1,6 @@
 import { JwtGenerateTokenInterface } from "@/core/ports/infrastructure/auth/jwt-generate-token-interface";
 import { InternalError } from "@/core/shared/errors/api-errors";
-import { jwtAuthErrorCodes } from "@/infrastructure/errors/codes/auth/jwt-auth-errors";
+import { jwtAuthErrorCodes } from "@/infrastructure/errors/codes/auth/jwt-errors";
 import jwt, { SignOptions } from "jsonwebtoken";
 
 export class JwtGenerateToken implements JwtGenerateTokenInterface {
