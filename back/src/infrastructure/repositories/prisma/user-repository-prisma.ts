@@ -2,15 +2,15 @@ import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
 import { User } from "@/core/entities/user";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
-  PrismaClientGenerated,
-  PrismaGenerated,
-} from "@/core/shared/utils/orm/prisma/prisma-client";
-import { prismaEntityUserParser } from "@/core/shared/utils/orm/prisma/prisma-entity-user-parser";
-import {
   ListUsersQueryProps,
   ListUsersRequestDTO,
 } from "@/core/usecases/user/list-user-dto";
 import { UpdateUserInputDTO } from "@/core/usecases/user/update-user-dto";
+import {
+  PrismaClientGenerated,
+  PrismaGenerated,
+} from "@/infrastructure/repositories/prisma/prisma-client";
+import { prismaEntityUserParser } from "@/infrastructure/repositories/prisma/utils/prisma-entity-user-parser";
 import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
 import { queryFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils/query-filter-to-prisma-where";
 

@@ -1,4 +1,3 @@
-import { prisma } from "@/core/shared/utils/orm/prisma/prisma-client";
 import { CreateUserUseCase } from "@/core/usecases/user/create-user-usecase";
 import { DeleteUserUseCase } from "@/core/usecases/user/delete-user-usecase";
 import { ListUserUseCase } from "@/core/usecases/user/list-user-usecase";
@@ -19,6 +18,7 @@ import { UserLoginController } from "@/infrastructure/http/express/controllers/u
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/user/update-controller";
 import { ensureIsAdmin } from "@/infrastructure/http/express/middleware/ensure-is-admin";
 import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
+import { prisma } from "@/infrastructure/repositories/prisma/prisma-client";
 import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-repository-prisma";
 import { Router } from "express";
 
