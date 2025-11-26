@@ -10,8 +10,8 @@ import {
 import { DeleteUserByIDControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-delete-by-id-controller-type";
 import { BadRequestError } from "@/core/shared/errors/api-errors";
 import { DeleteUserUseCaseInterface } from "@/core/usecases/user/delete-user-usecase-interface";
-import { UserDeleteByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/admin/user-delete-by-id-params-schema";
-import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
+import { UserDeleteByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/user/user-delete-by-id-params-schema";
+import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class DeleteUserByIDController implements DeleteUserByIDControllerType {
   constructor(private readonly usecase: DeleteUserUseCaseInterface) {}
@@ -33,7 +33,7 @@ export class DeleteUserByIDController implements DeleteUserByIDControllerType {
     const output: AuthenticatedHttpResponseInterface<DeleteUserByIDOutputDTO> =
       {
         statusCode: 200,
-        body: { deletedId: deletedUser.id },
+        body: { id: deletedUser.id },
       };
 
     return output;

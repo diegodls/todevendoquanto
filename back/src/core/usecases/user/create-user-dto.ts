@@ -1,9 +1,8 @@
 import { User } from "@/core/entities/user";
+import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
 
-export type CreateUserInputDTO = {
-  name: string;
-  email: string;
-  password: string;
-};
+export type CreateUserInputProps = Pick<User, "name" | "email" | "password">;
+
+export type CreateUserInputDTO = PropsToString<CreateUserInputProps>;
 
 export type CreateUserOutputDTO = Omit<User, "password">;

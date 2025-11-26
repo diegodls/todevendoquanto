@@ -1,14 +1,34 @@
 import { UserRole } from "@/core/entities/user";
-import { UpdateUserInputDTO } from "@/core/usecases/user/update-user-dto";
-import { StringToBoolean } from "@/infrastructure/validation/zod/shared/helpers/string-to-boolean";
-import { z } from "zod";
+import {
+  UpdateUserInputDTO,
+  UpdateUserInputParams,
+} from "@/core/usecases/user/update-user-dto";
+import { StringToBoolean } from "@/infrastructure/validation/zod/helpers/string-to-boolean";
+import z from "zod";
 
-export const UserUpdateBodySchema = z.object({
-  name: z.string().min(6).max(255).optional(),
-  email: z.string().email().optional(),
-  role: z
-    .string()
-    .transform((value) => value.toUpperCase())
-    .pipe(z.nativeEnum(UserRole)),
-  is_active: StringToBoolean.optional(),
-}) as z.ZodType<UpdateUserInputDTO>;
+export const UserUpdateParamsSchema = z
+  .object({
+    id: z.string({
+      error: (err) => {
+        if (!err.input) return `You must pass a valid ${err.path}`;
+
+        if (err.code === "invalid_type") return `Invalid type of ${err.path}`;
+
+        if (err.code === "invalid_format")
+          return `Invalid format of ${err.path}`;
+      },
+    }),
+  })
+  .strip() satisfies z.ZodType<UpdateUserInputParams>;
+
+export const UserUpdateBodySchema = z
+  .object({
+    name: z.string().min(6).max(255).optional(),
+    email: z.email().optional(),
+    role: z
+      .string()
+      .transform((value) => value.toUpperCase())
+      .pipe(z.enum(UserRole)),
+    is_active: StringToBoolean.optional(),
+  })
+  .strip() satisfies z.ZodType<UpdateUserInputDTO>;

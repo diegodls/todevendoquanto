@@ -1,15 +1,14 @@
 import { User } from "@/core/entities/user";
 
-export type LoginUserInputDTO = {
+export type LoginUserPayloadType = Pick<User, "email" | "role">;
+
+export type LoginUserInputQuery = {
   email: string;
   password: string;
 };
 
+export type LoginUserInputDTO = Pick<User, "email" | "password">;
+
 export type LoginUserOutputDTO = {
   token: string;
 };
-
-export interface LoginUserPayload {
-  email: User["email"];
-  role: User["role"];
-}

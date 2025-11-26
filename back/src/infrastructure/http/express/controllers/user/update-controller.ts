@@ -7,12 +7,15 @@ import {
 } from "@/core/shared/types/http-request-response";
 import {
   UpdateUserInputDTO,
+  UpdateUserInputParams,
   UpdateUserOutputDTO,
-  UpdateUserParams,
 } from "@/core/usecases/user/update-user-dto";
 import { UpdateUserUseCaseInterface } from "@/core/usecases/user/update-user-usecase-interface";
-import { UserUpdateBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-profile-update-body-schema";
-import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
+import {
+  UserUpdateBodySchema,
+  UserUpdateParamsSchema,
+} from "@/infrastructure/validation/zod/schemas/user/user-profile-update-body-schema";
+import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class UserUpdateController implements UserUpdateControllerType {
   constructor(readonly service: UpdateUserUseCaseInterface) {}
@@ -21,15 +24,16 @@ export class UserUpdateController implements UserUpdateControllerType {
     request: AuthenticatedHttpRequestInterface<
       UpdateUserInputDTO,
       {},
-      UpdateUserParams
+      UpdateUserInputParams
     >
   ): Promise<AuthenticatedHttpResponseInterface<UpdateUserOutputDTO>> {
-    const jwtUser = request.user;
+    const loggedUser = request.user;
 
-    console.log("UPDATE-CONTROLLER");
-    console.log(jwtUser);
-
-    const userIDToChange = request.params.id;
+    const userIDToChange = requestValidation(
+      "params",
+      request,
+      UserUpdateParamsSchema
+    ).id;
 
     if (!String(userIDToChange)) {
       throw new BadRequestError("User ID to change was not send");
@@ -42,7 +46,7 @@ export class UserUpdateController implements UserUpdateControllerType {
     const input = requestValidation("body", request, UserUpdateBodySchema);
 
     const updatedUser = await this.service.execute(
-      jwtUser,
+      loggedUser,
       userIDToChange,
       input
     );

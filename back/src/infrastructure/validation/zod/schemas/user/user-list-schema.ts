@@ -1,13 +1,13 @@
 import { UserRole } from "@/core/entities/user";
 import {
-  ListUsersQueryProps,
   ListUsersQueryInput,
+  ListUsersQueryProps,
   ListUsersRequestDTO,
   UserListRequestPaginatedQuery,
 } from "@/core/usecases/user/list-user-dto";
+import { createExactSchema } from "@/infrastructure/validation/zod/helpers/create-exact-schema";
+import { StringToBoolean } from "@/infrastructure/validation/zod/helpers/string-to-boolean";
 import { mergeWithPagination } from "@/infrastructure/validation/zod/schemas/shared/pagination-schema";
-import { createExactSchema } from "@/infrastructure/validation/zod/shared/helpers/create-exact-schema";
-import { StringToBoolean } from "@/infrastructure/validation/zod/shared/helpers/string-to-boolean";
 import z from "zod";
 
 const DateSchema = z
@@ -21,19 +21,19 @@ const createUserSchema = createExactSchema<ListUsersQueryProps>();
 
 const UserListQuerySchema = createUserSchema({
   name: z.string().min(2).max(255).optional(),
-  email: z.string().email().optional(),
+  email: z.email().optional(),
   roles: z
     .string()
     .transform((value) => value.toUpperCase().split(","))
-    .pipe(z.array(z.nativeEnum(UserRole)))
-    .default("BASIC")
+    .pipe(z.array(z.enum(UserRole)))
+    .default(["BASIC"])
     .optional(),
   is_active: StringToBoolean.optional(),
   created_after: DateSchema.optional(),
   created_before: DateSchema.optional(),
   updated_after: DateSchema.optional(),
   updated_before: DateSchema.optional(),
-}).strip() satisfies z.ZodType<ListUsersQueryProps, any, ListUsersQueryInput>;
+}).strip() satisfies z.ZodType<ListUsersQueryProps, ListUsersQueryInput>;
 
 export const FinalUserListPaginationSchema = mergeWithPagination(
   UserListQuerySchema,
@@ -42,6 +42,5 @@ export const FinalUserListPaginationSchema = mergeWithPagination(
 
 FinalUserListPaginationSchema satisfies z.ZodType<
   ListUsersRequestDTO,
-  any,
   UserListRequestPaginatedQuery
 >;

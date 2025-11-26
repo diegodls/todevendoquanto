@@ -1,22 +1,46 @@
-import { z } from "zod";
+import {
+  CreateUserInputDTO,
+  CreateUserInputProps,
+} from "@/core/usecases/user/create-user-dto";
+import z from "zod";
 
-export const UserSignInBodySchema = z.object({
-  name: z
-    .string({
-      description: "Insert a name",
-      message: "Must pass a valid name!",
-    })
-    .nonempty("Must pass a valid ")
-    .min(3, { message: "Name must have 3 or more caracteres" }),
-  email: z
-    .string({
-      invalid_type_error: "Must pass a valid email!",
-      required_error: "Must pass a valid email!",
-    })
-    .email({ message: "Must pass a valid email!" })
-    .nonempty("Must pass a valid email!"),
-  password: z
-    .string()
-    .nonempty("Must pass a valid password!")
-    .min(6, "Password must have 6 or more caracteres"),
-});
+export const CreateUserBodySchema = z
+  .object({
+    name: z
+      .string({
+        error: (err) => {
+          if (!err.input) return `You must pass a valid ${err.path}`;
+
+          if (err.code === "invalid_type") return `Invalid type of ${err.path}`;
+
+          if (err.code === "invalid_format")
+            return `Invalid format of ${err.path}`;
+        },
+      })
+      .min(3, { message: "Name must have 3 or more caracteres" }),
+
+    email: z.email({
+      error: (err) => {
+        if (!err.input) return `You must pass a valid ${err.path}`;
+
+        if (err.code === "invalid_type") return `Invalid type of ${err.path}`;
+
+        if (err.code === "invalid_format")
+          return `Invalid format of ${err.path}`;
+      },
+    }),
+
+    password: z
+      .string({
+        error: (err) => {
+          if (!err.input) return `You must pass a valid ${err.path}`;
+
+          if (err.code === "invalid_type") return `Invalid type of ${err.path}`;
+
+          if (err.code === "invalid_format")
+            return `Invalid format of ${err.path}`;
+        },
+      })
+      .min(6, "Password must have 6 or more caracteres"),
+  })
+  .strip() satisfies z.ZodType<CreateUserInputDTO, CreateUserInputProps>;

@@ -3,8 +3,8 @@ import {
   AuthenticatedHttpRequestInterface,
   PublicHttpRequestInterface,
 } from "@/core/shared/types/http-request-response";
-import { requestValidationErrorCodes } from "@/infrastructure/validation/zod/shared/errors/requestValidation/request-validation-error-codes";
-import { z, ZodSchema } from "zod";
+import { requestValidationErrorCodes } from "@/infrastructure/validation/zod/errors/requestValidation/request-validation-error-codes";
+import z from "zod";
 
 type RequestTypes =
   | PublicHttpRequestInterface
@@ -13,7 +13,7 @@ type RequestTypes =
 type RequestPartType = "body" | "headers" | "params" | "query";
 
 export const requestValidation = <
-  TypeSchema extends ZodSchema<any, any, any>,
+  TypeSchema extends z.ZodSchema<any, any>,
   PartTypes extends RequestPartType,
   RequestType extends RequestTypes
 >(

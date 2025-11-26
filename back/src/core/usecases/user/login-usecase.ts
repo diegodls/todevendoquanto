@@ -5,7 +5,7 @@ import { UnauthorizedError } from "@/core/shared/errors/api-errors";
 import {
   LoginUserInputDTO,
   LoginUserOutputDTO,
-  LoginUserPayload,
+  LoginUserPayloadType,
 } from "@/core/usecases/user/login-dto";
 import { LoginUseCaseInterface } from "@/core/usecases/user/login-usecase-interface";
 
@@ -34,7 +34,7 @@ export class LoginUseCase implements LoginUseCaseInterface {
       throw new UnauthorizedError("Wrong credentials!");
     }
 
-    const payload: LoginUserPayload = {
+    const payload: LoginUserPayloadType = {
       email: userExists.email,
       role: userExists.role,
     };

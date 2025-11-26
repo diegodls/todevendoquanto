@@ -9,8 +9,8 @@ import {
 } from "@/core/usecases/user/create-user-dto";
 import { CreateUserUseCase } from "@/core/usecases/user/create-user-usecase";
 import { userControllerErrorCodes } from "@/infrastructure/errors/codes/controllers/user/user-error-codes";
-import { UserSignInBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-sign-in-body-schema";
-import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
+import { CreateUserBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-sign-in-body-schema";
+import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class CreateUserController {
   constructor(private readonly usecase: CreateUserUseCase) {}
@@ -18,7 +18,7 @@ export class CreateUserController {
   async handle(
     request: AuthenticatedHttpRequestInterface<{}, {}, CreateUserInputDTO>
   ): Promise<AuthenticatedHttpResponseInterface<CreateUserOutputDTO>> {
-    const input = requestValidation("body", request, UserSignInBodySchema);
+    const input = requestValidation("body", request, CreateUserBodySchema);
 
     const createdUser = await this.usecase.execute(input);
 

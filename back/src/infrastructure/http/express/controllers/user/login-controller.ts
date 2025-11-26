@@ -9,7 +9,7 @@ import {
 } from "@/core/usecases/user/login-dto";
 import { LoginUseCase } from "@/core/usecases/user/login-usecase";
 import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-login-body-schema";
-import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
+import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class UserLoginController implements UserLoginControllerInterface {
   constructor(private readonly usecase: LoginUseCase) {}

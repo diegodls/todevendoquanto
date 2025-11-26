@@ -8,8 +8,8 @@ import {
 import { UserListRequestPaginatedQuery } from "@/core/usecases/user/list-user-dto";
 import { ListUserUseCase } from "@/core/usecases/user/list-user-usecase";
 
-import { FinalUserListPaginationSchema } from "@/infrastructure/validation/zod/schemas/admin/user-list-schema";
-import { requestValidation } from "@/infrastructure/validation/zod/shared/validation/request-validation";
+import { FinalUserListPaginationSchema } from "@/infrastructure/validation/zod/schemas/user/user-list-schema";
+import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class ListUserController implements UserListControllerType {
   constructor(private readonly service: ListUserUseCase) {}
