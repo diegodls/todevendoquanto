@@ -14,9 +14,15 @@ export class CreateUserUseCase implements CreateUserUseCaseInterface {
   public async execute(data: CreateUserInputDTO): Promise<User | null> {
     const { name, email, password } = data;
 
-    const userAlreadyExists = await this.repository.findByEmail(email);
+    const userWithNameExists = await this.repository.findByName(name);
 
-    if (userAlreadyExists) {
+    if (userWithNameExists) {
+      throw new AlreadyExistError("User already exists with given name");
+    }
+
+    const userWithEmailExists = await this.repository.findByEmail(email);
+
+    if (userWithEmailExists) {
       throw new AlreadyExistError("User already exists with given email");
     }
 
