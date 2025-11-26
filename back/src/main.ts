@@ -1,7 +1,7 @@
 import { testDb } from "@/core/shared/utils/db-health";
 import { errorHandlerAdapterExpress } from "@/infrastructure/http/express/adapters/error-handler-adapter-express";
 import { ExpressApp } from "@/infrastructure/http/express/app";
-import { routesHub } from "@/infrastructure/http/express/routes/routes-hub";
+import { routesHub } from "@/infrastructure/http/express/routes/routes";
 
 testDb();
 
