@@ -18,22 +18,22 @@ export const listUsersFilters: GenericFilterMapper<
       mode: "insensitive",
     },
   }),
-  is_active: (value) => ({ is_active: value }),
+  isActive: (value) => ({ isActive: value }),
   roles: (value) => ({
     role: {
       in: value,
     },
   }),
   created_after: (value) => ({
-    created_at: { gte: new Date(value) },
+    createdAt: { gte: new Date(value) },
   }),
   created_before: (value) => ({
-    created_at: { lte: new Date(value) },
+    createdAt: { lte: new Date(value) },
   }),
   updated_after: (value) => ({
-    updated_at: { gte: new Date(value) },
+    updatedAt: { gte: new Date(value) },
   }),
   updated_before: (value) => ({
-    updated_at: { lte: new Date(value) },
+    updatedAt: { lte: new Date(value) },
   }),
 };

@@ -10,7 +10,7 @@ export type UserListOrderProps = UserValidProps;
 export type UserListOrderPropsKeys = keyof UserListOrderProps;
 
 export type UserValidQueryProps = Partial<
-  Pick<UserValidProps, "name" | "email" | "is_active"> & {
+  Pick<UserValidProps, "name" | "email" | "isActive"> & {
     roles?: UserRoleType[];
   }
 >;

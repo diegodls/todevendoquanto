@@ -29,6 +29,6 @@ export const UserUpdateBodySchema = z
       .string()
       .transform((value) => value.toUpperCase())
       .pipe(z.enum(UserRole)),
-    is_active: StringToBoolean.optional(),
+    isActive: StringToBoolean.optional(),
   })
   .strip() satisfies z.ZodType<UpdateUserInputDTO>;

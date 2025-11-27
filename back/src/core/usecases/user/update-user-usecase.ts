@@ -37,7 +37,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
 
     if (!isLoggedUserAdmin) {
       delete data.role;
-      delete data.is_active;
+      delete data.isActive;
     }
 
     const targetUser: User | null = await this.repository.findById(
@@ -87,7 +87,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
 
     if (!isAdmin) {
       delete sanitizedData.role;
-      delete sanitizedData.is_active;
+      delete sanitizedData.isActive;
     }
 
     if (targetUser.email === sanitizedData?.email) {

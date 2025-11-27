@@ -29,9 +29,9 @@ export class User {
   public email: string = "";
   public password: string = "";
   public role: UserRoleType = UserRole.BASIC;
-  public created_at: Date = new Date();
-  public updated_at: Date = new Date();
-  public is_active: boolean = true;
+  public createdAt: Date = new Date();
+  public updatedAt: Date = new Date();
+  public isActive: boolean = true;
 
   constructor(props: Partial<User>, id?: string) {
     Object.assign(this, props);

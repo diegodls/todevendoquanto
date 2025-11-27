@@ -28,7 +28,7 @@ const UserListQuerySchema = createUserSchema({
     .pipe(z.array(z.enum(UserRole)))
     .default(["BASIC"])
     .optional(),
-  is_active: StringToBoolean.optional(),
+  isActive: StringToBoolean.optional(),
   created_after: DateSchema.optional(),
   created_before: DateSchema.optional(),
   updated_after: DateSchema.optional(),
