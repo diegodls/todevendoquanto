@@ -12,5 +12,10 @@ const adapter = new PrismaPg({ connectionString });
 
 export const prisma = new PrismaClientGenerated({
   adapter,
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
   log: ["query", "info", "warn", "error"],
 });
