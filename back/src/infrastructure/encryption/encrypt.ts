@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 
 export class Encrypt implements EncryptInterface {
   public async execute(input: string): Promise<string> {
-    const saltRounds = 10;
+    const saltRounds = 12;
 
     const encryptedInput = await bcrypt.hash(input, saltRounds);
 
