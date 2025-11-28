@@ -1,3 +1,4 @@
+import { AUTH_ROUTES_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
 import { LoginUseCase } from "@/core/usecases/auth/login-usecase";
 import { JwtGenerateToken } from "@/infrastructure/auth/jwt-generate-token";
 import { Compare } from "@/infrastructure/encryption/compare";
@@ -23,6 +24,9 @@ const loginController = new UserLoginController(loginUseCase);
 
 const authRouter = Router();
 
-authRouter.post("/login", publicExpressHttpAdapter(loginController));
+authRouter.post(
+  AUTH_ROUTES_PATH.login,
+  publicExpressHttpAdapter(loginController)
+);
 
 export { authRouter };

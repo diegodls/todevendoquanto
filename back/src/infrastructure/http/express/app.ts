@@ -1,4 +1,5 @@
 import { AppInterface } from "@/core/ports/infrastructure/http/app-interface";
+import { APP_ROUTES_ROOT_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
 import express, {
   ErrorRequestHandler,
   Express,
@@ -13,7 +14,7 @@ export class ExpressApp implements AppInterface {
   private constructor(readonly app: Express) {}
 
   public loadRoutes(routes: Router): void {
-    this.app.use("/api/v1", routes);
+    this.app.use(APP_ROUTES_ROOT_PATH, routes);
   }
 
   public loadMiddleware(middleware: Middleware): void {
