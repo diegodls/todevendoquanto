@@ -11,10 +11,10 @@ import {
   authenticatedExpressHttpAdapter,
   publicExpressHttpAdapter,
 } from "@/infrastructure/http/express/adapters/http-adapter-express";
+import { UserLoginController } from "@/infrastructure/http/express/controllers/auth/login-controller";
 import { CreateUserController } from "@/infrastructure/http/express/controllers/user/create-controller";
 import { DeleteUserByIDController } from "@/infrastructure/http/express/controllers/user/delete-by-id-controller";
 import { ListUserController } from "@/infrastructure/http/express/controllers/user/list-controller";
-import { UserLoginController } from "@/infrastructure/http/express/controllers/user/login-controller";
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/user/update-controller";
 import { ensureIsAdmin } from "@/infrastructure/http/express/middleware/ensure-is-admin";
 import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
