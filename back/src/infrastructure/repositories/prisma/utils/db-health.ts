@@ -1,4 +1,4 @@
-import { prisma } from "../prisma-client";
+import { prisma } from "../config/prisma-client";
 
 export async function testDb(timeToThrow = 3000) {
   //TODO: Maybe transform this into a "APP class" function

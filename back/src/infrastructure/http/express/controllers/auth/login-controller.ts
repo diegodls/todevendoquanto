@@ -1,4 +1,4 @@
-import { UserLoginControllerInterface } from "@/core/ports/infrastructure/http/controllers/public/user/user-login-controller-interface";
+import { UserLoginControllerInterface } from "@/core/ports/infrastructure/http/controllers/auth/user-login-controller-interface";
 import {
   PublicHttpRequestInterface,
   PublicHttpResponseInterface,
@@ -6,9 +6,9 @@ import {
 import {
   LoginUserInputDTO,
   LoginUserOutputDTO,
-} from "@/core/usecases/user/login-dto";
-import { LoginUseCase } from "@/core/usecases/user/login-usecase";
-import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-login-body-schema";
+} from "@/core/usecases/auth/login-dto";
+import { LoginUseCase } from "@/core/usecases/auth/login-usecase";
+import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/auth/user-login-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class UserLoginController implements UserLoginControllerInterface {

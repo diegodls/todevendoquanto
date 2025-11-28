@@ -7,7 +7,7 @@ import {
   ApiErrorInputDTO,
   ApiErrorOutputDTO,
   ErrorControllerInterface,
-} from "@/core/ports/infrastructure/http/controllers/error/error-controller-interface";
+} from "@/core/ports/infrastructure/http/controllers/api/error-controller-interface";
 import { InternalError } from "@/core/shared/errors/api-errors";
 import { ErrorUseCase } from "@/core/usecases/api/error-usecase";
 import { testControllerErrorCodes } from "@/infrastructure/errors/codes/controllers/api/test-error-codes";

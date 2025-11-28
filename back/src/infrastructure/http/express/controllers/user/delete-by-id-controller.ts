@@ -7,7 +7,7 @@ import {
   DeleteUserByIDOutputDTO,
 } from "@/core/usecases/user/delete-user-dto";
 
-import { DeleteUserByIDControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-delete-by-id-controller-type";
+import { DeleteUserByIDControllerType } from "@/core/ports/infrastructure/http/controllers/user/delete-user-by-id-controller-type";
 import { BadRequestError } from "@/core/shared/errors/api-errors";
 import { DeleteUserUseCaseInterface } from "@/core/usecases/user/delete-user-usecase-interface";
 import { UserDeleteByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/user/user-delete-by-id-params-schema";

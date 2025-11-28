@@ -1,7 +1,7 @@
 import {
-  LoginUserInputDTO,
   LoginUserInputQuery,
-} from "@/core/usecases/user/login-dto";
+  LoginUserInputDTO,
+} from "@/core/usecases/auth/login-dto";
 import z from "zod";
 
 export const UserLoginBodySchema = z

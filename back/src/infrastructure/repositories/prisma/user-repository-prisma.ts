@@ -9,7 +9,7 @@ import { UpdateUserInputDTO } from "@/core/usecases/user/update-user-dto";
 import {
   PrismaClientGenerated,
   PrismaGenerated,
-} from "@/infrastructure/repositories/prisma/prisma-client";
+} from "@/infrastructure/repositories/prisma/config/prisma-client";
 import { prismaEntityUserParser } from "@/infrastructure/repositories/prisma/utils/prisma-entity-user-parser";
 import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
 import { queryFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils/query-filter-to-prisma-where";

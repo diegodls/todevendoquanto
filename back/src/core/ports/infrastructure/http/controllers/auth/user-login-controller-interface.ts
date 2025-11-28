@@ -5,7 +5,7 @@ import {
 import {
   LoginUserInputDTO,
   LoginUserOutputDTO,
-} from "@/core/usecases/user/login-dto";
+} from "@/core/usecases/auth/login-dto";
 
 export interface UserLoginControllerInterface {
   handle(

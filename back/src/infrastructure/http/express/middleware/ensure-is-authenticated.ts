@@ -1,4 +1,4 @@
-import { JwtVerifyTokenInterface } from "@/core/ports/infrastructure/auth/jwt-verify-token-interface";
+import { JwtVerifyTokenInterface } from "@/core/ports/infrastructure/jwt/jwt-verify-token-interface";
 import { UnauthorizedError } from "@/core/shared/errors/api-errors";
 import { AuthenticatedHttpRequestInterface } from "@/core/shared/types/http-request-response";
 import { ensureIsAuthenticatedErrors } from "@/infrastructure/errors/codes/middlewares/ensure-is-authenticated-errors";

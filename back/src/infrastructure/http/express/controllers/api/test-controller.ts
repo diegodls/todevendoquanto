@@ -1,7 +1,7 @@
 import {
   TestControllerInterface,
   TestControllerOutputDTO,
-} from "@/core/ports/infrastructure/http/controllers/test/test-controller-interface";
+} from "@/core/ports/infrastructure/http/controllers/api/test-controller-interface";
 import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,

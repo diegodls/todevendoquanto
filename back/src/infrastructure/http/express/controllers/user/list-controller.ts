@@ -1,6 +1,6 @@
 import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
 import { User } from "@/core/entities/user";
-import { UserListControllerType } from "@/core/ports/infrastructure/http/controllers/authenticated/user/user-list-controller-type";
+import { UserListControllerType } from "@/core/ports/infrastructure/http/controllers/user/list-user-controller-type";
 import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
