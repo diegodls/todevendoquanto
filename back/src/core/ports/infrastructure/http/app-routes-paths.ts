@@ -17,7 +17,7 @@ export const USER_ROUTES_PATH = {
   update: "/update/:id",
   list: "/",
   create: "/create",
-  delete: "//delete/:id",
+  delete: "/delete/:id",
 } satisfies RouteMap;
 
 export const API_ROUTES_PATH = {
