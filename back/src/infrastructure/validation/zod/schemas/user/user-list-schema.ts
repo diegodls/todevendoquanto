@@ -26,7 +26,7 @@ const UserListQuerySchema = createUserSchema({
     .string()
     .transform((value) => value.toUpperCase().split(","))
     .pipe(z.array(z.enum(UserRole)))
-    .default(["BASIC"])
+    //.default(["BASIC", "ADMIN"])
     .optional(),
   isActive: StringToBoolean.optional(),
   created_after: DateSchema.optional(),
