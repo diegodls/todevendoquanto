@@ -1,10 +1,9 @@
+import { USER_ROUTES_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
 import { CreateUserUseCase } from "@/core/usecases/user/create-user-usecase";
 import { DeleteUserUseCase } from "@/core/usecases/user/delete-user-usecase";
 import { ListUserUseCase } from "@/core/usecases/user/list-user-usecase";
 import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
-import { JwtGenerateToken } from "@/infrastructure/auth/jwt-generate-token";
 import { JwtVerifyToken } from "@/infrastructure/auth/jwt-verify-token";
-import { Compare } from "@/infrastructure/encryption/compare";
 import { Encrypt } from "@/infrastructure/encryption/encrypt";
 import { authenticatedExpressHttpAdapter } from "@/infrastructure/http/express/adapters/http-adapter-express";
 import { CreateUserController } from "@/infrastructure/http/express/controllers/user/create-controller";
@@ -18,10 +17,8 @@ import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-
 import { Router } from "express";
 
 const jwtVerifyToken = new JwtVerifyToken();
-const jwtGenerateToken = new JwtGenerateToken();
 
 const encrypt = new Encrypt();
-const compare = new Compare();
 
 const userRepository = new UserRepositoryPrisma(prisma);
 
@@ -43,7 +40,7 @@ const authenticatedUserRouter = Router();
 authenticatedUserRouter.use(ensureIsAuthenticated(jwtVerifyToken));
 
 authenticatedUserRouter.patch(
-  "/update/:id",
+  USER_ROUTES_PATH.update,
   ensureIsAuthenticated(jwtVerifyToken),
   authenticatedExpressHttpAdapter(updateController)
 );
@@ -51,15 +48,18 @@ authenticatedUserRouter.patch(
 const adminUserRouter = Router();
 adminUserRouter.use(ensureIsAuthenticated(jwtVerifyToken), ensureIsAdmin());
 
-adminUserRouter.get("/", authenticatedExpressHttpAdapter(listUserController));
+adminUserRouter.get(
+  USER_ROUTES_PATH.list,
+  authenticatedExpressHttpAdapter(listUserController)
+);
 
 adminUserRouter.post(
-  "/create",
+  USER_ROUTES_PATH.create,
   authenticatedExpressHttpAdapter(createUserController)
 );
 
 adminUserRouter.delete(
-  "/delete/:id",
+  USER_ROUTES_PATH.delete,
   authenticatedExpressHttpAdapter(deleteController)
 );
 

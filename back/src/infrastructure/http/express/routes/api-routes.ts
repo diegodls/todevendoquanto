@@ -1,3 +1,4 @@
+import { API_ROUTES_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
 import { ErrorUseCase } from "@/core/usecases/api/error-usecase";
 import { JwtVerifyToken } from "@/infrastructure/auth/jwt-verify-token";
 import { authenticatedExpressHttpAdapter } from "@/infrastructure/http/express/adapters/http-adapter-express";
@@ -18,8 +19,14 @@ const apiRouter = Router();
 
 apiRouter.use(ensureIsAuthenticated(jwtService), ensureIsAdmin());
 
-apiRouter.get("/test", authenticatedExpressHttpAdapter(testController));
+apiRouter.get(
+  API_ROUTES_PATH.test,
+  authenticatedExpressHttpAdapter(testController)
+);
 
-apiRouter.get("/error", authenticatedExpressHttpAdapter(errorController));
+apiRouter.get(
+  API_ROUTES_PATH.error,
+  authenticatedExpressHttpAdapter(errorController)
+);
 
 export { apiRouter };
