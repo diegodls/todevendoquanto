@@ -4,7 +4,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
-import { useCasesErrorsCodes } from "@/core/shared/errors/usecases/user-usecase-errors";
+import { useCasesErrors } from "@/core/shared/errors/usecases/user-usecase-errors";
 
 import { DeleteUserUseCaseInterface } from "@/core/usecases/user/delete-user-usecase-interface";
 
@@ -18,7 +18,7 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
       throw new NotFoundError(
         "User not found",
         {},
-        useCasesErrorsCodes.E_0_USC_USR_0008.code
+        useCasesErrors.E_0_USC_USR_0008.code
       );
     }
 
@@ -26,7 +26,7 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
       throw new UnauthorizedError(
         "You cannot perform this action",
         {},
-        useCasesErrorsCodes.E_0_USC_USR_0009.code
+        useCasesErrors.E_0_USC_USR_0009.code
       );
     }
 

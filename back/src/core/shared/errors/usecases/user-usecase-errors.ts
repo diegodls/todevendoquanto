@@ -1,6 +1,6 @@
 import { ErrorsCodeType } from "@/core/shared/errors/types/error-codes-type";
 
-export interface UseCasesErrorsCodesInterface {
+interface UserUseCasesErrorsInterface {
   E_0_USC_USR_0001: {};
   E_0_USC_USR_0002: {};
   E_0_USC_USR_0003: ErrorsCodeType;
@@ -12,7 +12,7 @@ export interface UseCasesErrorsCodesInterface {
   E_0_USC_USR_0009: ErrorsCodeType;
 }
 
-export const useCasesErrorsCodes: UseCasesErrorsCodesInterface = {
+export const useCasesErrors: UserUseCasesErrorsInterface = {
   E_0_USC_USR_0001: {},
   E_0_USC_USR_0002: {},
   E_0_USC_USR_0003: {

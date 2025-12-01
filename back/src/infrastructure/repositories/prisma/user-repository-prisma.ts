@@ -16,10 +16,10 @@ import { queryFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils
 
 type PrismaUserWhereInput = PrismaGenerated.UserWhereInput;
 export class UserRepositoryPrisma implements UserRepositoryInterface {
-  constructor(private readonly ormClient: PrismaClientGenerated) {}
+  constructor(private readonly prismaORMClient: PrismaClientGenerated) {}
 
   async findById(id: string): Promise<User | null> {
-    const userExists = await this.ormClient.user.findFirst({
+    const userExists = await this.prismaORMClient.user.findFirst({
       where: { id },
     });
 
@@ -33,7 +33,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const userExists = await this.ormClient.user.findFirst({
+    const userExists = await this.prismaORMClient.user.findFirst({
       where: { email },
     });
 
@@ -47,7 +47,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async findByName(name: string): Promise<User | null> {
-    const userExists = await this.ormClient.user.findFirst({
+    const userExists = await this.prismaORMClient.user.findFirst({
       where: { name },
     });
 
@@ -61,7 +61,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async create(user: User): Promise<User | null> {
-    const createdUser = await this.ormClient.user.create({ data: user });
+    const createdUser = await this.prismaORMClient.user.create({ data: user });
 
     if (!createdUser) {
       return null;
@@ -73,7 +73,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async update(id: User["id"], data: UpdateUserInputDTO): Promise<User | null> {
-    const updatedUser = await this.ormClient.user.update({
+    const updatedUser = await this.prismaORMClient.user.update({
       where: { id },
       data,
     });
@@ -84,7 +84,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async deleteById(id: User["id"]): Promise<User | null> {
-    const output = await this.ormClient.user.delete({ where: { id } });
+    const output = await this.prismaORMClient.user.delete({ where: { id } });
 
     return output ? prismaEntityUserParser(output) : null;
   }
@@ -102,8 +102,8 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
     >(filtersOptions, listUsersFilters);
 
     const [total_items, usersList] = await Promise.all([
-      this.ormClient.user.count({ where: customWhere }),
-      this.ormClient.user.findMany({
+      this.prismaORMClient.user.count({ where: customWhere }),
+      this.prismaORMClient.user.findMany({
         where: customWhere,
         skip: (custom_current_page - 1) * custom_current_page_size,
         take: custom_current_page_size,
