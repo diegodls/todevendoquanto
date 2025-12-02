@@ -1,6 +1,5 @@
 import { JwtVerifyTokenInterface } from "@/core/ports/infrastructure/jwt/jwt-verify-token-interface";
 import { UnauthorizedError } from "@/core/shared/errors/api-errors";
-import { AuthenticatedHttpRequestInterface } from "@/core/shared/types/http-request-response";
 import { ensureIsAuthenticatedErrors } from "@/infrastructure/errors/codes/middlewares/ensure-is-authenticated-errors";
 import { NextFunction, Request, Response } from "express";
 
@@ -18,11 +17,9 @@ export const ensureIsAuthenticated = (jwtAuth: JwtVerifyTokenInterface) => {
 
     const token = authHeader.split(" ")[1];
 
-    // TODO: verificar o expiration date
-
     const decoded = await jwtAuth.execute<JwtPayloadInterface>(token);
 
-    (request as unknown as AuthenticatedHttpRequestInterface).user = decoded;
+    request.user = decoded;
 
     next();
   };
