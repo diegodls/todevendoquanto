@@ -1,3 +1,4 @@
+import { CreateUserControllerInterface } from "@/core/ports/infrastructure/http/controllers/user/create-user-controller-type";
 import { InternalError } from "@/core/shared/errors/api-errors";
 import {
   AuthenticatedHttpRequestInterface,
@@ -12,11 +13,11 @@ import { userControllerErrorCodes } from "@/infrastructure/errors/codes/controll
 import { CreateUserBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-sign-in-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
-export class CreateUserController {
+export class CreateUserController implements CreateUserControllerInterface {
   constructor(private readonly usecase: CreateUserUseCase) {}
 
   async handle(
-    request: AuthenticatedHttpRequestInterface<{}, {}, CreateUserInputDTO>
+    request: AuthenticatedHttpRequestInterface<CreateUserInputDTO>
   ): Promise<AuthenticatedHttpResponseInterface<CreateUserOutputDTO>> {
     const input = requestValidation("body", request, CreateUserBodySchema);
 
