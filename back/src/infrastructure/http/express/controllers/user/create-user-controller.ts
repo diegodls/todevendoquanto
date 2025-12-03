@@ -10,7 +10,7 @@ import {
 } from "@/core/usecases/user/create-user-dto";
 import { CreateUserUseCase } from "@/core/usecases/user/create-user-usecase";
 import { userControllerErrorCodes } from "@/infrastructure/errors/codes/controllers/user/user-error-codes";
-import { CreateUserBodySchema } from "@/infrastructure/validation/zod/schemas/user/user-sign-in-body-schema";
+import { CreateUserBodySchema } from "@/infrastructure/validation/zod/schemas/user/create-user-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class CreateUserController implements CreateUserControllerInterface {

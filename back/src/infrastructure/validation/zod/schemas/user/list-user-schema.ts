@@ -19,7 +19,7 @@ const DateSchema = z
 
 const createUserSchema = createExactSchema<ListUsersQueryProps>();
 
-const UserListQuerySchema = createUserSchema({
+const ListUserQuerySchema = createUserSchema({
   name: z.string().min(2).max(255).optional(),
   email: z.email().optional(),
   roles: z
@@ -35,12 +35,12 @@ const UserListQuerySchema = createUserSchema({
   updated_before: DateSchema.optional(),
 }).strip() satisfies z.ZodType<ListUsersQueryProps, ListUsersQueryInput>;
 
-export const FinalUserListPaginationSchema = mergeWithPagination(
-  UserListQuerySchema,
+export const ListUserPaginationSchema = mergeWithPagination(
+  ListUserQuerySchema,
   "name"
 );
 
-FinalUserListPaginationSchema satisfies z.ZodType<
+ListUserPaginationSchema satisfies z.ZodType<
   ListUsersRequestDTO,
   UserListRequestPaginatedQuery
 >;

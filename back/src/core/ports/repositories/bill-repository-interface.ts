@@ -1,8 +1,8 @@
 import {
-  CreateBillInputDTO,
   CreateBillOutputDTO,
+  CreateBillUseCaseProps,
 } from "@/core/usecases/bill/create-bill-dto";
 
 export interface BillRepositoryInterface {
-  create: (input: CreateBillInputDTO) => Promise<CreateBillOutputDTO>;
+  create: (input: CreateBillUseCaseProps) => Promise<CreateBillOutputDTO>;
 }

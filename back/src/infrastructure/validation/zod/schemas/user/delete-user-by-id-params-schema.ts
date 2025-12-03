@@ -4,7 +4,7 @@ import {
 } from "@/core/usecases/user/delete-user-dto";
 import z from "zod";
 
-export const UserDeleteByIDParamsSchema = z
+export const DeleteUserByIDParamsSchema = z
   .object({
     id: z.string({
       error: (err) => {

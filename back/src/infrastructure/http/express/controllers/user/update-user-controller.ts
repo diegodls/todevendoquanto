@@ -12,9 +12,9 @@ import {
 } from "@/core/usecases/user/update-user-dto";
 import { UpdateUserUseCaseInterface } from "@/core/usecases/user/update-user-usecase-interface";
 import {
-  UserUpdateBodySchema,
-  UserUpdateParamsSchema,
-} from "@/infrastructure/validation/zod/schemas/user/user-profile-update-body-schema";
+  UpdateUserBodySchema,
+  UpdateUserParamsSchema,
+} from "@/infrastructure/validation/zod/schemas/user/update-user-profile-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class UserUpdateController implements UserUpdateControllerType {
@@ -32,7 +32,7 @@ export class UserUpdateController implements UserUpdateControllerType {
     const userIDToChange = requestValidation(
       "params",
       request,
-      UserUpdateParamsSchema
+      UpdateUserParamsSchema
     ).id;
 
     if (!String(userIDToChange)) {
@@ -43,7 +43,7 @@ export class UserUpdateController implements UserUpdateControllerType {
       throw new BadRequestError("Invalid User ID to change");
     }
 
-    const input = requestValidation("body", request, UserUpdateBodySchema);
+    const input = requestValidation("body", request, UpdateUserBodySchema);
 
     const updatedUser = await this.service.execute(
       loggedUser,

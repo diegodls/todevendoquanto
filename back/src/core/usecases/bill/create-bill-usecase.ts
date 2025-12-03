@@ -3,8 +3,8 @@ import { BillRepositoryInterface } from "@/core/ports/repositories/bill-reposito
 import { InternalError } from "@/core/shared/errors/api-errors";
 import { billUseCaseErrors } from "@/core/shared/errors/usecases/bill-usecase-errors";
 import {
-  CreateBillInputDTO,
   CreateBillOutputDTO,
+  CreateBillUseCaseProps,
 } from "@/core/usecases/bill/create-bill-dto";
 import { CreateBillUseCaseInterface } from "@/core/usecases/bill/create-bill-usecase-interface";
 
@@ -14,7 +14,7 @@ export class CreateBillUseCase implements CreateBillUseCaseInterface {
   public async execute({
     userId,
     bill,
-  }: CreateBillInputDTO): Promise<CreateBillOutputDTO> {
+  }: CreateBillUseCaseProps): Promise<CreateBillOutputDTO> {
     const newEntityBill = new Bill(bill);
 
     const output = await this.repository.create({

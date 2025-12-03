@@ -6,7 +6,7 @@ import {
 import { StringToBoolean } from "@/infrastructure/validation/zod/helpers/string-to-boolean";
 import z from "zod";
 
-export const UserUpdateParamsSchema = z
+export const UpdateUserParamsSchema = z
   .object({
     id: z.string({
       error: (err) => {
@@ -21,7 +21,7 @@ export const UserUpdateParamsSchema = z
   })
   .strip() satisfies z.ZodType<UpdateUserInputParams>;
 
-export const UserUpdateBodySchema = z
+export const UpdateUserBodySchema = z
   .object({
     name: z.string().min(6).max(255).optional(),
     email: z.email().optional(),

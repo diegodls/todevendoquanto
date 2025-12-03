@@ -10,7 +10,7 @@ import {
 import { DeleteUserByIDControllerType } from "@/core/ports/infrastructure/http/controllers/user/delete-user-by-id-controller-type";
 import { BadRequestError } from "@/core/shared/errors/api-errors";
 import { DeleteUserUseCaseInterface } from "@/core/usecases/user/delete-user-usecase-interface";
-import { UserDeleteByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/user/user-delete-by-id-params-schema";
+import { DeleteUserByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/user/delete-user-by-id-params-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class DeleteUserByIDController implements DeleteUserByIDControllerType {
@@ -21,7 +21,7 @@ export class DeleteUserByIDController implements DeleteUserByIDControllerType {
     const { id } = requestValidation(
       "params",
       request,
-      UserDeleteByIDParamsSchema
+      DeleteUserByIDParamsSchema
     );
 
     const deletedUser = await this.usecase.execute(id);

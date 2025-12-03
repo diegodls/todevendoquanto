@@ -8,7 +8,7 @@ import {
 import { UserListRequestPaginatedQuery } from "@/core/usecases/user/list-user-dto";
 import { ListUserUseCase } from "@/core/usecases/user/list-user-usecase";
 
-import { FinalUserListPaginationSchema } from "@/infrastructure/validation/zod/schemas/user/user-list-schema";
+import { ListUserPaginationSchema } from "@/infrastructure/validation/zod/schemas/user/list-user-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class ListUserController implements UserListControllerType {
@@ -22,11 +22,7 @@ export class ListUserController implements UserListControllerType {
       UserListRequestPaginatedQuery
     >
   ): Promise<AuthenticatedHttpResponseInterface<PaginatedResponse<User>>> {
-    const input = requestValidation(
-      "query",
-      request,
-      FinalUserListPaginationSchema
-    );
+    const input = requestValidation("query", request, ListUserPaginationSchema);
 
     const usersList = await this.service.execute(input);
 
