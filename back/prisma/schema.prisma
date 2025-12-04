@@ -13,41 +13,45 @@ enum Role {
   BASIC
 }
 
-enum BillStatus {
+enum ExpenseStatus {
   PAYING
   PAID
   ABANDONED
+
+  @@map("ExpensesStatus")
 }
 
 model User {
-  id        String   @id
+  id        String    @id
   name      String
   password  String
-  email     String   @unique
-  role      Role     @default(BASIC)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  isActive  Boolean  @default(true) @map("is_active")
-  bills     Bill[]
+  email     String    @unique
+  role      Role      @default(BASIC)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  isActive  Boolean   @default(true) @map("is_active")
+  expenses  Expense[]
 
   @@map("users")
 }
 
-model Bill {
-  id             String     @id
-  name           String
-  description    String
-  value          Float
-  status         BillStatus @default(PAYING)
-  expirationDate DateTime   @map("expiration_date")
-  tags           String[]
-  paymentSplitIn Int        @map("payment_split_in")
-  paymentStartAt DateTime   @map("payment_start_at")
-  paymentEndAt   DateTime   @map("payment_end_at")
-  createdAt      DateTime   @default(now()) @map("created_at")
-  updatedAt      DateTime   @updatedAt @map("updated_at")
-  user           User?      @relation(fields: [userId], references: [id])
-  userId         String?    @map("user_id")
+model Expense {
+  id                String        @id
+  expenseId         String
+  name              String
+  description       String
+  amount            Int
+  totalAmount       Int           @map("total_amount")
+  status            ExpenseStatus @default(PAYING)
+  tags              String[]
+  actualInstallment Int           @map("actual_installment")
+  totalInstallment  Int           @map("total_installment")
+  paymentDay        DateTime      @map("payment_day")
+  expirationDay     DateTime      @map("expiration_day")
+  paymentStartAt    DateTime      @map("payment_start_at")
+  paymentEndAt      DateTime      @map("payment_end_at")
+  user              User?         @relation(fields: [userId], references: [id])
+  userId            String?       @map("user_id")
 
-  @@map("user_bills")
+  @@map("expenses")
 }
