@@ -1,8 +1,5 @@
-import {
-  CreateExpenseOutputDTO,
-  CreateExpenseUseCaseProps,
-} from "@/core/usecases/expense/create-expense-dto";
+import { Expense } from "@/core/entities/expense";
 
 export interface ExpenseRepositoryInterface {
-  create: (input: CreateExpenseUseCaseProps) => Promise<CreateExpenseOutputDTO>;
+  create: (expenses: Expense[]) => Promise<Expense[]>;
 }

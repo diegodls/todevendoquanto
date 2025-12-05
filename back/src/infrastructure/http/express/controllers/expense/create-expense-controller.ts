@@ -19,7 +19,7 @@ export class CreateExpenseController implements CreateExpenseControllerType {
       {},
       {}
     >
-  ): Promise<AuthenticatedHttpResponseInterface<Expense>> {
+  ): Promise<AuthenticatedHttpResponseInterface<Expense[]>> {
     const user = request.user;
 
     const input = requestValidation("body", request, CreateExpenseBodySchema);
@@ -29,7 +29,7 @@ export class CreateExpenseController implements CreateExpenseControllerType {
       expense: input,
     });
 
-    const output: AuthenticatedHttpResponseInterface<Expense> = {
+    const output: AuthenticatedHttpResponseInterface<Expense[]> = {
       statusCode: 200,
       body: createdExpense,
     };

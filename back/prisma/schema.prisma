@@ -23,12 +23,12 @@ enum ExpenseStatus {
 
 model User {
   id        String    @id
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
   name      String
   password  String
   email     String    @unique
   role      Role      @default(BASIC)
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
   isActive  Boolean   @default(true) @map("is_active")
   expenses  Expense[]
 
@@ -38,6 +38,8 @@ model User {
 model Expense {
   id                String        @id
   expenseId         String
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
   name              String
   description       String
   amount            Int

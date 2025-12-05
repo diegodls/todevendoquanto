@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 export const zodDefaultErrorHandler: z.core.$ZodErrorMap = (issue) => {
   if (!issue.input) return `You must pass a valid ${issue.path}`;
 

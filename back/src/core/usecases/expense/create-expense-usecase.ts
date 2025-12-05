@@ -15,14 +15,25 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
     userId,
     expense,
   }: CreateExpenseUseCaseProps): Promise<CreateExpenseOutputDTO> {
-    const newEntityExpense = new Expense(expense);
+    const expensesToCreate: Expense[] = [];
 
-    const output = await this.repository.create({
-      userId: userId,
-      expense: newEntityExpense,
-    });
+    const currentExpenseId = crypto.randomUUID(); // ! MOVER PARA PARA UMA CLASSE E INJETAR AQUI
 
-    if (!output) {
+    for (let i = 0; i < expense.totalInstallment; i++) {
+      let expenseToBeCreated = new Expense(expense);
+
+      expenseToBeCreated.userId = userId;
+
+      expenseToBeCreated.expenseId = currentExpenseId;
+
+      expenseToBeCreated.actualInstallment = i + 1;
+
+      expensesToCreate.push(expenseToBeCreated);
+    }
+
+    const output = await this.repository.create(expensesToCreate);
+
+    if (!output || output.length !== expensesToCreate.length) {
       throw new InternalError(
         "Wasn't possible to create expense, try again later!",
         {},

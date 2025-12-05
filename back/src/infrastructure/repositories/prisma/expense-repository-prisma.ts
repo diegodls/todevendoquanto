@@ -1,24 +1,19 @@
 import { Expense } from "@/core/entities/expense";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
-import {
-  CreateExpenseOutputDTO,
-  CreateExpenseUseCaseProps,
-} from "@/core/usecases/expense/create-expense-dto";
 import { PrismaClientGenerated } from "@/infrastructure/repositories/prisma/config/prisma-client";
 
 export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
   constructor(private readonly prismaORMClient: PrismaClientGenerated) {}
 
-  create({
-    userId,
-    expense,
-  }: CreateExpenseUseCaseProps): Promise<CreateExpenseOutputDTO> {
-    const expenseToBeCreated = new Expense(expense);
-
-    const output = this.prismaORMClient.expenses.create({
-      data: { ...expenseToBeCreated, userId },
+  async create(expenses: Expense[]): Promise<Expense[]> {
+    const output = await this.prismaORMClient.expense.createMany({
+      data: expenses,
     });
 
-    return output;
+    if (expenses.length === output.count) {
+      return expenses;
+    }
+
+    return [];
   }
 }

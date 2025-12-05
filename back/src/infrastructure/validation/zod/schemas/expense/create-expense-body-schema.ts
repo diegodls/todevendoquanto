@@ -1,51 +1,97 @@
 import { ExpenseStatus } from "@/core/entities/expense";
+import { monthsAhead } from "@/core/shared/helpers/date-month-ahead";
 import { CreateExpenseInputDTO } from "@/core/usecases/expense/create-expense-dto";
 import { zodDefaultErrorHandler } from "@/infrastructure/validation/zod/helpers/zod-default-error-handler";
 import z from "zod";
 
-const today = new Date(new Date().setMonth(new Date().getMonth() + 1));
-
-const monthsAhead = (quantity: number): Date => {
-  return new Date(today.setMonth(today.getMonth() + quantity));
-};
-
 export const CreateExpenseBodySchema = z
   .object({
+    userId: z.string().optional().default(""),
+
     name: z
-      .string({
-        error: zodDefaultErrorHandler,
-      })
+      .string({ error: zodDefaultErrorHandler })
       .min(3, { message: "Name must have 3 or more caracteres" }),
 
     description: z
-      .string({
-        error: zodDefaultErrorHandler,
-      })
-      .max(256)
-      .optional(),
-
-    value: z
       .string({ error: zodDefaultErrorHandler })
-      .transform((value) => Number(value))
-      .pipe(z.number())
-      .default(0)
-      .optional(),
+      .max(256, {
+        error: (issue) => {
+          if (issue.maximum) {
+            return `Size of ${256} exceeded on ${issue.path}.`;
+          }
+        },
+      })
+      .optional()
+      .default(""),
+
+    amount: z.number({ error: zodDefaultErrorHandler }).optional().default(0),
+
+    totalAmount: z
+      .number({ error: zodDefaultErrorHandler })
+      .optional()
+      .default(0),
 
     status: z
-      .string()
+      .string({ error: zodDefaultErrorHandler })
       .transform((value) => value.toUpperCase())
       .pipe(z.enum(ExpenseStatus))
-      .default("PAYING")
-      .optional(),
+      .optional()
+      .default("PAYING"),
 
-    expirationDate: z.date().default(monthsAhead(1)).optional(),
+    tags: z
+      .array(
+        z.string({
+          error: zodDefaultErrorHandler,
+        })
+      )
+      .optional()
+      .default([""]),
 
-    tags: z.array(z.string()).default([""]).optional(),
+    actualInstallment: z
+      .number({
+        error: zodDefaultErrorHandler,
+      })
+      .optional()
+      .default(1),
 
-    paymentSplitIn: z.number().default(1).optional(),
+    totalInstallment: z
+      .number({
+        error: zodDefaultErrorHandler,
+      })
+      .optional()
+      .default(1),
 
-    paymentStartAt: z.date().default(monthsAhead(1)).optional(),
+    paymentDay: z
+      .date({
+        error: zodDefaultErrorHandler,
+      })
+      .optional()
+      .default(monthsAhead(1)),
 
-    paymentEndAt: z.date().default(monthsAhead(1)).optional(),
+    expirationDay: z
+      .date({
+        error: zodDefaultErrorHandler,
+      })
+      .optional()
+      .default(monthsAhead(1)),
+
+    paymentStartAt: z
+      .date({
+        error: zodDefaultErrorHandler,
+      })
+      .optional()
+      .default(monthsAhead(1)),
+
+    paymentEndAt: z
+      .date({
+        error: zodDefaultErrorHandler,
+      })
+      .optional()
+      .default(monthsAhead(1)),
+
+      TIRAR ESSAS VERIFICAÇÕES DO ZOD E MOVER PARA O USECASE
+      CASO NÃO SEJA PASSADO O paymentStartAt/paymentEndAt
+      O USECASE DEVE CALCULAR COM BASE NO DIA ATUAL
+      TEM QUE VER O QUE O USECASE ESTÁ RECEBENDO DO CONTROLLER
   })
-  .strip() as z.ZodType<CreateExpenseInputDTO>;
+  .strip() satisfies z.ZodType<CreateExpenseInputDTO>;

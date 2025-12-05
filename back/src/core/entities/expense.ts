@@ -9,7 +9,8 @@ export type ExpenseStatusType =
 
 export class Expense {
   public readonly id: string = "";
-  public readonly expenseId: string = "";
+  public expenseId: string = "";
+  public userId: string = "";
   public createdAt: Date = new Date();
   public updatedAt: Date = new Date();
   public name: string = "";
@@ -20,8 +21,8 @@ export class Expense {
   public tags: string[] = [];
   public actualInstallment: number = 1;
   public totalInstallment: number = 1;
-  public paymentDay: number = 1;
-  public expirationDay: number = 1;
+  public paymentDay: Date = new Date();
+  public expirationDay: Date = new Date();
   public paymentStartAt: Date = new Date();
   public paymentEndAt: Date = new Date();
 
@@ -39,6 +40,7 @@ export type UserExpenseInvalidValidProps = Pick<
   "id" | "expenseId" | "createdAt" | "updatedAt"
 >;
 
-export type UserExpenseValidProps = Partial<
-  Omit<Expense, keyof UserExpenseInvalidValidProps>
+export type UserExpenseValidProps = Omit<
+  Expense,
+  keyof UserExpenseInvalidValidProps
 >;

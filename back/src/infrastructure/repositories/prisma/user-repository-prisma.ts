@@ -10,7 +10,7 @@ import {
   PrismaClientGenerated,
   PrismaGenerated,
 } from "@/infrastructure/repositories/prisma/config/prisma-client";
-import { prismaEntityUserParser } from "@/infrastructure/repositories/prisma/utils/prisma-entity-user-parser";
+import { prismaUserEntityParser } from "@/infrastructure/repositories/prisma/utils/prisma-user-to-entity-parser";
 import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
 import { queryFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils/query-filter-to-prisma-where";
 
@@ -27,7 +27,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       return null;
     }
 
-    const output = prismaEntityUserParser(userExists);
+    const output = prismaUserEntityParser(userExists);
 
     return output;
   }
@@ -41,7 +41,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       return null;
     }
 
-    const output = prismaEntityUserParser(userExists);
+    const output = prismaUserEntityParser(userExists);
 
     return output;
   }
@@ -55,7 +55,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       return null;
     }
 
-    const output = prismaEntityUserParser(userExists);
+    const output = prismaUserEntityParser(userExists);
 
     return output;
   }
@@ -67,7 +67,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       return null;
     }
 
-    const output = prismaEntityUserParser(createdUser);
+    const output = prismaUserEntityParser(createdUser);
 
     return output;
   }
@@ -78,7 +78,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       data,
     });
 
-    const parsedUser = prismaEntityUserParser(updatedUser);
+    const parsedUser = prismaUserEntityParser(updatedUser);
 
     return parsedUser;
   }
@@ -86,7 +86,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   async deleteById(id: User["id"]): Promise<User | null> {
     const output = await this.prismaORMClient.user.delete({ where: { id } });
 
-    return output ? prismaEntityUserParser(output) : null;
+    return output ? prismaUserEntityParser(output) : null;
   }
 
   async list(filters: ListUsersRequestDTO): Promise<PaginatedResponse<User>> {
@@ -127,7 +127,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
 
     if (usersList.length > 0) {
       const parsedUsersList: User[] = usersList.map((user) => {
-        return prismaEntityUserParser({ ...user, password: "" });
+        return prismaUserEntityParser({ ...user, password: "" });
       });
 
       output.data = parsedUsersList;

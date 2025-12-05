@@ -8,6 +8,8 @@ import { ensureIsAdmin } from "@/infrastructure/http/express/middleware/ensure-i
 import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
 import { Router } from "express";
 
+// TODO: trocar os imports por index.ts
+
 const testController = new TestController();
 
 const errorService = new ErrorUseCase();

@@ -31,3 +31,8 @@ export const DOCS_ROUTES_PATH = {
   docs: "/docs",
   json: "/docs/json",
 } satisfies RouteMap;
+
+export const EXPENSE_ROUTES_PATH = {
+  root: "/expense",
+  create: "/create",
+};
