@@ -3,6 +3,7 @@ import { CreateExpenseUseCase } from "@/core/usecases/expense/create-expense-use
 import { authenticatedExpressHttpAdapter } from "@/infrastructure/http/express/adapters/http-adapter-express";
 import { CreateExpenseController } from "@/infrastructure/http/express/controllers/expense/create-expense-controller";
 import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
+import { GenerateUuid } from "@/infrastructure/protocols/uuid/generate-uuid";
 import { prisma } from "@/infrastructure/repositories/prisma/config/prisma-client";
 import { ExpenseRepositoryPrisma } from "@/infrastructure/repositories/prisma/expense-repository-prisma";
 import { Router } from "express";
@@ -10,11 +11,16 @@ import { JwtVerifyToken } from "../../../protocols/jwt/jwt-verify-token";
 
 const jwtVerifyToken = new JwtVerifyToken();
 
+const generateUuid = new GenerateUuid();
+
 const expenseRouter = Router();
 
 const expenseRepository = new ExpenseRepositoryPrisma(prisma);
 
-const createExpenseUseCase = new CreateExpenseUseCase(expenseRepository);
+const createExpenseUseCase = new CreateExpenseUseCase(
+  expenseRepository,
+  generateUuid
+);
 
 const createExpenseController = new CreateExpenseController(
   createExpenseUseCase
