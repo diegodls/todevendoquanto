@@ -1,8 +1,8 @@
 import { DOCS_ROUTES_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
-import { JwtVerifyToken } from "@/infrastructure/auth/jwt-verify-token";
 import { generateOpenApiDocs } from "@/infrastructure/docs/generator";
 import { ensureIsAdmin } from "@/infrastructure/http/express/middleware/ensure-is-admin";
 import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
+import { JwtVerifyToken } from "@/infrastructure/protocols/jwt/jwt-verify-token";
 import { Router } from "express";
 import swaggerUi from "swagger-ui-express";
 

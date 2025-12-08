@@ -1,4 +1,4 @@
-import { JwtVerifyTokenInterface } from "@/core/ports/infrastructure/jwt/jwt-verify-token-interface";
+import { JwtVerifyTokenInterface } from "@/core/ports/infrastructure/protocols/jwt/jwt-verify-token-interface";
 import { UnauthorizedError } from "@/core/shared/errors/api-errors";
 import { ensureIsAuthenticatedErrors } from "@/infrastructure/errors/codes/middlewares/ensure-is-authenticated-errors";
 import { NextFunction, Request, Response } from "express";

@@ -1,5 +1,5 @@
 import { User } from "@/core/entities/user";
-import { EncryptInterface } from "@/core/ports/infrastructure/encryption/encrypt-interface";
+import { EncryptInterface } from "@/core/ports/infrastructure/protocols/encryption/encrypt-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import { AlreadyExistError } from "@/core/shared/errors/api-errors";
 import { CreateUserInputDTO } from "@/core/usecases/user/create-user-dto";

@@ -17,7 +17,7 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
   }: CreateExpenseUseCaseProps): Promise<CreateExpenseOutputDTO> {
     const expensesToCreate: Expense[] = [];
 
-    const currentExpenseId = crypto.randomUUID(); // ! MOVER PARA PARA UMA CLASSE E INJETAR AQUI
+    const currentExpenseId = crypto.randomUUID();
 
     for (let i = 0; i < expense.totalInstallment; i++) {
       let expenseToBeCreated = new Expense(expense);

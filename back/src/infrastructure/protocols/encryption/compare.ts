@@ -1,4 +1,4 @@
-import { CompareInterface } from "@/core/ports/infrastructure/encryption/compare-interface";
+import { CompareInterface } from "@/core/ports/infrastructure/protocols/encryption/compare-interface";
 import { compare } from "bcrypt";
 
 export class Compare implements CompareInterface {

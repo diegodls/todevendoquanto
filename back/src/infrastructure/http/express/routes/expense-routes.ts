@@ -6,7 +6,7 @@ import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/
 import { prisma } from "@/infrastructure/repositories/prisma/config/prisma-client";
 import { ExpenseRepositoryPrisma } from "@/infrastructure/repositories/prisma/expense-repository-prisma";
 import { Router } from "express";
-import { JwtVerifyToken } from "./../../../auth/jwt-verify-token";
+import { JwtVerifyToken } from "../../../protocols/jwt/jwt-verify-token";
 
 const jwtVerifyToken = new JwtVerifyToken();
 

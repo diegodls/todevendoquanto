@@ -1,4 +1,4 @@
-import { EncryptInterface } from "@/core/ports/infrastructure/encryption/encrypt-interface";
+import { EncryptInterface } from "@/core/ports/infrastructure/protocols/encryption/encrypt-interface";
 import { InternalError } from "@/core/shared/errors/api-errors";
 import { encryptErrorsCodes } from "@/infrastructure/errors/codes/encryption/encrypt-errors";
 import bcrypt from "bcrypt";

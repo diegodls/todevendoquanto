@@ -1,5 +1,5 @@
-import { CompareInterface } from "@/core/ports/infrastructure/encryption/compare-interface";
-import { JwtGenerateTokenInterface } from "@/core/ports/infrastructure/jwt/jwt-generate-token-interface";
+import { CompareInterface } from "@/core/ports/infrastructure/protocols/encryption/compare-interface";
+import { JwtGenerateTokenInterface } from "@/core/ports/infrastructure/protocols/jwt/jwt-generate-token-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import { UnauthorizedError } from "@/core/shared/errors/api-errors";
 import {

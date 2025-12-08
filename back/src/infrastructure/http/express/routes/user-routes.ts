@@ -3,8 +3,6 @@ import { CreateUserUseCase } from "@/core/usecases/user/create-user-usecase";
 import { DeleteUserUseCase } from "@/core/usecases/user/delete-user-usecase";
 import { ListUserUseCase } from "@/core/usecases/user/list-user-usecase";
 import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
-import { JwtVerifyToken } from "@/infrastructure/auth/jwt-verify-token";
-import { Encrypt } from "@/infrastructure/encryption/encrypt";
 import { authenticatedExpressHttpAdapter } from "@/infrastructure/http/express/adapters/http-adapter-express";
 import { CreateUserController } from "@/infrastructure/http/express/controllers/user/create-user-controller";
 import { DeleteUserByIDController } from "@/infrastructure/http/express/controllers/user/delete-user-by-id-controller";
@@ -12,6 +10,8 @@ import { ListUserController } from "@/infrastructure/http/express/controllers/us
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/user/update-user-controller";
 import { ensureIsAdmin } from "@/infrastructure/http/express/middleware/ensure-is-admin";
 import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
+import { Encrypt } from "@/infrastructure/protocols/encryption/encrypt";
+import { JwtVerifyToken } from "@/infrastructure/protocols/jwt/jwt-verify-token";
 import { prisma } from "@/infrastructure/repositories/prisma/config/prisma-client";
 import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-repository-prisma";
 import { Router } from "express";

@@ -1,8 +1,9 @@
 import { ExpenseStatus } from "@/core/entities/expense";
-import { monthsAhead } from "@/core/shared/helpers/date-month-ahead";
 import { CreateExpenseInputDTO } from "@/core/usecases/expense/create-expense-dto";
 import { zodDefaultErrorHandler } from "@/infrastructure/validation/zod/helpers/zod-default-error-handler";
 import z from "zod";
+
+const today = new Date();
 
 export const CreateExpenseBodySchema = z
   .object({
@@ -66,32 +67,27 @@ export const CreateExpenseBodySchema = z
         error: zodDefaultErrorHandler,
       })
       .optional()
-      .default(monthsAhead(1)),
+      .default(today),
 
     expirationDay: z
       .date({
         error: zodDefaultErrorHandler,
       })
       .optional()
-      .default(monthsAhead(1)),
+      .default(today),
 
     paymentStartAt: z
       .date({
         error: zodDefaultErrorHandler,
       })
       .optional()
-      .default(monthsAhead(1)),
+      .default(today),
 
     paymentEndAt: z
       .date({
         error: zodDefaultErrorHandler,
       })
       .optional()
-      .default(monthsAhead(1)),
-
-      TIRAR ESSAS VERIFICAÇÕES DO ZOD E MOVER PARA O USECASE
-      CASO NÃO SEJA PASSADO O paymentStartAt/paymentEndAt
-      O USECASE DEVE CALCULAR COM BASE NO DIA ATUAL
-      TEM QUE VER O QUE O USECASE ESTÁ RECEBENDO DO CONTROLLER
+      .default(today),
   })
   .strip() satisfies z.ZodType<CreateExpenseInputDTO>;

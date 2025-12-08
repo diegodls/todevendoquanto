@@ -1,11 +1,11 @@
 import { API_ROUTES_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
 import { ErrorUseCase } from "@/core/usecases/api/error-usecase";
-import { JwtVerifyToken } from "@/infrastructure/auth/jwt-verify-token";
 import { authenticatedExpressHttpAdapter } from "@/infrastructure/http/express/adapters/http-adapter-express";
 import { ErrorController } from "@/infrastructure/http/express/controllers/api/error-controller";
 import { TestController } from "@/infrastructure/http/express/controllers/api/test-controller";
 import { ensureIsAdmin } from "@/infrastructure/http/express/middleware/ensure-is-admin";
 import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
+import { JwtVerifyToken } from "@/infrastructure/protocols/jwt/jwt-verify-token";
 import { Router } from "express";
 
 // TODO: trocar os imports por index.ts
