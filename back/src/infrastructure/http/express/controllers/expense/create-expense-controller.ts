@@ -4,7 +4,7 @@ import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
-import { CreateExpenseInputDTO } from "@/core/usecases/expense/create-expense-dto";
+import { CreateExpenseBodyInput } from "@/core/usecases/expense/create-expense-dto";
 import { CreateExpenseUseCase } from "@/core/usecases/expense/create-expense-usecase";
 import { CreateExpenseBodySchema } from "@/infrastructure/validation/zod/schemas/expense/create-expense-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
@@ -14,7 +14,7 @@ export class CreateExpenseController implements CreateExpenseControllerType {
 
   async handle(
     request: AuthenticatedHttpRequestInterface<
-      CreateExpenseInputDTO,
+      CreateExpenseBodyInput,
       {},
       {},
       {}

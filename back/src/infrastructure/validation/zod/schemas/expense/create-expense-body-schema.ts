@@ -1,5 +1,5 @@
 import { ExpenseStatus } from "@/core/entities/expense";
-import { CreateExpenseInputDTO } from "@/core/usecases/expense/create-expense-dto";
+import { CreateExpenseBodyInput } from "@/core/usecases/expense/create-expense-dto";
 import { zodDefaultErrorHandler } from "@/infrastructure/validation/zod/helpers/zod-default-error-handler";
 import z from "zod";
 
@@ -7,8 +7,6 @@ const today = new Date();
 
 export const CreateExpenseBodySchema = z
   .object({
-    userId: z.string().optional().default(""),
-
     name: z
       .string({ error: zodDefaultErrorHandler })
       .min(3, { message: "Name must have 3 or more caracteres" }),
@@ -89,4 +87,4 @@ export const CreateExpenseBodySchema = z
       })
       .optional(),
   })
-  .strip() satisfies z.ZodType<CreateExpenseInputDTO>;
+  .strip() satisfies z.ZodType<CreateExpenseBodyInput>;

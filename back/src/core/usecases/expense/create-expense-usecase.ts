@@ -4,8 +4,8 @@ import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-re
 import { InternalError } from "@/core/shared/errors/api-errors";
 import { expenseUseCaseErrors } from "@/core/shared/errors/usecases/expense-usecase-errors";
 import {
+  CreateExpenseInputDTO,
   CreateExpenseOutputDTO,
-  CreateExpenseUseCaseProps,
 } from "@/core/usecases/expense/create-expense-dto";
 import { CreateExpenseUseCaseInterface } from "@/core/usecases/expense/create-expense-usecase-interface";
 
@@ -18,7 +18,7 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
   public async execute({
     userId,
     expense,
-  }: CreateExpenseUseCaseProps): Promise<CreateExpenseOutputDTO> {
+  }: CreateExpenseInputDTO): Promise<CreateExpenseOutputDTO> {
     const expensesToCreate: Expense[] = [];
 
     const currentExpenseId = this.generateUuid.execute();

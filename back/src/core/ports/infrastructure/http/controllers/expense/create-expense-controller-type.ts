@@ -1,11 +1,11 @@
 import { AuthenticatedControllerInterface } from "@/core/ports/infrastructure/http/controllers/authenticated-controller-interface";
 import {
-  CreateExpenseInputDTO,
+  CreateExpenseBodyInput,
   CreateExpenseOutputDTO,
 } from "@/core/usecases/expense/create-expense-dto";
 
 export type CreateExpenseControllerType = AuthenticatedControllerInterface<
-  CreateExpenseInputDTO,
+  CreateExpenseBodyInput,
   {},
   {},
   {},
