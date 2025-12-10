@@ -87,7 +87,6 @@ export const CreateExpenseBodySchema = z
       .date({
         error: zodDefaultErrorHandler,
       })
-      .optional()
-      .default(today),
+      .optional(),
   })
   .strip() satisfies z.ZodType<CreateExpenseInputDTO>;

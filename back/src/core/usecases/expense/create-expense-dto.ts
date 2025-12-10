@@ -8,5 +8,5 @@ export type CreateExpenseOutputDTO = Expense[];
 
 export type CreateExpenseUseCaseProps = {
   userId: User["id"];
-  expense: UserExpenseValidProps;
+  expense: CreateExpenseInputDTO;
 };
