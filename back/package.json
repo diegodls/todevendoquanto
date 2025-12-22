@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsnd -r tsconfig-paths/register --transpile-only --respawn --ignore-watch node_modules src/main.ts",
-    "tsc": "tsc --noEmit --watch"
+    "tsc": "tsc --noEmit --watch",
+    "prisma:first": "npx prisma migrate dev & npx prisma generate",
+    "prisma:push": "npx prisma migrate dev",
+    "prisma:reset": "npx prisma migrate reset",
+    "prisma:pull": "npx prisma db pull",
+    "prisma:studio": "npx prisma studio"
   },
   "keywords": [],
   "author": "",
@@ -13,24 +18,28 @@
   "type": "commonjs",
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^8.1.0",
-    "@prisma/client": "^7.0.1",
+    "@prisma/client": "^6.19.1",
     "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-list-endpoints": "^7.1.1",
     "git-commit-msg-linter": "^5.0.8",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.11",
+    "pg": "^8.16.3",
     "swagger-ui-express": "^5.0.1",
     "tsconfig-paths": "^4.2.0",
     "zod": "^4.1.13"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.5",
-    "@prisma/adapter-pg": "^7.0.1",
+    "@prisma/adapter-pg": "^7.2.0",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.5",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.0.3",
     "@types/nodemailer": "^7.0.4",
+    "@types/pg": "^8.16.0",
     "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
@@ -38,7 +47,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.3.0",
-    "prisma": "^6.19.0",
+    "prisma": "^6.19.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   }
