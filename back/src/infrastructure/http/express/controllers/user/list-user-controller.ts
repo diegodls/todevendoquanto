@@ -1,0 +1,37 @@
+import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
+import { User } from "@/core/entities/user";
+import { UserListControllerType } from "@/core/ports/infrastructure/http/controllers/user/list-user-controller-type";
+import {
+  AuthenticatedHttpRequestInterface,
+  AuthenticatedHttpResponseInterface,
+} from "@/core/shared/types/http-request-response";
+import { UserListRequestPaginatedQuery } from "@/core/usecases/user/list-user-dto";
+import { ListUserUseCase } from "@/core/usecases/user/list-user-usecase";
+
+import { ListUserPaginationSchema } from "@/infrastructure/validation/zod/schemas/user/list-user-schema";
+import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
+
+export class ListUserController implements UserListControllerType {
+  constructor(private readonly service: ListUserUseCase) {}
+
+  public async handle(
+    request: AuthenticatedHttpRequestInterface<
+      {},
+      {},
+      {},
+      UserListRequestPaginatedQuery
+    >
+  ): Promise<AuthenticatedHttpResponseInterface<PaginatedResponse<User>>> {
+    const input = requestValidation("query", request, ListUserPaginationSchema);
+
+    const usersList = await this.service.execute(input);
+
+    const output: AuthenticatedHttpResponseInterface<PaginatedResponse<User>> =
+      {
+        statusCode: 200,
+        body: usersList,
+      };
+
+    return output;
+  }
+}

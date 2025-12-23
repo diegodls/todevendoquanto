@@ -3,9 +3,10 @@ import {
   PaginationProps,
   PaginationQueryInput,
 } from "@/application/dtos/shared/pagination-dto";
-import { BadRequestError } from "@/core/shared/utils/errors/api-error";
-import { toZodEnum } from "@/infrastructure/validation/zod/shared/helpers/to-zod-enum";
-import { z } from "zod";
+import { BadRequestError } from "@/core/shared/errors/api-errors";
+
+import { toZodEnum } from "@/infrastructure/validation/zod/helpers/to-zod-enum";
+import z from "zod";
 
 export function createPaginationSchema<T extends readonly string[]>(
   orderByKeys: T,
@@ -20,14 +21,14 @@ export function createPaginationSchema<T extends readonly string[]>(
       page: z
         .string()
         .transform(Number)
-        .pipe(z.number().int().positive().default(1))
-        .optional(),
+        .optional()
+        .pipe(z.number().int().positive().default(1)),
 
       page_size: z
         .string()
         .transform(Number)
-        .pipe(z.number().int().positive().max(100).default(20))
-        .optional(),
+        .optional()
+        .pipe(z.number().int().positive().max(100).default(20)),
 
       order: z.enum(PaginationDirection).optional().default("asc"),
 
@@ -38,12 +39,11 @@ export function createPaginationSchema<T extends readonly string[]>(
     })
     .strip() satisfies z.ZodType<
     PaginationProps<T[number]>,
-    any,
     PaginationQueryInput
   >;
 }
 
-export function mergeWithPagination<T extends z.AnyZodObject>(
+export function mergeWithPagination<T extends z.ZodObject>(
   filterSchema: T,
   defaultOrderKey: keyof z.infer<T>
 ) {
@@ -58,3 +58,19 @@ export function mergeWithPagination<T extends z.AnyZodObject>(
 
   return PaginationSchema.merge(filterSchema);
 }
+
+/*
+
+page: z
+        .string()
+        .transform(Number)
+        .pipe(z.number().int().positive().default(Number(1))).def(1)
+        .optional(),
+
+      page_size: z
+        .string()
+        .transform(Number)
+        .pipe(z.number().int().positive().max(100).default(20))
+        .optional(),
+
+*/

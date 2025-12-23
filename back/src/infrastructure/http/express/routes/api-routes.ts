@@ -1,0 +1,34 @@
+import { API_ROUTES_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
+import { ErrorUseCase } from "@/core/usecases/api/error-usecase";
+import { authenticatedExpressHttpAdapter } from "@/infrastructure/http/express/adapters/http-adapter-express";
+import { ErrorController } from "@/infrastructure/http/express/controllers/api/error-controller";
+import { TestController } from "@/infrastructure/http/express/controllers/api/test-controller";
+import { ensureIsAdmin } from "@/infrastructure/http/express/middleware/ensure-is-admin";
+import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
+import { JwtVerifyToken } from "@/infrastructure/protocols/jwt/jwt-verify-token";
+import { Router } from "express";
+
+// TODO: trocar os imports por index.ts
+
+const testController = new TestController();
+
+const errorService = new ErrorUseCase();
+const errorController = new ErrorController(errorService);
+
+const jwtService = new JwtVerifyToken();
+
+const apiRouter = Router();
+
+apiRouter.use(ensureIsAuthenticated(jwtService), ensureIsAdmin());
+
+apiRouter.get(
+  API_ROUTES_PATH.test,
+  authenticatedExpressHttpAdapter(testController)
+);
+
+apiRouter.get(
+  API_ROUTES_PATH.error,
+  authenticatedExpressHttpAdapter(errorController)
+);
+
+export { apiRouter };

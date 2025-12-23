@@ -1,54 +1,20 @@
 import { AppInterface } from "@/core/ports/infrastructure/http/app-interface";
-import { AnyAuthenticatedRouteType } from "@/core/ports/infrastructure/http/routes/authenticated-routes-type";
-import { PublicRoutesType } from "@/core/ports/infrastructure/http/routes/public-routes-type";
-import { TestRoutesType } from "@/core/ports/infrastructure/http/routes/test-routes-type";
-import { HttpMethod } from "@/core/shared/types/http-method";
-import {
-  authenticatedHttpAdapterExpress,
-  publicHttpAdapterExpress,
-} from "@/infrastructure/http/express/adapters/http-adapter-express";
-import express, { ErrorRequestHandler, Express, RequestHandler } from "express";
-
-type ExpressHttpMethod = keyof Pick<Express, HttpMethod>;
+import { APP_ROUTES_ROOT_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
+import express, {
+  ErrorRequestHandler,
+  Express,
+  RequestHandler,
+  Router,
+} from "express";
+import listEndpoints from "express-list-endpoints";
 
 type Middleware = RequestHandler | ErrorRequestHandler;
 
 export class ExpressApp implements AppInterface {
   private constructor(readonly app: Express) {}
 
-  private registerRoute(
-    app: Express,
-    method: ExpressHttpMethod,
-    path: string,
-    handlers: RequestHandler[]
-  ) {
-    return app[method](path, ...handlers);
-  }
-
-  public loadAuthenticatedRoutes(
-    authenticatedRoutes: AnyAuthenticatedRouteType[]
-  ): void {
-    authenticatedRoutes.forEach((route) => {
-      this.registerRoute(this.app, route.method, route.path, [
-        authenticatedHttpAdapterExpress(route.controller),
-      ]);
-    });
-  }
-
-  public loadPublicRoutes(publicRoutes: PublicRoutesType) {
-    publicRoutes.forEach((route) => {
-      this.registerRoute(this.app, route.method, route.path, [
-        publicHttpAdapterExpress(route.controller),
-      ]);
-    });
-  }
-
-  public loadTestRoutes(testRoutes: TestRoutesType): void {
-    testRoutes.forEach((route) => {
-      this.registerRoute(this.app, route.method, route.path, [
-        publicHttpAdapterExpress(route.controller),
-      ]);
-    });
+  public loadRoutes(routes: Router): void {
+    this.app.use(APP_ROUTES_ROOT_PATH, routes);
   }
 
   public loadMiddleware(middleware: Middleware): void {
@@ -63,27 +29,27 @@ export class ExpressApp implements AppInterface {
     return new ExpressApp(app);
   }
 
-  private printRoutes() {
-    const routes = this.app.router.stack
-      .filter((layer: any) => layer.route)
-      .map((route: any) => {
-        return {
-          path: route.route.path,
-          method: route.route.stack[0].method,
-        };
-      });
-
-    console.table(routes);
-  }
-
   public start(PORT: number): void {
     this.app.listen(PORT, () => {
       console.log("");
       console.log("");
       console.log(`🚀🚀🚀 SERVER RUNNING ON PORT: ${PORT}`);
-      this.printRoutes();
       console.log("");
       console.log("");
     });
+
+    this.printRoutes();
+  }
+
+  public printRoutes() {
+    const routes = listEndpoints(this.app.router);
+
+    console.log("");
+    console.log("⚠️⚠️⚠️⚠️⚠️");
+    console.log("");
+    console.log(`🛣️ STACK: ${this.app.router.stack.length}`);
+    console.log(`🛣️ ROTAS: ${routes.length}`);
+    console.log("");
+    console.table(routes);
   }
 }

@@ -22,16 +22,16 @@ export const UserRole = {
   ADMIN: "ADMIN",
 } as const;
 
-export type TUserRole = (typeof UserRole)[keyof typeof UserRole];
+export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 export class User {
   public readonly id: string = "";
   public name: string = "";
   public email: string = "";
   public password: string = "";
-  public role: TUserRole = UserRole.BASIC;
-  public created_at: Date = new Date();
-  public updated_at: Date = new Date();
-  public is_active: boolean = true;
+  public role: UserRoleType = UserRole.BASIC;
+  public createdAt: Date = new Date();
+  public updatedAt: Date = new Date();
+  public isActive: boolean = true;
 
   constructor(props: Partial<User>, id?: string) {
     Object.assign(this, props);
