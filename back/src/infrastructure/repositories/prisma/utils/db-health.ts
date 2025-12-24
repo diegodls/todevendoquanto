@@ -23,7 +23,7 @@ export async function testDb(timeToThrow = 3000) {
     console.log("🟢 DATABASE IS RUNNING FINE!");
   } catch (error) {
     console.log("");
-    console.log("🔴 DATABASE IS NOT FILLING WELL");
+    console.log("🔴 DATABASE IS NOT FEELING WELL");
     console.log("");
     console.log("⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
     console.log(error);
