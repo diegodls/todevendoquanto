@@ -1,68 +1,98 @@
 # ToDeVendoQuanto
 
-A Node.js application to manage and track debts efficiently.
+<p dir="auto" align="center">
+  <a
+    target="_blank"
+    alt="Banner"
+    title="Banner"
+    href="https://github.com/diegodls/todevendoquanto/blob/master/back/docs/img/readme/banner_full.png"
+  >
+    <img alt="Banner" title="Banner" src="https://github.com/diegodls/todevendoquanto/blob/master/back/docs/img/readme/banner_full.png"/>
+  Expandir
+    </a>
+</p>
 
-## Table of Contents
+Uma aplicação para controle financeiro de maneira fácil e eficiente.
 
-- [Introduction](#introduction)
+## Acesso rápido
+- [Por que](#por-que)
+- [Sobre](#sobre)
 - [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Technologies Used](#technologies-used)
-- [Contributing](#contributing)
-- [License](#license)
+- [Instalação](#instalação)
+- [Uso](#uso)
+- [Tecnologias](#tecnologias)
+- [Contribuição](#contribuição)
+- [Licença](#licença)
 
-## Introduction
+## Por que
 
-ToDeVendoQuanto is a Node.js-based application designed to help users manage and track debts with ease.
+Projeto em desenvolvido para aplicação de conhecimentos adquiridos em: 
+
+- Desenvolvimento Fullstack
+- SOLID
+- Arquitetura Limpa (Clean Archtecture)
+- Injeção de dependência (DI)
+- Testes
+
+## Sobre
+
+ToDeVendoQuanto é uma aplicação feita em Node.js, Next.js com a missão de ajudar seus usuários a controlar suas finanças, verificar e eliminar gastos.
 
 ## Features
 
-- Add, update, and delete debts.
-- View a summary of all debts.
-- User-friendly interface for managing financial records.
+- Cadastro, atualização e exclusão de perfis.
+- Cadastro, atualização e exclusão de gastos.
+- Acesso ao resumo dos gastos e/ou de um gasto especifico.
+- Interface familiar para controle de gastos.
+- Sistema de tags para agrupamento e localização de gastos.
 
-## Installation
+## Instalação
 
-1. Clone the repository:
-    ```git clone https://github.com/yourusername/todevendoquanto.git```
-2. Navigate to the project directory:
-    ```cd todevendoquanto```
-3. Install dependencies:
+1. Clone o repositório:
+    ```git clone https://github.com/diegodls/todevendoquanto.git```
+
+## Uso
+
+#### Backend
+
+1. Com uma janela de comando/prompt/cmd aberta, navegue até a raiz da api:
+    ```cd todevendoquanto\back```
+
+2. Instale as dependências:
     ```npm install```
 
-## Usage
+3. Configure um banco de dados, seja [Postgresql](https://www.postgresql.org/), [Mongo](https://www.mongodb.com/) ou outro.
 
-1. Generate the Prisma client:
+4. Crie um arquivo `.env` na raiz do projeto e configure seguindo o arquivo `.env-example` de exemplo.
+
+5. Adicione a url do banco de dados no arquivo `.env` criado seguindo o exemplo `.env-example`:
+   ```DATABASE_URL="your_database_connection_string"```
+
+6. Gere o Cliente do Prisma com o comando:
     ```npx prisma generate```
-2. Create a `.env` file in the root directory and add your database connection string:
-    ```DATABASE_URL="your_database_connection_string"```
-3. Run the database migrations:
-    ```npx prisma migrate dev --name init```
-4. Start the application:
-    ```npm run dev```
-5. Open your browser and navigate to `http://localhost:3000`.
 
-## Technologies Used
+7. Rode as migrations do prisma com:
+    ```npx prisma migrate dev --name init```
+
+8. Inicie a api com o comando:
+    ```npm run dev```
+
+9. Consuma a api pela url `http://localhost:3333` (ou outra porta configurada no `.env`), recomendo a leitura do arquivo de rotas ou documentação.
+
+## Tecnologias
+
+#### Backend
 
 - Node.js
+- Typescript
 - Express.js
-- MongoDB (or any other database)
-- Other dependencies listed in `package.json`
+- Prisma
+- E demais dependências listadas no arquivo `package.json`.
 
-## Contributing
+## Contribuição
 
-Contributions are welcome! Please follow these steps:
+Correções ou dicas são bem vindas.
 
-1. Fork the repository.
-2. Create a new branch:
-    ```git checkout -b feature-name```
-3. Commit your changes:
-    ```git commit -m "Add feature-name"```
-4. Push to the branch:
-    ```git push origin feature-name```
-5. Open a pull request.
+## Licença
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+Este projeto está sobre a [MIT License](Licença MIT).
