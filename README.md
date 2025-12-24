@@ -15,6 +15,7 @@
 Uma aplicação para controle financeiro de maneira fácil e eficiente.
 
 ## Acesso rápido
+
 - [Por que](#por-que)
 - [Sobre](#sobre)
 - [Features](#features)
@@ -26,11 +27,11 @@ Uma aplicação para controle financeiro de maneira fácil e eficiente.
 
 ## Por que
 
-Projeto em desenvolvido para aplicação de conhecimentos adquiridos em: 
+Projeto em desenvolvido para aplicação de conhecimentos adquiridos em:
 
 - Desenvolvimento Fullstack
 - SOLID
-- Arquitetura Limpa (Clean Archtecture)
+- Arquitetura Limpa (Clean Architecture)
 - Injeção de dependência (DI)
 - Testes
 
@@ -53,7 +54,7 @@ ToDeVendoQuanto é uma aplicação feita em Node.js, Next.js com a missão de aj
 
 ## Uso
 
-#### Backend
+### Backend
 
 1. Com uma janela de comando/prompt/cmd aberta, navegue até a raiz da api:
     ```cd todevendoquanto\back```
@@ -81,7 +82,7 @@ ToDeVendoQuanto é uma aplicação feita em Node.js, Next.js com a missão de aj
 
 ## Tecnologias
 
-#### Backend
+### Backend
 
 - Node.js
 - Typescript
