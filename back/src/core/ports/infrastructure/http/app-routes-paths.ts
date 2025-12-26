@@ -33,6 +33,6 @@ export const DOCS_ROUTES_PATH = {
 } satisfies RouteMap;
 
 export const EXPENSE_ROUTES_PATH = {
-  root: "/expense",
+  root: "/expenses",
   create: "/create",
 };
