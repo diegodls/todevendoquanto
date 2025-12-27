@@ -35,4 +35,5 @@ export const DOCS_ROUTES_PATH = {
 export const EXPENSE_ROUTES_PATH = {
   root: "/expenses",
   create: "/create",
+  delete: "/delete/:id",
 };
