@@ -1,5 +1,9 @@
-import { ExpenseStatus } from "@/core/entities/expense";
-import { CreateExpenseBodyInput } from "@/core/usecases/expense/create-expense-dto";
+import { ExpenseStatus, expenseStatusValues } from "@/core/entities/expense";
+import { DECIMALS_REGEX } from "@/core/shared/regex/decimals";
+import {
+  CreateExpenseBodyInput,
+  CreateExpenseInputDTO,
+} from "@/core/usecases/expense/create-expense-dto";
 import { zodDefaultErrorHandler } from "@/infrastructure/validation/zod/helpers/zod-default-error-handler";
 import z from "zod";
 
@@ -9,10 +13,17 @@ export const CreateExpenseBodySchema = z
   .object({
     name: z
       .string({ error: zodDefaultErrorHandler })
-      .min(3, { message: "Name must have 3 or more caracteres" }),
+      .min(3, { message: "Name must have 3 or more caracteres" })
+      .nonempty({
+        error: (issue) => {
+          if (!issue.input || issue.input.length <= 0) {
+            return `Name can't be empty`;
+          }
+        },
+      }),
 
     description: z
-      .string({ error: zodDefaultErrorHandler })
+      .string()
       .max(256, {
         error: (issue) => {
           if (issue.maximum) {
@@ -20,22 +31,67 @@ export const CreateExpenseBodySchema = z
           }
         },
       })
-      .optional()
       .default(""),
 
-    amount: z.number({ error: zodDefaultErrorHandler }).optional().default(0),
+    amount: z
+      .string({
+        error: (issue) => {
+          if (issue.code === "invalid_type") {
+            return `Invalid type: ${
+              issue.input
+            }, expected string, received ${typeof issue.input}`;
+          }
+          return `Error on: ${issue.path}`;
+        },
+      })
+      .regex(DECIMALS_REGEX, {
+        error: (issue) => {
+          if (issue.code === "invalid_format") {
+            return `Invalid ${issue.input} format`;
+          }
+        },
+      })
+      .transform((value) => parseFloat(value))
+      .optional()
+      .default(0),
 
     totalAmount: z
-      .number({ error: zodDefaultErrorHandler })
+      .string({
+        error: (issue) => {
+          if (issue.code === "invalid_type") {
+            return `Invalid type: ${
+              issue.input
+            }, expected string, received ${typeof issue.input}`;
+          }
+          return `Error on: ${issue.path}`;
+        },
+      })
+      .regex(DECIMALS_REGEX, {
+        error: (issue) => {
+          if (issue.code === "invalid_format") {
+            return `Invalid ${issue.input} format`;
+          }
+        },
+      })
+      .transform((value) => parseFloat(value))
       .optional()
       .default(0),
 
     status: z
-      .string({ error: zodDefaultErrorHandler })
-      .transform((value) => value.toUpperCase())
-      .pipe(z.enum(ExpenseStatus))
+      .string()
+      .toUpperCase()
       .optional()
-      .default("PAYING"),
+      .pipe(
+        z
+          .enum(ExpenseStatus, {
+            error: (issue) => {
+              if (issue.code === "invalid_value") {
+                return `${issue.input} is no a ${issue.path} valid type, pick one of: ${expenseStatusValues}`;
+              }
+            },
+          })
+          .default("PAYING")
+      ),
 
     tags: z
       .array(
@@ -50,41 +106,36 @@ export const CreateExpenseBodySchema = z
       .number({
         error: zodDefaultErrorHandler,
       })
-      .optional()
       .default(1),
 
     totalInstallment: z
       .number({
         error: zodDefaultErrorHandler,
       })
-      .optional()
       .default(1),
 
     paymentDay: z
       .date({
         error: zodDefaultErrorHandler,
       })
-      .optional()
       .default(today),
 
     expirationDay: z
       .date({
         error: zodDefaultErrorHandler,
       })
-      .optional()
       .default(today),
 
     paymentStartAt: z
       .date({
         error: zodDefaultErrorHandler,
       })
-      .optional()
       .default(today),
 
     paymentEndAt: z
       .date({
         error: zodDefaultErrorHandler,
       })
-      .optional(),
+      .default(today),
   })
-  .strip() satisfies z.ZodType<CreateExpenseBodyInput>;
+  .strip() satisfies z.ZodType<CreateExpenseInputDTO, CreateExpenseBodyInput>;
