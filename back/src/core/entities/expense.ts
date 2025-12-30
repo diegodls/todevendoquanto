@@ -7,6 +7,11 @@ export const ExpenseStatus = {
 export type ExpenseStatusType =
   (typeof ExpenseStatus)[keyof typeof ExpenseStatus];
 
+export const expenseStatusValues = Object.values(ExpenseStatus) as [
+  ExpenseStatusType,
+  ...ExpenseStatusType[]
+];
+
 export class Expense {
   public readonly id: string = "";
   public expenseId: string = "";
@@ -37,7 +42,7 @@ export class Expense {
 
 export type UserExpenseInvalidValidProps = Pick<
   Expense,
-  "id" | "expenseId" | "createdAt" | "updatedAt"
+  "id" | "expenseId" | "userId" | "createdAt" | "updatedAt"
 >;
 
 export type UserExpenseValidProps = Omit<
