@@ -9,10 +9,10 @@ export type CreateExpenseBodyInput = {
   tags?: string[];
   actualInstallment?: number;
   totalInstallment?: number;
-  paymentDay?: Date;
-  expirationDay?: Date;
-  paymentStartAt?: Date;
-  paymentEndAt?: Date;
+  paymentDay?: string;
+  expirationDay?: string;
+  paymentStartAt?: string;
+  paymentEndAt?: string;
 };
 
 export type CreateExpenseInputDTO = UserExpenseValidProps;

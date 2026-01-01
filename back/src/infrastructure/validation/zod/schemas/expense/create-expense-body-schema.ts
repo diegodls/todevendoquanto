@@ -5,9 +5,16 @@ import {
   CreateExpenseInputDTO,
 } from "@/core/usecases/expense/create-expense-dto";
 import { zodDefaultErrorHandler } from "@/infrastructure/validation/zod/helpers/zod-default-error-handler";
+import { DateSchema } from "@/infrastructure/validation/zod/schemas/shared/date-schema";
 import z from "zod";
 
-const today = new Date();
+const defaultToday = () => {
+  const defaultHourDrift = 12;
+  // prevent drift, local 01/01/2026 11:00:00 ~> cloud 02/01/2026 00:00:00
+  const now = new Date();
+  now.setHours(defaultHourDrift, 0, 0);
+  return now;
+};
 
 export const CreateExpenseBodySchema = z
   .object({
@@ -114,28 +121,12 @@ export const CreateExpenseBodySchema = z
       })
       .default(1),
 
-    paymentDay: z
-      .date({
-        error: zodDefaultErrorHandler,
-      })
-      .default(today),
+    paymentDay: DateSchema.default(defaultToday),
 
-    expirationDay: z
-      .date({
-        error: zodDefaultErrorHandler,
-      })
-      .default(today),
+    expirationDay: DateSchema.default(defaultToday),
 
-    paymentStartAt: z
-      .date({
-        error: zodDefaultErrorHandler,
-      })
-      .default(today),
+    paymentStartAt: DateSchema.default(defaultToday),
 
-    paymentEndAt: z
-      .date({
-        error: zodDefaultErrorHandler,
-      })
-      .default(today),
+    paymentEndAt: DateSchema.default(defaultToday),
   })
   .strip() satisfies z.ZodType<CreateExpenseInputDTO, CreateExpenseBodyInput>;
