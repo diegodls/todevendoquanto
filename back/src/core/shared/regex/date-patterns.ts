@@ -1,4 +1,4 @@
-export const DATE_PATTERNS = /(\d{1,2})[/-](\d{1,2})[/-](\d{1,2})/;
+export const DATE_PATTERNS = /^(\d{4})[\/\-](\d{2})[\/\-](\d{2})$/;
 /*
-Localiza padrões na string XX/XX/XX ou XX-XX-XX
+Localiza padrões na string XXXX/XX/XX ou XXXX-XX-XX
 */

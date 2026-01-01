@@ -7,15 +7,9 @@ import {
 } from "@/core/usecases/user/list-user-dto";
 import { createExactSchema } from "@/infrastructure/validation/zod/helpers/create-exact-schema";
 import { StringToBoolean } from "@/infrastructure/validation/zod/helpers/string-to-boolean";
+import { DateSchema } from "@/infrastructure/validation/zod/schemas/shared/date-schema";
 import { mergeWithPagination } from "@/infrastructure/validation/zod/schemas/shared/pagination-schema";
 import z from "zod";
-
-const DateSchema = z
-  .string()
-  .pipe(z.coerce.date())
-  .refine((date) => !Number.isNaN(date.getTime()), {
-    message: "Invalid date format. Please, use ISO 8601 format.",
-  });
 
 const createUserSchema = createExactSchema<ListUsersQueryProps>();
 
