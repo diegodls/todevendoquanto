@@ -14,7 +14,7 @@ export const expenseStatusValues = Object.values(ExpenseStatus) as [
 
 export class Expense {
   public readonly id: string = "";
-  public expenseId: string = "";
+  public installmentId: string = "";
   public userId: string = "";
   public createdAt: Date = new Date();
   public updatedAt: Date = new Date();
@@ -42,7 +42,7 @@ export class Expense {
 
 export type UserExpenseInvalidValidProps = Pick<
   Expense,
-  "id" | "expenseId" | "userId" | "createdAt" | "updatedAt"
+  "id" | "installmentId" | "userId" | "createdAt" | "updatedAt"
 >;
 
 export type UserExpenseValidProps = Omit<
