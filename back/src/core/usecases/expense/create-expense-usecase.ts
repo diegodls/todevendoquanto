@@ -23,14 +23,14 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
   }: CreateExpenseUseCaseInput): Promise<CreateExpenseOutputDTO> {
     const expensesToCreate: Expense[] = [];
 
-    const currentExpenseId = this.generateUuid.execute();
+    const currentInstallmentId = this.generateUuid.execute();
 
     for (let i = 0; i < expense.totalInstallment; i++) {
       let expenseToBeCreated = new Expense(expense);
 
       expenseToBeCreated.userId = userId;
 
-      expenseToBeCreated.expenseId = currentExpenseId;
+      expenseToBeCreated.installmentId = currentInstallmentId;
 
       expenseToBeCreated.actualInstallment = i + 1;
 
