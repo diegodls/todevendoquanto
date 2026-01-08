@@ -9,5 +9,5 @@ export type CreateExpenseControllerType = AuthenticatedControllerInterface<
   {},
   {},
   {},
-  CreateExpenseOutputDTO
+  CreateExpenseOutputDTO[]
 >;

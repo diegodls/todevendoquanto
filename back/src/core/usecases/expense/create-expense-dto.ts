@@ -1,4 +1,4 @@
-import { Expense, UserExpenseValidProps } from "@/core/entities/expense";
+import { ExpenseStatusType } from "@/core/entities/expense";
 
 export type CreateExpenseBodyInput = {
   name: string;
@@ -15,11 +15,32 @@ export type CreateExpenseBodyInput = {
   paymentEndAt?: string;
 };
 
-export type CreateExpenseInputDTO = UserExpenseValidProps;
+export type CreateExpenseInputDTO = {
+  name: string;
+  description: string;
+  amount: number;
+  totalAmount: number;
+  status: ExpenseStatusType;
+  tags: string[];
+  actualInstallment: number;
+  totalInstallment: number;
+  paymentDay: Date;
+  expirationDay: Date;
+  paymentStartAt: Date;
+  paymentEndAt: Date;
+};
 
-export type CreateExpenseOutputDTO = Expense[];
-
-export type CreateExpenseUseCaseInput = {
-  userId: Expense["userId"];
-  expense: CreateExpenseInputDTO;
+export type CreateExpenseOutputDTO = {
+  name: string;
+  description: string;
+  amount: number;
+  totalAmount: number;
+  status: string;
+  tags: string[];
+  actualInstallment: number;
+  totalInstallment: number;
+  paymentDay: string;
+  expirationDay: string;
+  paymentStartAt: string;
+  paymentEndAt: string;
 };
