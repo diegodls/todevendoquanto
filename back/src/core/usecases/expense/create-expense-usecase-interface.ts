@@ -1,8 +1,11 @@
 import {
+  CreateExpenseInputDTO,
   CreateExpenseOutputDTO,
-  CreateExpenseUseCaseInput,
 } from "@/core/usecases/expense/create-expense-dto";
 
 export interface CreateExpenseUseCaseInterface {
-  execute: (data: CreateExpenseUseCaseInput) => Promise<CreateExpenseOutputDTO>;
+  execute: (
+    userId: string,
+    expense: CreateExpenseInputDTO
+  ) => Promise<CreateExpenseOutputDTO[]>;
 }

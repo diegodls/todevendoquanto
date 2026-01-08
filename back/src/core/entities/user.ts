@@ -17,6 +17,8 @@ enum UserRole {
 }
 */
 
+import { UserId } from "@/core/entities/shared/types";
+
 export const UserRole = {
   BASIC: "BASIC",
   ADMIN: "ADMIN",
@@ -24,7 +26,7 @@ export const UserRole = {
 
 export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 export class User {
-  public readonly id: string = "";
+  public readonly id: UserId = "";
   public name: string = "";
   public email: string = "";
   public password: string = "";
@@ -33,7 +35,7 @@ export class User {
   public updatedAt: Date = new Date();
   public isActive: boolean = true;
 
-  constructor(props: Partial<User>, id?: string) {
+  constructor(props: Partial<User>, id?: UserId) {
     Object.assign(this, props);
 
     if (!id) {
