@@ -1,4 +1,4 @@
-import { Expense } from "@/core/entities/expense";
+import { Expense } from "@/core/entities/expense/expense";
 import { User } from "@/core/entities/user";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";

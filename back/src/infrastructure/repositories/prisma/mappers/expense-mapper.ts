@@ -1,13 +1,15 @@
-import { Expense as EntityExpense } from "@/core/entities/expense";
+import { Expense as EntityExpense } from "@/core/entities/expense/expense";
+import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
+import { Money } from "@/core/entities/expense/value-objects/money";
 import { CreateExpenseOutputDTO } from "@/core/usecases/expense/create-expense-dto";
 import { Expense as PrismaExpense } from "@/prisma";
 
 export class ExpenseMapper {
   static toDomain(raw: PrismaExpense): EntityExpense {
     return EntityExpense.restore(raw.id, {
-      name: raw.name,
+      name: ExpenseName.create(raw.name),
       description: raw.description,
-      amount: raw.amount,
+      amount: Money.create(raw.amount, raw.currency),
       totalAmount: raw.totalAmount,
       status: raw.status,
       tags: raw.tags,
@@ -27,9 +29,10 @@ export class ExpenseMapper {
   static toPersistence(entity: EntityExpense): PrismaExpense {
     return {
       id: entity.id,
-      name: entity.name,
+      name: entity.name.value,
       description: entity.description,
-      amount: entity.amount,
+      amount: entity.amount.amount,
+      currency: entity.amount.currency,
       totalAmount: entity.totalAmount,
       status: entity.status,
       tags: entity.tags,
@@ -50,9 +53,10 @@ export class ExpenseMapper {
     expense: EntityExpense
   ): CreateExpenseOutputDTO {
     return {
-      name: expense.name,
+      name: expense.name.value,
       description: expense.description,
-      amount: expense.amount,
+      amount: expense.amount.amount,
+      currency: expense.amount.currency,
       totalAmount: expense.totalAmount,
       status: expense.status,
       tags: expense.tags,

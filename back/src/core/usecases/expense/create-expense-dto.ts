@@ -1,4 +1,4 @@
-import { ExpenseStatusType } from "@/core/entities/expense";
+import { ExpenseStatusType } from "@/core/entities/expense/expense";
 
 export type CreateExpenseBodyInput = {
   name: string;
@@ -34,6 +34,7 @@ export type CreateExpenseOutputDTO = {
   name: string;
   description: string;
   amount: number;
+  currency: string;
   totalAmount: number;
   status: string;
   tags: string[];

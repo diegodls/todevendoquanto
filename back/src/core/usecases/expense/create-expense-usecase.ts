@@ -1,4 +1,4 @@
-import { Expense } from "@/core/entities/expense";
+import { Expense } from "@/core/entities/expense/expense";
 import { DateProviderInterface } from "@/core/ports/infrastructure/protocols/date/date-provider-interface";
 import { GenerateUuidInterface } from "@/core/ports/infrastructure/protocols/uuid/generate-uuid-interface";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";

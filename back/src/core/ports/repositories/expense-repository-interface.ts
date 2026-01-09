@@ -1,4 +1,4 @@
-import { Expense } from "@/core/entities/expense";
+import { Expense } from "@/core/entities/expense/expense";
 import { CreateExpenseOutputDTO } from "@/core/usecases/expense/create-expense-dto";
 
 export interface ExpenseRepositoryInterface {

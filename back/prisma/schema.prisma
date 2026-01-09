@@ -43,6 +43,7 @@ model Expense {
   name              String
   description       String
   amount            Int
+  currency          String        @default("BRL")
   totalAmount       Int           @map("total_amount")
   status            ExpenseStatus @default(PAYING)
   tags              String[]
