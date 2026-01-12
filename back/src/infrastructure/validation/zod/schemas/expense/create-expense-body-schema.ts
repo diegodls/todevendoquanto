@@ -112,7 +112,7 @@ export const CreateExpenseBodySchema = z
       .optional()
       .default([""]),
 
-    actualInstallment: z
+    currentInstallment: z
       .number({
         error: zodDefaultErrorHandler,
       })

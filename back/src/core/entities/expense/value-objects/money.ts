@@ -12,8 +12,17 @@ export class Money {
     }
   }
 
-  static create(amount: number, currency?: string): Money {
+  public static create(amount: number, currency?: string): Money {
     return new Money(amount, currency);
+  }
+
+  public static fromCents(cents: number, currency?: string): Money {
+    const amount = Math.round(cents / 100);
+    return new Money(amount, currency);
+  }
+
+  get cents(): number {
+    return this._amount * 100;
   }
 
   get amount(): number {
@@ -24,21 +33,26 @@ export class Money {
     return this._currency;
   }
 
-  isGreaterThan(other: Money): boolean {
+  public isGreaterThan(other: Money): boolean {
     this.assertSameCurrency(other);
     return this._amount > other._amount;
   }
 
-  equals(other: Money): boolean {
+  public equals(other: Money): boolean {
     return this._amount == other._amount && this._currency == other._currency;
   }
 
-  add(other: Money): Money {
+  public add(other: Money): Money {
     this.assertSameCurrency(other);
     return new Money(this._amount + other._amount, this._currency);
   }
 
-  multiply(factor: number): Money {
+  public subtract(other: Money): Money {
+    this.assertSameCurrency(other);
+    return new Money(this._amount - other._amount, this._currency);
+  }
+
+  public multiply(factor: number): Money {
     return new Money(this._amount * factor, this._currency);
   }
 

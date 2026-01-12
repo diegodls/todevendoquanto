@@ -1,5 +1,8 @@
 import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
+import { InstallmentInfo } from "@/core/entities/expense/value-objects/installment-info";
 import { Money } from "@/core/entities/expense/value-objects/money";
+import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
+import { Tags } from "@/core/entities/expense/value-objects/tags";
 
 import { ExpenseId, InstallmentId, UserId } from "@/core/entities/shared/types";
 
@@ -24,7 +27,7 @@ type CreateExpenseInput = {
   totalAmount: number;
   status: ExpenseStatusType;
   tags: string[];
-  actualInstallment: number;
+  currentInstallment: number;
   totalInstallment: number;
   paymentDay: Date;
   expirationDay: Date;
@@ -38,15 +41,11 @@ type ExpenseProps = {
   name: ExpenseName;
   description: string;
   amount: Money;
-  totalAmount: number;
+  totalAmount: Money;
   status: ExpenseStatusType;
-  tags: string[];
-  actualInstallment: number;
-  totalInstallment: number;
-  paymentDay: Date;
-  expirationDay: Date;
-  paymentStartAt: Date;
-  paymentEndAt: Date;
+  tags: Tags;
+  installmentInfo: InstallmentInfo;
+  paymentSchedule: PaymentSchedule;
   userId: UserId;
   installmentId: InstallmentId;
   createdAt: Date;
@@ -62,15 +61,11 @@ export class Expense {
   private _name: ExpenseName;
   private _description: string;
   private _amount: Money;
-  private _totalAmount: number;
+  private _totalAmount: Money;
   private _status: ExpenseStatusType;
-  private _tags: string[];
-  private _actualInstallment: number;
-  private _totalInstallment: number;
-  private _paymentDay: Date;
-  private _expirationDay: Date;
-  private _paymentStartAt: Date;
-  private _paymentEndAt: Date;
+  private _tags: Tags;
+  private _installmentInfo: InstallmentInfo;
+  private _paymentSchedule: PaymentSchedule;
   private _updatedAt: Date;
 
   constructor(props: ExpenseProps, id?: ExpenseId) {
@@ -85,12 +80,8 @@ export class Expense {
     this._totalAmount = props.totalAmount;
     this._status = props.status;
     this._tags = props.tags;
-    this._actualInstallment = props.actualInstallment;
-    this._totalInstallment = props.totalInstallment;
-    this._paymentDay = props.paymentDay;
-    this._expirationDay = props.expirationDay;
-    this._paymentStartAt = props.paymentStartAt;
-    this._paymentEndAt = props.paymentEndAt;
+    this._installmentInfo = props.installmentInfo;
+    this._paymentSchedule = props.paymentSchedule;
     this._updatedAt = props.updatedAt;
   }
 
@@ -110,7 +101,7 @@ export class Expense {
     return this._amount;
   }
 
-  get totalAmount(): number {
+  get totalAmount(): Money {
     return this._totalAmount;
   }
 
@@ -118,32 +109,16 @@ export class Expense {
     return this._status;
   }
 
-  get tags(): string[] {
+  get tags(): Tags {
     return this._tags;
   }
 
-  get actualInstallment(): number {
-    return this._actualInstallment;
+  get installmentInfo(): InstallmentInfo {
+    return this._installmentInfo;
   }
 
-  get totalInstallment(): number {
-    return this._totalInstallment;
-  }
-
-  get paymentDay(): Date {
-    return this._paymentDay;
-  }
-
-  get expirationDay(): Date {
-    return this._expirationDay;
-  }
-
-  get paymentStartAt(): Date {
-    return this._paymentStartAt;
-  }
-
-  get paymentEndAt(): Date {
-    return this._paymentEndAt;
+  get paymentSchedule(): PaymentSchedule {
+    return this._paymentSchedule;
   }
 
   get userId(): UserId {
@@ -167,13 +142,30 @@ export class Expense {
     id?: ExpenseId
   ): Expense {
     const name = ExpenseName.create(createProps.name);
-    const amount = Money.create(createProps.amount);
+    const amount = Money.fromCents(createProps.amount);
+    const totalAmount = Money.fromCents(createProps.totalAmount);
+    const installmentInfo = InstallmentInfo.create(
+      createProps.currentInstallment,
+      createProps.totalInstallment
+    );
+    const paymentSchedule = PaymentSchedule.create(
+      createProps.paymentDay,
+      createProps.expirationDay,
+      createProps.paymentStartAt,
+      createProps.paymentEndAt
+    );
+
+    const tags = Tags.create(createProps.tags);
 
     return new Expense(
       {
         ...createProps,
         name,
         amount,
+        totalAmount,
+        installmentInfo,
+        paymentSchedule,
+        tags,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -191,22 +183,10 @@ export class Expense {
     if (!this._name.equals(newName)) {
       this._name = newName;
 
-      /*
-      ! ADICIONAR OS EVENTOS DE DOMÍNIO
-      const oldNameValue = this._name.value;
-      this.addDomainEvent(newExpenseDetailsUpdated(this._id, oldNameValue, newName.value))
-      */
-
       this.touch();
     }
 
     if (this._description !== description) {
-      /*
-      ! ADICIONAR OS EVENTOS DE DOMÍNIO
-      const oldNDescription = this._description;
-      this.addDomainEvent(newExpenseDetailsUpdated(this._id, oldNDescription, this._description))
-      */
-
       this._description = description;
 
       this.touch();

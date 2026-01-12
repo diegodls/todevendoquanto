@@ -9,7 +9,7 @@ export class ExpenseName {
     }
   }
 
-  static create(name: string): ExpenseName {
+  public static create(name: string): ExpenseName {
     const trimmed = name.trim();
 
     if (trimmed.length === 0) {
@@ -23,7 +23,7 @@ export class ExpenseName {
     return this._value;
   }
 
-  equals(other: ExpenseName): boolean {
+  public equals(other: ExpenseName): boolean {
     if (!(other instanceof ExpenseName)) {
       return false;
     }

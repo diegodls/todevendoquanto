@@ -26,7 +26,7 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
     const installmentId = this.generateUuid.execute();
 
     for (let i = 0; i < expense.totalInstallment; i++) {
-      const actualInstallment = i + 1;
+      const currentInstallment = i + 1;
 
       const paymentDay =
         expense.status === "PAYING"
@@ -50,7 +50,7 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
 
       const expenseToBeCreated = Expense.create({
         ...expense,
-        actualInstallment,
+        currentInstallment,
         paymentDay,
         expirationDay,
         paymentStartAt,
