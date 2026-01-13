@@ -6,12 +6,18 @@
   "scripts": {
     "dev": "tsnd -r tsconfig-paths/register --transpile-only --respawn --ignore-watch node_modules src/main.ts",
     "tsc": "tsc --noEmit --watch",
-    "lazy": "start /min cmd . /k npm run tsc & npm run dev",
+    "lazy": "start /min cmd . /k npm run tsc & start /min cmd . /k npm run test & npm run dev",
     "db:init": "npx prisma migrate dev & npx prisma generate",
     "db:push": "npx prisma migrate dev",
     "db:reset": "npx prisma migrate reset",
     "db:pull": "npx prisma db pull",
-    "db:client": "npx prisma studio"
+    "db:client": "npx prisma studio",
+    "test": "vitest --silent=passed-only -w",
+    "test:verbose": "vitest --reporter=verbose",
+    "test:unit": "npm test -- --project=unit",
+    "test:integration": "npm test -- --project=integration",
+    "test:staged": "npm test -- related --run",
+    "test:ci": "npm test -- --coverage --run"
   },
   "keywords": [],
   "author": "",
@@ -44,12 +50,14 @@
     "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
+    "@vitest/coverage-v8": "^4.0.17",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.3.0",
     "prisma": "^6.19.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
   }
 }
