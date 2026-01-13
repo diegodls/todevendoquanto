@@ -1,4 +1,7 @@
-import { ExpenseStatus, expenseStatusValues } from "@/core/entities/expense";
+import {
+  ExpenseStatus,
+  expenseStatusValues,
+} from "@/core/entities/expense/expense";
 import { DECIMALS_REGEX } from "@/core/shared/regex/decimals";
 import {
   CreateExpenseBodyInput,
@@ -109,7 +112,7 @@ export const CreateExpenseBodySchema = z
       .optional()
       .default([""]),
 
-    actualInstallment: z
+    currentInstallment: z
       .number({
         error: zodDefaultErrorHandler,
       })

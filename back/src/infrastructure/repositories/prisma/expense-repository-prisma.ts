@@ -1,4 +1,4 @@
-import { Expense } from "@/core/entities/expense";
+import { Expense } from "@/core/entities/expense/expense";
 import { ExpenseId } from "@/core/entities/shared/types";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { CreateExpenseOutputDTO } from "@/core/usecases/expense/create-expense-dto";
@@ -18,12 +18,8 @@ export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
 
   async create(expenses: Expense[]): Promise<CreateExpenseOutputDTO[]> {
     const prismaExpenses = expenses.map((e) => {
-      console.log(e);
-
       return ExpenseMapper.toPersistence(e);
     });
-
-    // return expenses;
 
     const created = await this.prismaORMClient.expense.createMany({
       data: prismaExpenses,

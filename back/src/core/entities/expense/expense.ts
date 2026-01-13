@@ -1,3 +1,9 @@
+import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
+import { InstallmentInfo } from "@/core/entities/expense/value-objects/installment-info";
+import { Money } from "@/core/entities/expense/value-objects/money";
+import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
+import { Tags } from "@/core/entities/expense/value-objects/tags";
+
 import { ExpenseId, InstallmentId, UserId } from "@/core/entities/shared/types";
 
 export const ExpenseStatus = {
@@ -14,19 +20,32 @@ export const expenseStatusValues = Object.values(ExpenseStatus) as [
   ...ExpenseStatusType[]
 ];
 
-type ExpenseProps = {
+type CreateExpenseInput = {
   name: string;
   description: string;
   amount: number;
   totalAmount: number;
   status: ExpenseStatusType;
   tags: string[];
-  actualInstallment: number;
+  currentInstallment: number;
   totalInstallment: number;
   paymentDay: Date;
   expirationDay: Date;
   paymentStartAt: Date;
   paymentEndAt: Date;
+  userId: UserId;
+  installmentId: InstallmentId;
+};
+
+type ExpenseProps = {
+  name: ExpenseName;
+  description: string;
+  amount: Money;
+  totalAmount: Money;
+  status: ExpenseStatusType;
+  tags: Tags;
+  installmentInfo: InstallmentInfo;
+  paymentSchedule: PaymentSchedule;
   userId: UserId;
   installmentId: InstallmentId;
   createdAt: Date;
@@ -37,48 +56,40 @@ export class Expense {
   private readonly _id: ExpenseId;
   private readonly _userId: UserId;
   private readonly _createdAt: Date;
-  private _name: string;
+  private readonly _installmentId: InstallmentId;
+
+  private _name: ExpenseName;
   private _description: string;
-  private _amount: number;
-  private _totalAmount: number;
+  private _amount: Money;
+  private _totalAmount: Money;
   private _status: ExpenseStatusType;
-  private _tags: string[];
-  private _actualInstallment: number;
-  private _totalInstallment: number;
-  private _paymentDay: Date;
-  private _expirationDay: Date;
-  private _paymentStartAt: Date;
-  private _paymentEndAt: Date;
-  private _installmentId: InstallmentId;
+  private _tags: Tags;
+  private _installmentInfo: InstallmentInfo;
+  private _paymentSchedule: PaymentSchedule;
   private _updatedAt: Date;
 
   constructor(props: ExpenseProps, id?: ExpenseId) {
     this._id = id ?? crypto.randomUUID();
     this._userId = props.userId;
     this._createdAt = props.createdAt;
+    this._installmentId = props.installmentId;
+
     this._name = props.name;
     this._description = props.description;
     this._amount = props.amount;
     this._totalAmount = props.totalAmount;
     this._status = props.status;
     this._tags = props.tags;
-    this._actualInstallment = props.actualInstallment;
-    this._totalInstallment = props.totalInstallment;
-    this._paymentDay = props.paymentDay;
-    this._expirationDay = props.expirationDay;
-    this._paymentStartAt = props.paymentStartAt;
-    this._paymentEndAt = props.paymentEndAt;
-    this._installmentId = props.installmentId;
+    this._installmentInfo = props.installmentInfo;
+    this._paymentSchedule = props.paymentSchedule;
     this._updatedAt = props.updatedAt;
-
-    this.validate();
   }
 
   get id(): ExpenseId {
     return this._id;
   }
 
-  get name(): string {
+  get name(): ExpenseName {
     return this._name;
   }
 
@@ -86,11 +97,11 @@ export class Expense {
     return this._description;
   }
 
-  get amount(): number {
+  get amount(): Money {
     return this._amount;
   }
 
-  get totalAmount(): number {
+  get totalAmount(): Money {
     return this._totalAmount;
   }
 
@@ -98,32 +109,16 @@ export class Expense {
     return this._status;
   }
 
-  get tags(): string[] {
+  get tags(): Tags {
     return this._tags;
   }
 
-  get actualInstallment(): number {
-    return this._actualInstallment;
+  get installmentInfo(): InstallmentInfo {
+    return this._installmentInfo;
   }
 
-  get totalInstallment(): number {
-    return this._totalInstallment;
-  }
-
-  get paymentDay(): Date {
-    return this._paymentDay;
-  }
-
-  get expirationDay(): Date {
-    return this._expirationDay;
-  }
-
-  get paymentStartAt(): Date {
-    return this._paymentStartAt;
-  }
-
-  get paymentEndAt(): Date {
-    return this._paymentEndAt;
+  get paymentSchedule(): PaymentSchedule {
+    return this._paymentSchedule;
   }
 
   get userId(): UserId {
@@ -143,12 +138,34 @@ export class Expense {
   }
 
   public static create(
-    createProps: Omit<ExpenseProps, "createdAt" | "updatedAt" | "id">,
+    createProps: CreateExpenseInput,
     id?: ExpenseId
   ): Expense {
+    const name = ExpenseName.create(createProps.name);
+    const amount = Money.fromCents(createProps.amount);
+    const totalAmount = Money.fromCents(createProps.totalAmount);
+    const installmentInfo = InstallmentInfo.create(
+      createProps.currentInstallment,
+      createProps.totalInstallment
+    );
+    const paymentSchedule = PaymentSchedule.create(
+      createProps.paymentDay,
+      createProps.expirationDay,
+      createProps.paymentStartAt,
+      createProps.paymentEndAt
+    );
+
+    const tags = Tags.create(createProps.tags);
+
     return new Expense(
       {
         ...createProps,
+        name,
+        amount,
+        totalAmount,
+        installmentInfo,
+        paymentSchedule,
+        tags,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -161,13 +178,19 @@ export class Expense {
   }
 
   public updateDetails(name: string, description: string): void {
-    if (!name) throw new Error("Name cannot be empty");
+    const newName = ExpenseName.create(name);
 
-    this._name = name;
+    if (!this._name.equals(newName)) {
+      this._name = newName;
 
-    this._description = description;
+      this.touch();
+    }
 
-    this.touch();
+    if (this._description !== description) {
+      this._description = description;
+
+      this.touch();
+    }
   }
 
   public markAsPaid(): void {
@@ -196,23 +219,5 @@ export class Expense {
 
   private touch(): void {
     this._updatedAt = new Date();
-  }
-
-  private validate(): void {
-    if (!this._name || this._name.trim().length < 3) {
-      throw new Error("Expense Name is required and must have at least 3 char");
-    }
-
-    if (this._amount <= 0) {
-      throw new Error("Expense amount must be greater than zero");
-    }
-
-    if (isNaN(this._paymentDay.getTime())) {
-      throw new Error("Invalid Payment date");
-    }
-
-    if (!this._userId) {
-      throw new Error("Expense must belong to a user");
-    }
   }
 }

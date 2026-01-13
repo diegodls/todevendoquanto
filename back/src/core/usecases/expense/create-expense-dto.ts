@@ -1,4 +1,4 @@
-import { ExpenseStatusType } from "@/core/entities/expense";
+import { ExpenseStatusType } from "@/core/entities/expense/expense";
 
 export type CreateExpenseBodyInput = {
   name: string;
@@ -7,7 +7,7 @@ export type CreateExpenseBodyInput = {
   totalAmount?: string;
   status?: string;
   tags?: string[];
-  actualInstallment?: number;
+  currentInstallment?: number;
   totalInstallment?: number;
   paymentDay?: string;
   expirationDay?: string;
@@ -22,7 +22,7 @@ export type CreateExpenseInputDTO = {
   totalAmount: number;
   status: ExpenseStatusType;
   tags: string[];
-  actualInstallment: number;
+  currentInstallment: number;
   totalInstallment: number;
   paymentDay: Date;
   expirationDay: Date;
@@ -34,10 +34,11 @@ export type CreateExpenseOutputDTO = {
   name: string;
   description: string;
   amount: number;
+  currency: string;
   totalAmount: number;
   status: string;
   tags: string[];
-  actualInstallment: number;
+  currentInstallment: number;
   totalInstallment: number;
   paymentDay: string;
   expirationDay: string;

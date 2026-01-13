@@ -1,4 +1,4 @@
-import { Expense } from "@/core/entities/expense";
+import { Expense } from "@/core/entities/expense/expense";
 import { User } from "@/core/entities/user";
 
 export interface DeleteExpenseUseCaseInterface {

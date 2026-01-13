@@ -1,4 +1,4 @@
-import { Expense } from "@/core/entities/expense";
+import { Expense } from "@/core/entities/expense/expense";
 import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
 
 export type DeleteExpenseInputDTO = {
