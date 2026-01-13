@@ -4,7 +4,7 @@ export class Tag {
       throw new Error("Tag must have at least 3 characters");
     }
 
-    if (_value.length < 10) {
+    if (_value.length > 10) {
       throw new Error("Tag cannot exceed 10 characters");
     }
   }

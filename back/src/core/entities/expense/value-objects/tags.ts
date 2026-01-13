@@ -14,7 +14,7 @@ export class Tags {
 
     let newTagArr: string[] = [];
 
-    for (const tag in tags) {
+    for (const tag of tags) {
       const newTag = Tag.create(tag);
 
       if (!newTagArr.includes(newTag.value)) {
