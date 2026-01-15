@@ -1,5 +1,5 @@
+import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
 import { describe, expect, it } from "vitest";
-import { ExpenseName } from "./expense-name";
 
 describe("ExpenseName", () => {
   describe("create", () => {
