@@ -1,6 +1,13 @@
+import path from "path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src/"),
+    },
+  },
+
   test: {
     environment: "node", // 'node' = backend, 'jsdom'/'happy-dom' = frontend.
 
@@ -12,6 +19,14 @@ export default defineConfig({
 
     projects: [
       {
+        resolve: {
+          alias: {
+            "@": path.resolve(__dirname, "./src/"),
+          },
+        },
+
+        // extends: true,
+
         test: {
           name: { label: "unit", color: "cyan" },
           environment: "node",
@@ -19,6 +34,14 @@ export default defineConfig({
         },
       },
       {
+        resolve: {
+          alias: {
+            "@": path.resolve(__dirname, "./src/"),
+          },
+        },
+
+        // extends: true,
+
         test: {
           name: { label: "integration", color: "magenta" },
           environment: "node",
@@ -31,7 +54,13 @@ export default defineConfig({
       provider: "v8", // V8 é extremamente rápida
       reporter: ["text", "json", "html"],
       include: ["src/**/*.ts"],
-      exclude: ["src/**/*.spec.ts", "src/types/**"], // Não meça cobertura de arquivos desses tipos
+      exclude: [
+        "**/*.spec.ts",
+        "**/*.test.ts",
+        "node_modules/",
+        "dist/",
+        "src/types/**",
+      ], // Não meça cobertura deste arquivos/pastas
     },
   },
 });
