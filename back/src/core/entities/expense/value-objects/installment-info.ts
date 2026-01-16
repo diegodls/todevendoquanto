@@ -1,4 +1,5 @@
 export class InstallmentInfo {
+  private readonly MAX_INSTALLMENTS = 120;
   private constructor(
     private readonly _current: number,
     private readonly _total: number
@@ -16,14 +17,16 @@ export class InstallmentInfo {
         `Current installment (${_current}) cannot exceed total(${_total})`
       );
     }
+
+    if (_total > this.MAX_INSTALLMENTS) {
+      throw new Error(
+        `Total installment cannot exceed ${this.MAX_INSTALLMENTS} months`
+      );
+    }
   }
 
   public static create(current: number, total: number): InstallmentInfo {
     return new InstallmentInfo(current, total);
-  }
-
-  public static single(): InstallmentInfo {
-    return new InstallmentInfo(1, 1);
   }
 
   get current(): number {
@@ -34,8 +37,16 @@ export class InstallmentInfo {
     return this._total;
   }
 
-  private isComplete(): boolean {
+  public static single(): InstallmentInfo {
+    return new InstallmentInfo(1, 1);
+  }
+
+  public isComplete(): boolean {
     return this._current === this._total;
+  }
+
+  public isSingle(): boolean {
+    return this._total == 1;
   }
 
   public next(): InstallmentInfo {
@@ -43,5 +54,17 @@ export class InstallmentInfo {
       throw new Error("Cannot advance beyond final installment");
     }
     return new InstallmentInfo(this._current + 1, this.total);
+  }
+
+  public equals(other: InstallmentInfo): boolean {
+    if (!(other instanceof InstallmentInfo)) {
+      return false;
+    }
+
+    return this._current === other._current && this._total === other._total;
+  }
+
+  public toString(): string {
+    return `${this.current}/${this._total}`;
   }
 }
