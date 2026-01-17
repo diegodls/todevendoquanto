@@ -1,7 +1,7 @@
 export class Money {
   private constructor(
     private readonly _amount: number,
-    private readonly _currency: string = "BRL"
+    private readonly _currency: string = "BRL",
   ) {
     if (_amount < 0) {
       throw new Error("Monet amount cannot be negative");
@@ -59,7 +59,7 @@ export class Money {
   private assertSameCurrency(other: Money): void {
     if (this._currency !== other._currency) {
       throw new Error(
-        `Cannot operate on different currencies: ${this._currency} vs ${other._currency}`
+        `Cannot operate on different currencies: ${this._currency} vs ${other._currency}`,
       );
     }
   }
