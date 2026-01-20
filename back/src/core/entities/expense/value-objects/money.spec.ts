@@ -244,4 +244,210 @@ describe("Money", () => {
       expect(money1.isLessThan(money2)).toBe(false);
     });
   });
+
+  describe("isLessThanOrEq1ual", () => {
+    it("should return true when amount is less", () => {
+      const money1 = Money.create(50);
+      const money2 = Money.create(100);
+
+      expect(money1.isLessThanOrEqual(money2)).toBe(true);
+    });
+
+    it("should return true when amounts are equal", () => {
+      const money1 = Money.create(50);
+      const money2 = Money.create(50);
+
+      expect(money1.isLessThanOrEqual(money2)).toBe(true);
+    });
+
+    it("should return true when amounts is greater", () => {
+      const money1 = Money.create(100);
+      const money2 = Money.create(50);
+
+      expect(money1.isLessThanOrEqual(money2)).toBe(false);
+    });
+  });
+
+  describe("equals", () => {
+    it("should return true for same amount and currency", () => {
+      const money1 = Money.create(100);
+      const money2 = Money.create(100);
+
+      expect(money1.equals(money2)).toBe(true);
+    });
+
+    it("should return false for different amounts", () => {
+      const money1 = Money.create(100);
+      const money2 = Money.create(50);
+
+      expect(money1.equals(money2)).toBe(false);
+    });
+
+    it("should return false for different currencies", () => {
+      const usd = Money.create(100, "USD");
+      const brl = Money.create(100, "BRL");
+
+      expect(usd.equals(brl)).toBe(false);
+    });
+
+    it("should return false when comparing with null", () => {
+      const money = Money.create(100);
+
+      expect(money.equals(null as any)).toBe(false);
+    });
+
+    it("should return false when comparing with undefined", () => {
+      const money = Money.create(100);
+
+      expect(money.equals(undefined as any)).toBe(false);
+    });
+
+    it("should return false when comparing with plain object", () => {
+      const money = Money.create(100);
+      const plain = { _amount: 100, _currency: "BRL" };
+
+      expect(money.equals(plain as any)).toBe(false);
+    });
+  });
+
+  describe("add", () => {
+    it("should add two money amounts", () => {
+      const money1 = Money.create(50);
+      const money2 = Money.create(50);
+      const result = money1.add(money2);
+
+      expect(result.amount).toBe(100);
+      expect(result.currency).toBe("BRL");
+    });
+
+    it("should add zero", () => {
+      const money = Money.create(100);
+      const result = money.add(Money.zero());
+
+      expect(result.amount).toBe(100);
+    });
+
+    it("should create new instance", () => {
+      const money1 = Money.create(100);
+      const result = money1.add(Money.zero());
+
+      expect(result.amount).toBe(100);
+    });
+
+    it("should create new instance", () => {
+      const money = Money.create(50);
+      const money2 = Money.create(80);
+      const result = money.add(money2);
+
+      expect(money.amount).toBe(50);
+      expect(money2.amount).toBe(80);
+      expect(result).not.toBe(money);
+      expect(result).not.toBe(money2);
+    });
+
+    it("should throw error on different currencies", () => {
+      const brl = Money.create(100, "BRL");
+      const usd = Money.create(100, "USD");
+
+      expect(() => brl.add(usd)).toThrow(
+        "Cannot operate on different currencies",
+      );
+    });
+
+    describe("subtract", () => {
+      it("should subtract two money amounts", () => {
+        const money1 = Money.create(100);
+        const money2 = Money.create(30);
+        const result = money1.subtract(money2);
+
+        expect(result.amount).toBe(70);
+      });
+    });
+
+    it("should subtract to zero", () => {
+      const money1 = Money.create(100);
+      const money2 = Money.create(100);
+      const result = money1.subtract(money2);
+
+      expect(result.amount).toBe(0);
+
+      expect(result.isZero()).toBe(true);
+    });
+
+    it("should create a new instance", () => {
+      const money1 = Money.create(100);
+      const money2 = Money.create(30);
+      const result = money1.subtract(money2);
+
+      expect(money1.amount).toBe(100);
+      expect(money2.amount).toBe(30);
+      expect(result).not.toBe(money1);
+    });
+
+    it("should throw error when result would be negative instance", () => {
+      const money1 = Money.create(50);
+      const money2 = Money.create(100);
+
+      expect(() => money1.subtract(money2)).toThrow(
+        "Subtraction would result in negative amount",
+      );
+    });
+
+    it("should throw error on different currencies", () => {
+      const brl = Money.create(100, "BRL");
+      const usd = Money.create(100, "USD");
+
+      expect(() => brl.subtract(usd)).toThrow(
+        "Cannot operate on different currencies",
+      );
+    });
+  });
+
+  describe("multiply", () => {
+    it("should multiply money by factor", () => {
+      const money = Money.create(50);
+      const result = money.multiply(3);
+
+      expect(result.amount).toBe(150);
+      expect(result.currency).toBe("BRL");
+    });
+
+    it("should multiply by zero", () => {
+      const money = Money.create(100);
+      const result = money.multiply(0);
+
+      expect(result.amount).toBe(0);
+    });
+
+    it(" multiply by decimal", () => {
+      const money = Money.create(100);
+      const result = money.multiply(0.5);
+
+      expect(result.amount).toBe(50);
+    });
+
+    it("should create new instance", () => {
+      const money = Money.create(50);
+      const result = money.multiply(2);
+
+      expect(money.amount).toBe(50);
+      expect(result).not.toBe(money);
+    });
+
+    it("should throw error on NaN factor", () => {
+      const money = Money.create(100);
+
+      expect(() => {
+        money.multiply(NaN);
+      }).toThrow("Multiplication factor must be a finite number");
+    });
+
+    it("should throw error on negative factor", () => {
+      const money = Money.create(100);
+
+      expect(() => money.multiply(-2)).toThrow(
+        "Multiplication factor cannot be negative",
+      );
+    });
+  });
 });
