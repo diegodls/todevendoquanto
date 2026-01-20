@@ -86,6 +86,9 @@ export class Money {
   }
 
   public equals(other: Money): boolean {
+    if (!(other instanceof Money)) {
+      return false;
+    }
     return this._amount === other._amount && this._currency === other._currency;
   }
 
@@ -97,11 +100,11 @@ export class Money {
   public subtract(other: Money): Money {
     this.assertSameCurrency(other);
 
-    const result = this._amount - this._amount;
+    const result = this._amount - other._amount;
 
     if (result < 0) {
       throw new Error(
-        `Subtraction would result ion negative amount: ${this.amount} - ${other._amount} = ${this.amount - other._amount}`,
+        `Subtraction would result in negative amount: ${this.amount} - ${other._amount} = ${this.amount - other._amount}`,
       );
     }
     return new Money(result, this._currency);
