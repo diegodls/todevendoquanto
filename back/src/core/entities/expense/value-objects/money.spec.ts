@@ -14,31 +14,31 @@ describe("Money", () => {
       expect(money.amount).toBe(100);
       expect(money.currency).toBe("USD");
     });
-  });
 
-  it("should accept zero amount", () => {
-    const money = Money.create(0);
-    expect(money.amount).toBe(0);
-  });
+    it("should accept zero amount", () => {
+      const money = Money.create(0);
+      expect(money.amount).toBe(0);
+    });
 
-  it("should accept decimal amounts", () => {
-    const money = Money.create(49.99);
-    expect(money.amount).toBe(49.99);
-  });
+    it("should accept decimal amounts", () => {
+      const money = Money.create(49.99);
+      expect(money.amount).toBe(49.99);
+    });
 
-  it("should normalize currency to uppercase", () => {
-    const moneyBRL = Money.create(100, "brl");
-    const moneyUSD = Money.create(100, "usd");
-    expect(moneyBRL.currency).toBe("BRL");
-    expect(moneyUSD.currency).toBe("USD");
-  });
+    it("should normalize currency to uppercase", () => {
+      const moneyBRL = Money.create(100, "brl");
+      const moneyUSD = Money.create(100, "usd");
+      expect(moneyBRL.currency).toBe("BRL");
+      expect(moneyUSD.currency).toBe("USD");
+    });
 
-  it("should handle all currency", () => {
-    const currencies = ["BRL", "USD"];
+    it("should handle all currency", () => {
+      const currencies = ["BRL", "USD"];
 
-    currencies.forEach((currency) => {
-      const money = Money.create(100, currency);
-      expect(money.currency).toBe(currency);
+      currencies.forEach((currency) => {
+        const money = Money.create(100, currency);
+        expect(money.currency).toBe(currency);
+      });
     });
   });
 
@@ -172,6 +172,7 @@ describe("Money", () => {
       expect(money.isZero()).toBe(true);
     });
   });
+
   describe("comparisons", () => {
     describe("isGreaterThan", () => {
       it("should return true when amount is greater", () => {
@@ -225,6 +226,7 @@ describe("Money", () => {
       expect(money1.isGreaterThanOrEqual(money2)).toBe(false);
     });
   });
+
   describe("isLessThan", () => {
     it("should return true when amount is less", () => {
       const money1 = Money.create(50);
@@ -419,7 +421,7 @@ describe("Money", () => {
       expect(result.amount).toBe(0);
     });
 
-    it(" multiply by decimal", () => {
+    it("should multiply by decimal", () => {
       const money = Money.create(100);
       const result = money.multiply(0.5);
 
@@ -448,6 +450,74 @@ describe("Money", () => {
       expect(() => money.multiply(-2)).toThrow(
         "Multiplication factor cannot be negative",
       );
+    });
+  });
+
+  describe("divide", () => {
+    it("should divide with valid number", () => {
+      const money = Money.create(100);
+      const divided = money.divide(2);
+      expect(divided.amount).toBe(50);
+      expect(divided.cents).toBe(5000);
+      expect(divided.currency).toBe("BRL");
+    });
+
+    it("should divide with different currency", () => {
+      const money = Money.create(100, "USD");
+      const divided = money.divide(2);
+
+      expect(divided.amount).toBe(50);
+      expect(divided.cents).toBe(5000);
+      expect(divided.currency).toBe("USD");
+    });
+
+    it("should divide by decimal ", () => {
+      const money = Money.create(100);
+      const divided = money.divide(0.2);
+      expect(divided.amount).toBe(500);
+      expect(divided.cents).toBe(50000);
+    });
+
+    it("should create new instance", () => {
+      const money = Money.create(100);
+      const divided = money.divide(2);
+      expect(money.amount).toBe(100);
+      expect(money).not.toBe(divided);
+    });
+
+    it("should throw when divisor is finite", () => {
+      const money = Money.create(100);
+
+      expect(() => money.divide(Infinity)).toThrow(
+        "Divisor factor must be a finite number",
+      );
+    });
+
+    it("should throw when divisor is NaN", () => {
+      const money = Money.create(100);
+
+      expect(() => money.divide(NaN)).toThrow(
+        "Divisor factor must be a finite number",
+      );
+    });
+
+    it("should throw when divisor is zero", () => {
+      const money = Money.create(100);
+
+      expect(() => money.divide(0)).toThrow("Cannot divide by zero");
+    });
+
+    it("should throw when divisor is negative", () => {
+      const money = Money.create(100);
+      expect(() => money.divide(-1)).toThrow("Divisor cannot be negative");
+    });
+  });
+
+  describe("allocate", () => {
+    it("should cannot allocate with empty ratio", () => {
+      const money = Money.create(100);
+
+      expect(() => money.allocate([])).toThrow("Ratios array cannot be empty");
     });
   });
 });
