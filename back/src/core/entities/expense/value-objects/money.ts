@@ -124,7 +124,7 @@ export class Money {
 
   public divide(divisor: number): Money {
     if (!Number.isFinite(divisor)) {
-      throw new Error("Multiplication factor must be a finite number");
+      throw new Error("Divisor factor must be a finite number");
     }
 
     if (divisor === 0) {
@@ -152,6 +152,7 @@ export class Money {
     const totalCents = this.cents;
 
     let allocated = 0;
+
     const results: Money[] = [];
 
     ratios.forEach((ratio, index) => {
