@@ -146,7 +146,7 @@ export class Money {
     const totalRatio = ratios.reduce((sum, ratio) => sum + ratio, 0);
 
     if (totalRatio === 0) {
-      throw new Error("Total of ratios cannot ve zero");
+      throw new Error("Total of ratios cannot be zero");
     }
 
     const totalCents = this.cents;
@@ -162,7 +162,9 @@ export class Money {
 
       let share: number = 0;
 
-      if (index == ratios.length - 1) {
+      if (index === ratios.length - 1) {
+        share = totalCents - allocated;
+      } else {
         share = Math.floor((totalCents * ratio) / totalRatio);
         allocated += share;
       }
