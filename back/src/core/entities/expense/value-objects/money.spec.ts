@@ -485,7 +485,7 @@ describe("Money", () => {
       expect(money).not.toBe(divided);
     });
 
-    it("should throw when divisor is finite", () => {
+    it("should throw error on Infinity divisor", () => {
       const money = Money.create(100);
 
       expect(() => money.divide(Infinity)).toThrow(
@@ -514,10 +514,147 @@ describe("Money", () => {
   });
 
   describe("allocate", () => {
-    it("should cannot allocate with empty ratio", () => {
+    it("should allocate money proportionally", () => {
+      const money = Money.create(100);
+      const result = money.allocate([1, 1, 1]);
+
+      expect(result).toHaveLength(3);
+      expect(result[0].amount).toBeCloseTo(33.33, 2);
+      expect(result[1].amount).toBeCloseTo(33.33, 2);
+      expect(result[2].amount).toBeCloseTo(33.34, 2);
+    });
+
+    it("should allocate with different ratios", () => {
+      const money = Money.create(100);
+      const result = money.allocate([7, 3]);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].amount).toBe(70);
+      expect(result[1].amount).toBe(30);
+    });
+
+    it("should allocate cents without loss", () => {
+      const money = Money.fromCents(1000);
+      const result = money.allocate([1, 1, 1]);
+
+      const totalCents = result.reduce((sum, m) => sum + m.cents, 0);
+
+      expect(totalCents).toBe(1000);
+    });
+
+    it("should handle single allocation", () => {
+      const money = Money.create(100);
+      const result = money.allocate([1]);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].amount).toBe(100);
+    });
+
+    it("should preserve currency", () => {
+      const money = Money.create(100, "USD");
+      const result = money.allocate([1, 1]);
+
+      expect(result[0].currency).toBe("USD");
+      expect(result[1].currency).toBe("USD");
+    });
+
+    it("should throw error on empty ratios", () => {
       const money = Money.create(100);
 
       expect(() => money.allocate([])).toThrow("Ratios array cannot be empty");
+    });
+
+    it("should throw error on zero total ratio", () => {
+      const money = Money.create(100);
+
+      expect(() => money.allocate([0, 0])).toThrow(
+        "Total of ratios cannot be zero",
+      );
+    });
+
+    it("should throw error on negative ratio", () => {
+      const money = Money.create(100);
+
+      expect(() => money.allocate([-1, -1])).toThrow(
+        "Ratios cannot be negative",
+      );
+    });
+  });
+
+  describe("toString", () => {
+    it("should format money as string", () => {
+      const money = Money.create(100);
+      expect(money.toString()).toBe("BRL 100.00");
+    });
+
+    it("should format with two decimal places", () => {
+      const money = Money.create(49.9);
+      expect(money.toString()).toBe("BRL 49.90");
+    });
+
+    it("should format zero", () => {
+      const money = Money.zero();
+      expect(money.toString()).toBe("BRL 0.00");
+    });
+
+    it("should format different currency", () => {
+      const money = Money.create(100, "USD");
+      expect(money.toString()).toBe("USD 100.00");
+    });
+  });
+
+  describe("toJSON", () => {
+    it("should serialize to JSON", () => {
+      const money = Money.create(100, "USD");
+      const json = money.toJSON();
+
+      expect(json).toEqual({
+        amount: 100,
+        currency: "USD",
+      });
+    });
+
+    it("should be JSON.stringify compatible", () => {
+      const money = Money.create(49.99);
+      const serialized = JSON.stringify(money);
+
+      expect(serialized).toContain('"amount":49.99');
+      expect(serialized).toContain('"currency":"BRL"');
+    });
+  });
+
+  describe("immutability", () => {
+    it("should not modify original on add", () => {
+      const original = Money.create(100);
+      const added = original.add(Money.create(50));
+
+      expect(original.amount).toBe(100);
+      expect(added.amount).toBe(150);
+    });
+
+    it("should not modify original on subtract", () => {
+      const original = Money.create(100);
+      const subtracted = original.subtract(Money.create(30));
+      expect(original.amount).toBe(100);
+      expect(subtracted.amount).toBe(70);
+    });
+
+    it("should not modify original on multiply", () => {
+      const original = Money.create(100);
+      const multiplied = original.multiply(2);
+
+      expect(original.amount).toBe(100);
+      expect(multiplied.amount).toBe(200);
+    });
+
+    it("should create independent instances", () => {
+      const money1 = Money.create(100);
+      const money2 = Money.create(200);
+
+      expect(money1.amount).toBe(100);
+      expect(money2.amount).toBe(200);
+
+      expect(money1).not.toBe(money2);
     });
   });
 });
