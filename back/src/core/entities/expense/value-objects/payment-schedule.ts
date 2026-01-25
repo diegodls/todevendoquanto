@@ -26,9 +26,9 @@ export class PaymentSchedule {
   }
 
   public static createMonthly(
-    paymentDayOfMonth: number,
-    month: number,
     year: number,
+    month: number,
+    paymentDayOfMonth: number,
   ): PaymentSchedule {
     if (paymentDayOfMonth < 1 || paymentDayOfMonth > 31) {
       throw new Error("Payment day must be between 1 and 31");
