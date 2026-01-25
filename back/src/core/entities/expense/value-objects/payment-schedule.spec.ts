@@ -50,6 +50,15 @@ describe("PaymentSchedule", () => {
   describe("createMonthly", () => {
     it("should create monthly schedule with valid day", () => {
       const schedule = PaymentSchedule.createMonthly(2026, 1, 15);
+
+      expect(schedule.paymentDay.getDate()).toBe(15);
+      expect(schedule.paymentDay.getMonth()).toBe(0);
+      expect(schedule.startAt.getDate()).toBe(1);
+      expect(schedule.expirationDay.getDate()).toBe(20);
     });
+
+    // it("should create schedule for last day of month", () => {
+    //   const schedule = PaymentSchedule.createMonthly(2026, 1, 27);
+    // });
   });
 });
