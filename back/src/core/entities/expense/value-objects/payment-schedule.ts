@@ -25,22 +25,6 @@ export class PaymentSchedule {
     );
   }
 
-  public static createMonthly(
-    year: number,
-    month: number,
-    paymentDayOfMonth: number,
-  ): PaymentSchedule {
-    if (paymentDayOfMonth < 1 || paymentDayOfMonth > 31) {
-      throw new Error("Payment day must be between 1 and 31");
-    }
-    const startAt = new Date(year, month - 1, 1);
-    const paymentDay = new Date(year, month - 1, paymentDayOfMonth);
-    const expirationDay = new Date(year, month - 1, paymentDayOfMonth + 5);
-    const endAt = new Date(year, month, 0);
-
-    return new PaymentSchedule(paymentDay, expirationDay, startAt, endAt);
-  }
-
   get paymentDay(): Date {
     return new Date(this._paymentDay);
   }
@@ -74,7 +58,7 @@ export class PaymentSchedule {
     const payment = this.stripTime(this._paymentDay);
     const expiration = this.stripTime(this._expirationDay);
 
-    return ref >= payment && ref < expiration;
+    return ref >= payment && ref <= expiration;
   }
 
   public daysUntilExpiration(referenceDate: Date = new Date()): number {
@@ -139,18 +123,6 @@ export class PaymentSchedule {
     if (this._startAt > this._endAt) {
       throw new Error(
         `Payment period start (${this.formatDate(this._startAt)}) must be before end (${this.formatDate(this._endAt)})`,
-      );
-    }
-
-    if (this._paymentDay > this._expirationDay) {
-      throw new Error(
-        `Payment day (${this.formatDate(this._paymentDay)}) must be before expiration day (${this.formatDate(this._expirationDay)})`,
-      );
-    }
-
-    if (this._paymentDay < this._startAt) {
-      throw new Error(
-        `Payment day (${this.formatDate(this._paymentDay)}) must be within payment period (${this.formatDate(this._startAt)} to ${this.formatDate(this._endAt)})`,
       );
     }
 
