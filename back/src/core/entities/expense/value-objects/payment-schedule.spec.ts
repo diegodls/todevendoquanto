@@ -3,10 +3,10 @@ import { describe, expect, it } from "vitest";
 
 describe("PaymentSchedule", () => {
   const validDates = {
-    paymentDay: new Date("2026-01-15"),
-    expirationDay: new Date("2026-01-20"),
-    startAt: new Date("2026-01-01"),
-    endAt: new Date("2026-01-31"),
+    paymentDay: new Date(2026, 0, 15),
+    expirationDay: new Date(2026, 0, 20),
+    startAt: new Date(2026, 0, 1),
+    endAt: new Date(2026, 0, 31),
   };
 
   describe("create", () => {
@@ -25,10 +25,10 @@ describe("PaymentSchedule", () => {
     });
 
     it("should create copies of dates to prevent mutation", () => {
-      const paymentDay = new Date("2026-01-15");
-      const expirationDay = new Date("2026-01-20");
-      const startDay = new Date("2026-01-01");
-      const endAt = new Date("2026-01-31");
+      const paymentDay = new Date(2026, 0, 15);
+      const expirationDay = new Date(2026, 0, 20);
+      const startDay = new Date(2026, 0, 1);
+      const endAt = new Date(2026, 0, 31);
 
       const schedule = PaymentSchedule.create(
         paymentDay,
@@ -91,10 +91,10 @@ describe("PaymentSchedule", () => {
     it("should throw error when start date is after end date", () => {
       expect(() =>
         PaymentSchedule.create(
-          new Date("2026-01-15"),
-          new Date("2026-01-20"),
-          new Date("2026-01-31"),
-          new Date("2026-01-01"),
+          new Date(2026, 0, 15),
+          new Date(2026, 0, 20),
+          new Date(2026, 0, 31),
+          new Date(2026, 0, 1),
         ),
       ).toThrow(
         "Payment period start (2026-01-31) must be before end (2026-01-01)",
@@ -149,26 +149,26 @@ describe("PaymentSchedule", () => {
 
     it("should return false on expiration day itself", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-20");
+      const referenceDate = new Date(2026, 0, 20);
 
       expect(schedule.isExpired(referenceDate)).toBe(false);
     });
 
     it(" ignore time component", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15T10:00:00"),
-        new Date("2026-01-20T15:00:00"),
-        new Date("2026-01-01T08:00:00"),
-        new Date("2026-01-31T23:59:59"),
+        new Date(2026, 0, 15, 10, 0, 0),
+        new Date(2026, 0, 20, 15, 0, 0),
+        new Date(2026, 0, 10, 8, 0, 0),
+        new Date(2026, 0, 31, 23, 59, 59),
       );
 
-      const referenceDate = new Date("2026-01-20T23:59:59");
+      const referenceDate = new Date(2026, 0, 20, 23, 59, 59);
 
       expect(schedule.isExpired(referenceDate)).toBe(false);
     });
@@ -194,48 +194,48 @@ describe("PaymentSchedule", () => {
   describe("isWithinPaymentPeriod", () => {
     it("should return true when within period", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-15");
+      const referenceDate = new Date(2026, 0, 15);
 
       expect(schedule.isWithinPaymentPeriod(referenceDate)).toBe(true);
     });
 
     it("should return true on start date", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-01");
+      const referenceDate = new Date(2026, 0, 1);
 
       expect(schedule.isWithinPaymentPeriod(referenceDate)).toBe(true);
     });
 
     it("return true on end date", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-31");
+      const referenceDate = new Date(2026, 0, 31);
       expect(schedule.isWithinPaymentPeriod(referenceDate)).toBe(true);
     });
 
     it("should return false before period", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
       const referenceDate = new Date("2025-15-31");
@@ -245,13 +245,13 @@ describe("PaymentSchedule", () => {
 
     it("should return false after period", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-02-01");
+      const referenceDate = new Date(2026, 2, 1);
 
       expect(schedule.isWithinPaymentPeriod(referenceDate)).toBe(false);
     });
@@ -260,65 +260,65 @@ describe("PaymentSchedule", () => {
   describe("isPaymentDue", () => {
     it("should return true on payment day", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-15");
+      const referenceDate = new Date(2026, 0, 15);
 
       expect(schedule.isPaymentDue(referenceDate)).toBe(true);
     });
 
     it("should return true between payment and expiration", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-18");
+      const referenceDate = new Date(2026, 0, 18);
 
       expect(schedule.isPaymentDue(referenceDate)).toBe(true);
     });
 
     it("should return true on expiration day", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-20");
+      const referenceDate = new Date(2026, 0, 20);
 
       expect(schedule.isPaymentDue(referenceDate)).toBe(true);
     });
 
     it("should return false before payment day", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-10");
+      const referenceDate = new Date(2026, 0, 10);
 
       expect(schedule.isPaymentDue(referenceDate)).toBe(false);
     });
 
     it(" return false after expiration", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-25");
+      const referenceDate = new Date(2026, 0, 25);
 
       expect(schedule.isPaymentDue(referenceDate)).toBe(false);
     });
@@ -327,39 +327,39 @@ describe("PaymentSchedule", () => {
   describe("daysUntilExpiration", () => {
     it("should calculate days until expiration", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-15");
+      const referenceDate = new Date(2026, 0, 15);
 
       expect(schedule.daysUntilExpiration(referenceDate)).toBe(5);
     });
 
     it("should return 0 on expiration day", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-20");
+      const referenceDate = new Date(2026, 0, 20);
 
       expect(schedule.daysUntilExpiration(referenceDate)).toBe(0);
     });
 
     it("should return negative for past expiration", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
 
-      const referenceDate = new Date("2026-01-25");
+      const referenceDate = new Date(2026, 0, 25);
 
       expect(schedule.daysUntilExpiration(referenceDate)).toBe(-5);
     });
@@ -368,14 +368,139 @@ describe("PaymentSchedule", () => {
   describe("daysUntilPayment", () => {
     it("should calculate days until payment", () => {
       const schedule = PaymentSchedule.create(
-        new Date("2026-01-15"),
-        new Date("2026-01-20"),
-        new Date("2026-01-01"),
-        new Date("2026-01-31"),
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
       );
-      const referenceDate = new Date("2026-01-10");
+      const referenceDate = new Date(2026, 0, 10);
 
-      expect(schedule.daysUntilExpiration(referenceDate)).toBe(5);
+      expect(schedule.daysUntilPayment(referenceDate)).toBe(5);
+    });
+
+    it("should return 0 on payment day", () => {
+      const schedule = PaymentSchedule.create(
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
+      );
+
+      const referenceDate = new Date(2026, 0, 15);
+
+      expect(schedule.daysUntilPayment(referenceDate)).toBe(0);
+    });
+
+    it("should return negative after payment day", () => {
+      const schedule = PaymentSchedule.create(
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
+      );
+
+      const referenceDate = new Date(2026, 0, 20);
+      expect(schedule.daysUntilPayment(referenceDate)).toBe(-5);
+    });
+  });
+
+  describe("equals", () => {
+    it("should return true for same values", () => {
+      const schedule1 = PaymentSchedule.create(
+        validDates.paymentDay,
+        validDates.expirationDay,
+        validDates.startAt,
+        validDates.endAt,
+      );
+
+      const schedule2 = PaymentSchedule.create(
+        validDates.paymentDay,
+        validDates.expirationDay,
+        validDates.startAt,
+        validDates.endAt,
+      );
+      expect(schedule1.equals(schedule2)).toBe(true);
+    });
+
+    it("should return false when comparing with null", () => {
+      const schedule = PaymentSchedule.create(
+        validDates.paymentDay,
+        validDates.expirationDay,
+        validDates.startAt,
+        validDates.endAt,
+      );
+
+      expect(schedule.equals(null as any)).toBe(false);
+    });
+
+    it("should return false when comparing with non-PaymentSchedule", () => {
+      const schedule = PaymentSchedule.create(
+        validDates.paymentDay,
+        validDates.expirationDay,
+        validDates.startAt,
+        validDates.endAt,
+      );
+
+      const fake = { paymentDay: validDates.paymentDay };
+
+      expect(schedule.equals(fake as any)).toBe(false);
+    });
+  });
+
+  describe("toString", () => {
+    it("should format schedule as string", () => {
+      const schedule = PaymentSchedule.create(
+        new Date(2026, 0, 15),
+        new Date(2026, 0, 20),
+        new Date(2026, 0, 1),
+        new Date(2026, 0, 31),
+      );
+      const str = schedule.toString();
+
+      expect(str).toContain("2026-01-15");
+      expect(str).toContain("2026-01-20");
+      expect(str).toContain("2026-01-01");
+      expect(str).toContain("2026-01-31");
+    });
+  });
+
+  describe("immutability", () => {
+    it("should not allow external mutation via getter", () => {
+      const schedule = PaymentSchedule.create(
+        validDates.paymentDay,
+        validDates.expirationDay,
+        validDates.startAt,
+        validDates.endAt,
+      );
+
+      const paymentDay = schedule.paymentDay;
+      paymentDay.setFullYear(2099);
+
+      expect(schedule.paymentDay.getFullYear()).toBe(2026);
+    });
+
+    it("should not be affected by mutation of constructor arguments", () => {
+      const paymentDay = new Date(2026, 0, 15);
+      const expirationDay = new Date(2026, 0, 1);
+      const startAt = new Date(2026, 0, 1);
+      const endAt = new Date(2026, 0, 31);
+
+      const schedule = PaymentSchedule.create(
+        paymentDay,
+        expirationDay,
+        startAt,
+        endAt,
+      );
+
+      paymentDay.setFullYear(2099);
+      expirationDay.setFullYear(2099);
+      startAt.setFullYear(2099);
+      endAt.setFullYear(2099);
+
+      expect(schedule.paymentDay.getFullYear()).toBe(2026);
+      expect(schedule.expirationDay.getFullYear()).toBe(2026);
+      expect(schedule.startAt.getFullYear()).toBe(2026);
+      expect(schedule.endAt.getFullYear()).toBe(2026);
     });
   });
 });

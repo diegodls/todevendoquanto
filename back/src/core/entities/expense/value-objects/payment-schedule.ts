@@ -98,6 +98,10 @@ export class PaymentSchedule {
     );
   }
 
+  public toString(): string {
+    return `PaymentSchedule(payment: ${this.formatDate(this._paymentDay)}, expiration: ${this.formatDate(this._expirationDay)}, period: ${this.formatDate(this._startAt)} to ${this.formatDate(this._endAt)}, )`;
+  }
+
   private validate(): void {
     this.validateDatesAreValid();
     this.validateLogicalOrder();
@@ -168,9 +172,5 @@ export class PaymentSchedule {
     stripped.setHours(0, 0, 0, 0);
 
     return stripped;
-  }
-
-  public toString(): string {
-    return `PaymentSchedule(payment: ${this._paymentDay}, expiration: ${this._expirationDay}, period: ${this._startAt} to ${this._endAt}, )`;
   }
 }
