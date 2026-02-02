@@ -3,7 +3,6 @@ import { InstallmentInfo } from "@/core/entities/expense/value-objects/installme
 import { Money } from "@/core/entities/expense/value-objects/money";
 import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
 import { Tags } from "@/core/entities/expense/value-objects/tags";
-
 import { ExpenseId, InstallmentId, UserId } from "@/core/entities/shared/types";
 
 export const ExpenseStatus = {
@@ -17,24 +16,22 @@ export type ExpenseStatusType =
 
 export const expenseStatusValues = Object.values(ExpenseStatus) as [
   ExpenseStatusType,
-  ...ExpenseStatusType[]
+  ...ExpenseStatusType[],
 ];
 
 type CreateExpenseInput = {
   name: string;
   description: string;
   amount: number;
-  totalAmount: number;
-  status: ExpenseStatusType;
-  tags: string[];
-  currentInstallment: number;
-  totalInstallment: number;
+  totalInstallments: number;
   paymentDay: Date;
   expirationDay: Date;
   paymentStartAt: Date;
   paymentEndAt: Date;
   userId: UserId;
   installmentId: InstallmentId;
+  tags?: string[];
+  currency?: string;
 };
 
 type ExpenseProps = {
@@ -68,12 +65,11 @@ export class Expense {
   private _paymentSchedule: PaymentSchedule;
   private _updatedAt: Date;
 
-  constructor(props: ExpenseProps, id?: ExpenseId) {
+  private constructor(props: ExpenseProps, id?: ExpenseId) {
     this._id = id ?? crypto.randomUUID();
     this._userId = props.userId;
     this._createdAt = props.createdAt;
     this._installmentId = props.installmentId;
-
     this._name = props.name;
     this._description = props.description;
     this._amount = props.amount;
@@ -83,6 +79,8 @@ export class Expense {
     this._installmentInfo = props.installmentInfo;
     this._paymentSchedule = props.paymentSchedule;
     this._updatedAt = props.updatedAt;
+
+    this.validateInvariants();
   }
 
   get id(): ExpenseId {
@@ -130,91 +128,225 @@ export class Expense {
   }
 
   get createdAt(): Date {
-    return this._createdAt;
+    return new Date(this._createdAt);
   }
 
   get updatedAt(): Date {
-    return this._updatedAt;
+    return new Date(this._updatedAt);
   }
 
-  public static create(
-    createProps: CreateExpenseInput,
-    id?: ExpenseId
-  ): Expense {
-    const name = ExpenseName.create(createProps.name);
-    const amount = Money.fromCents(createProps.amount);
-    const totalAmount = Money.fromCents(createProps.totalAmount);
-    const installmentInfo = InstallmentInfo.create(
-      createProps.currentInstallment,
-      createProps.totalInstallment
-    );
+  public static create(input: CreateExpenseInput, id?: ExpenseId): Expense {
+    const name = ExpenseName.create(input.name);
+    const amount = Money.fromCents(input.amount, input.currency);
+    const totalAmount = amount.multiply(input.totalInstallments);
+    const installmentInfo = InstallmentInfo.create(1, input.totalInstallments);
     const paymentSchedule = PaymentSchedule.create(
-      createProps.paymentDay,
-      createProps.expirationDay,
-      createProps.paymentStartAt,
-      createProps.paymentEndAt
+      input.paymentDay,
+      input.expirationDay,
+      input.paymentStartAt,
+      input.paymentEndAt,
     );
-
-    const tags = Tags.create(createProps.tags);
+    const tags = Tags.create(input.tags);
 
     return new Expense(
       {
-        ...createProps,
         name,
+        description: input.description,
         amount,
         totalAmount,
+        status: ExpenseStatus.PAYING,
+        tags,
         installmentInfo,
         paymentSchedule,
-        tags,
+        userId: input.userId,
+        installmentId: input.installmentId,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      id
+      id,
     );
   }
 
-  public static restore(id: ExpenseId, restoreProps: ExpenseProps): Expense {
-    return new Expense(restoreProps, id);
+  public static restore(id: ExpenseId, props: ExpenseProps): Expense {
+    return new Expense(props, id);
   }
 
   public updateDetails(name: string, description: string): void {
+    let hasChanged = false;
     const newName = ExpenseName.create(name);
 
     if (!this._name.equals(newName)) {
       this._name = newName;
-
-      this.touch();
+      hasChanged = true;
     }
 
     if (this._description !== description) {
       this._description = description;
+      hasChanged = true;
+    }
 
+    if (hasChanged) {
       this.touch();
     }
   }
 
-  public markAsPaid(): void {
-    if (this._status === "PAID") return;
-
-    this._status = "PAID";
-
+  public addTag(tag: string): void {
+    this._tags = this._tags.add(tag);
     this.touch();
   }
 
-  public markAsAbandoned(): void {
-    if (this._status === "ABANDONED") return;
+  public removeTag(tag: string): void {
+    const newTags = this._tags.remove(tag);
 
-    this._status = "ABANDONED";
+    if (!newTags.equals(this._tags)) {
+      this._tags = newTags;
+      this.touch();
+    }
+  }
 
+  public advanceInstallment(): void {
+    if (this._installmentInfo.isComplete()) {
+      throw new Error("Cannot advance: already at final installment");
+    }
+
+    if (this._status === ExpenseStatus.PAID) {
+      throw new Error("Cannot advance installment of paid expense");
+    }
+
+    if (this._status === ExpenseStatus.ABANDONED) {
+      throw new Error("Cannot advance installment of abandoned expense");
+    }
+
+    this._installmentInfo = this._installmentInfo.next();
+    this.touch();
+  }
+
+  public markAsPaid(): void {
+    this.assertCanBePaid();
+
+    if (this._status === ExpenseStatus.PAID) {
+      return;
+    }
+
+    this._status = ExpenseStatus.PAID;
+    this.touch();
+  }
+
+  public markAsAbandoned(reason?: string): void {
+    if (this._status === ExpenseStatus.ABANDONED) {
+      return;
+    }
+
+    this._status = ExpenseStatus.ABANDONED;
     this.touch();
   }
 
   public markAsPaying(): void {
-    if (this._status === "PAYING") return;
+    if (this._status === ExpenseStatus.PAYING) {
+      return;
+    }
 
-    this._status = "PAYING";
+    if (this._status === ExpenseStatus.PAID) {
+      throw new Error("Cannot change status from PAID to PAYING");
+    }
 
+    this._status = ExpenseStatus.PAYING;
     this.touch();
+  }
+
+  public isOverdue(referenceDate: Date = new Date()): boolean {
+    return (
+      this._paymentSchedule.isExpired(referenceDate) &&
+      this._status !== ExpenseStatus.PAID
+    );
+  }
+
+  public isPaid(): boolean {
+    return this._status === ExpenseStatus.PAID;
+  }
+
+  public isAbandoned(): boolean {
+    return this._status === ExpenseStatus.ABANDONED;
+  }
+
+  public isPaying(): boolean {
+    return this._status === ExpenseStatus.PAYING;
+  }
+
+  public canBePaid(): boolean {
+    try {
+      this.assertCanBePaid();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  public getDaysUntilExpiration(referenceDate: Date = new Date()): number {
+    return this._paymentSchedule.daysUntilExpiration(referenceDate);
+  }
+
+  public getRemainingAmount(): Money {
+    if (this._installmentInfo.isSingle()) {
+      return this._status === ExpenseStatus.PAID
+        ? Money.zero(this._amount.currency)
+        : this._amount;
+    }
+
+    const paidInstallments = this._installmentInfo.current - 1;
+    const remainingInstallments =
+      this._installmentInfo.total - paidInstallments;
+
+    return this._amount.multiply(remainingInstallments);
+  }
+
+  private validateInvariants(): void {
+    if (!this._userId) {
+      throw new Error("Expense must belong to a user");
+    }
+
+    if (!this._installmentId) {
+      throw new Error("Expense must have an installment ID");
+    }
+
+    if (this._amount.currency !== this._totalAmount.currency) {
+      throw new Error(
+        `Amount and totalAmount must have same currency: ${this._amount.currency} vs ${this._totalAmount.currency}`,
+      );
+    }
+
+    const expectedTotal = this._amount.multiply(this._installmentInfo.total);
+
+    if (this._totalAmount.amount !== expectedTotal.amount) {
+      throw new Error(
+        `Total amount (${this._totalAmount.amount}) must equal amount (${this._amount.amount}) × installments (${this._installmentInfo.total})`,
+      );
+    }
+
+    if (
+      this._status === ExpenseStatus.PAID &&
+      !this._installmentInfo.isComplete()
+    ) {
+      throw new Error(
+        `Expense marked as PAID but installment is ${this._installmentInfo.current}/${this._installmentInfo.total}`,
+      );
+    }
+  }
+
+  private assertCanBePaid(): void {
+    if (this._status === ExpenseStatus.ABANDONED) {
+      throw new Error("Cannot mark abandoned expense as paid");
+    }
+
+    if (!this._installmentInfo.isComplete()) {
+      throw new Error(
+        `Cannot mark as paid: installment ${this._installmentInfo.current}/${this._installmentInfo.total} is not complete`,
+      );
+    }
+
+    if (this._paymentSchedule.isExpired()) {
+      throw new Error("Cannot mark as paid: payment schedule has expired");
+    }
   }
 
   private touch(): void {
