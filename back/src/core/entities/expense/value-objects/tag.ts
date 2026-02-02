@@ -2,7 +2,7 @@ const ONLY_LETTERS_NUMBERS_HYPHENS = /^[a-z0-9-]+$/;
 const LOWERCASE_NOSPACE_HYPHENS = /\s+/g;
 export class Tag {
   private static readonly MIN_LENGTH = 3;
-  private static readonly MAX_LENGTH = 10;
+  private static readonly MAX_LENGTH = 20;
 
   private constructor(private readonly _value: string) {
     if (_value.length < Tag.MIN_LENGTH) {
@@ -15,7 +15,7 @@ export class Tag {
 
     if (!ONLY_LETTERS_NUMBERS_HYPHENS.test(_value)) {
       throw new Error(
-        `Tag can only contain lowercase letters, numbers and hyphens`,
+        "Tag can only contain lowercase letters, numbers, and hyphens",
       );
     }
   }
@@ -30,6 +30,8 @@ export class Tag {
     const normalized = trimmed
       .toLowerCase()
       .replace(LOWERCASE_NOSPACE_HYPHENS, "-");
+
+    console.log(`TAG | create | ${tag} | ${normalized}`);
 
     return new Tag(normalized);
   }
