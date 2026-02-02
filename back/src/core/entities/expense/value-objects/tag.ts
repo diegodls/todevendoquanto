@@ -31,8 +31,6 @@ export class Tag {
       .toLowerCase()
       .replace(LOWERCASE_NOSPACE_HYPHENS, "-");
 
-    console.log(`TAG | create | ${tag} | ${normalized}`);
-
     return new Tag(normalized);
   }
 
