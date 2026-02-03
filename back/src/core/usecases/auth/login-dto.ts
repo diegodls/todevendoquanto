@@ -1,4 +1,4 @@
-import { User } from "@/core/entities/user";
+import { User } from "@/core/entities/user/user";
 
 export type LoginUserPayloadType = Pick<User, "email" | "role">;
 

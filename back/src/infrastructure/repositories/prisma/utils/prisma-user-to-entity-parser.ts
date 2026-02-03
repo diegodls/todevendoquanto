@@ -1,5 +1,8 @@
 import { User as PrismaUser } from "../../../../../generated/prisma";
-import { User as EntityUser, UserRole } from "../../../../core/entities/user";
+import {
+  User as EntityUser,
+  UserRole,
+} from "../../../../core/entities/user/user";
 
 export const prismaUserEntityParser = (prismaUser: PrismaUser): EntityUser => {
   const output: EntityUser = {

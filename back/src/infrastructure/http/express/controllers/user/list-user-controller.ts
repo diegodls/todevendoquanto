@@ -1,5 +1,5 @@
 import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
-import { User } from "@/core/entities/user";
+import { User } from "@/core/entities/user/user";
 import { UserListControllerType } from "@/core/ports/infrastructure/http/controllers/user/list-user-controller-type";
 import {
   AuthenticatedHttpRequestInterface,
@@ -20,7 +20,7 @@ export class ListUserController implements UserListControllerType {
       {},
       {},
       UserListRequestPaginatedQuery
-    >
+    >,
   ): Promise<AuthenticatedHttpResponseInterface<PaginatedResponse<User>>> {
     const input = requestValidation("query", request, ListUserPaginationSchema);
 

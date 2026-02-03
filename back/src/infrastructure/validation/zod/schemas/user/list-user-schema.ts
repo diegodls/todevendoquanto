@@ -1,4 +1,4 @@
-import { UserRole } from "@/core/entities/user";
+import { UserRole } from "@/core/entities/user/user";
 import {
   ListUsersQueryInput,
   ListUsersQueryProps,
@@ -31,7 +31,7 @@ const ListUserQuerySchema = createUserSchema({
 
 export const ListUserPaginationSchema = mergeWithPagination(
   ListUserQuerySchema,
-  "name"
+  "name",
 );
 
 ListUserPaginationSchema satisfies z.ZodType<

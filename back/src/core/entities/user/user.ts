@@ -1,22 +1,3 @@
-/*
-const Role: { [x: string]: "BASIC" | "ADMIN" } = {
-  BASIC: "BASIC",
-  ADMIN: "ADMIN",
-};
-
-export type UserRole = (typeof Role)[keyof typeof Role];
-
-export enum UserRole {
-  BASIC = "BASIC",
-  ADMIN = "ADMIN",
-}
-
-enum UserRole {
-  BASIC = "BASIC",
-  ADMIN = "ADMIN",
-}
-*/
-
 import { UserId } from "@/core/entities/shared/types";
 
 export const UserRole = {
@@ -25,6 +6,7 @@ export const UserRole = {
 } as const;
 
 export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
+
 export class User {
   public readonly id: UserId = "";
   public name: string = "";

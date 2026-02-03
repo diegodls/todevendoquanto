@@ -2,7 +2,7 @@ import {
   PaginationProps,
   PaginationQueryInput,
 } from "@/application/dtos/shared/pagination-dto";
-import { UserRoleType, UserValidProps } from "@/core/entities/user";
+import { UserRoleType, UserValidProps } from "@/core/entities/user/user";
 import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
 
 export type UserListOrderProps = UserValidProps;

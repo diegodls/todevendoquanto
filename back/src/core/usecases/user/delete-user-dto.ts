@@ -1,4 +1,4 @@
-import { User } from "@/core/entities/user";
+import { User } from "@/core/entities/user/user";
 import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
 
 export type DeleteUserByIDProps = Pick<User, "id">;

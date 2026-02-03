@@ -1,4 +1,4 @@
-import { UserRole } from "@/core/entities/user";
+import { UserRole } from "@/core/entities/user/user";
 import { JwtPayloadInterface } from "@/core/ports/infrastructure/protocols/jwt/jwt-verify-token-interface";
 import z from "zod";
 

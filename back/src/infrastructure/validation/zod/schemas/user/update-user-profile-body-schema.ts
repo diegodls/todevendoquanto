@@ -1,4 +1,4 @@
-import { UserRole } from "@/core/entities/user";
+import { UserRole } from "@/core/entities/user/user";
 import {
   UpdateUserInputDTO,
   UpdateUserInputParams,

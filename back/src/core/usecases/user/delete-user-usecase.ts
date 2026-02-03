@@ -1,4 +1,4 @@
-import { User } from "@/core/entities/user";
+import { User } from "@/core/entities/user/user";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
   NotFoundError,
@@ -18,7 +18,7 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
       throw new NotFoundError(
         "User not found",
         {},
-        useCasesErrors.E_0_USC_USR_0008.code
+        useCasesErrors.E_0_USC_USR_0008.code,
       );
     }
 
@@ -26,7 +26,7 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
       throw new UnauthorizedError(
         "You cannot perform this action",
         {},
-        useCasesErrors.E_0_USC_USR_0009.code
+        useCasesErrors.E_0_USC_USR_0009.code,
       );
     }
 

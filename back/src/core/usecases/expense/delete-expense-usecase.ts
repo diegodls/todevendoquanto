@@ -1,5 +1,5 @@
 import { Expense } from "@/core/entities/expense/expense";
-import { User } from "@/core/entities/user";
+import { User } from "@/core/entities/user/user";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
@@ -12,7 +12,7 @@ import { DeleteExpenseUseCaseInterface } from "@/core/usecases/expense/delete-ex
 export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
   constructor(
     private readonly expenseRepository: ExpenseRepositoryInterface,
-    private readonly userRepository: UserRepositoryInterface
+    private readonly userRepository: UserRepositoryInterface,
   ) {}
   async execute(id: Expense["id"], userId: User["id"]): Promise<void> {
     const expenseExists = await this.expenseRepository.findById(id);
@@ -21,7 +21,7 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
       throw new NotFoundError(
         `Expense not found with ID provided: ${id}`,
         {},
-        deleteExpenseUseCaseErrors.E_0_DEU_NFE_0001.code
+        deleteExpenseUseCaseErrors.E_0_DEU_NFE_0001.code,
       );
     }
 
@@ -34,7 +34,7 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
       throw new UnauthorizedError(
         "You can't delete this expense!",
         {},
-        deleteExpenseUseCaseErrors.E_0_DEU_NFE_0002.code
+        deleteExpenseUseCaseErrors.E_0_DEU_NFE_0002.code,
       );
     }
 

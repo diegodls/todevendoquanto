@@ -1,4 +1,4 @@
-import { User } from "@/core/entities/user";
+import { User } from "@/core/entities/user/user";
 import { JwtPayloadInterface } from "@/core/ports/infrastructure/protocols/jwt/jwt-verify-token-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
@@ -19,17 +19,17 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
   public async execute(
     loggedUserJWT: JwtPayloadInterface,
     targetUserID: User["id"],
-    data: UpdateUserInputDTO
+    data: UpdateUserInputDTO,
   ): Promise<UpdateUserOutputDTO | null> {
     const loggedUser: User | null = await this.repository.findById(
-      loggedUserJWT.sub
+      loggedUserJWT.sub,
     );
 
     if (!loggedUser) {
       throw new UnauthorizedError(
         "Invalid authentication: user not found!",
         {},
-        useCasesErrors.E_0_USC_USR_0003.code
+        useCasesErrors.E_0_USC_USR_0003.code,
       );
     }
 
@@ -40,13 +40,12 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
       delete data.isActive;
     }
 
-    const targetUser: User | null = await this.repository.findById(
-      targetUserID
-    );
+    const targetUser: User | null =
+      await this.repository.findById(targetUserID);
 
     if (!targetUser) {
       throw new BadRequestError(
-        "The user to be updated was not found with given ID!"
+        "The user to be updated was not found with given ID!",
       );
     }
 
@@ -54,7 +53,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
       throw new UnauthorizedError(
         "You don't have the permissions",
         {},
-        useCasesErrors.E_0_USC_USR_0004.code
+        useCasesErrors.E_0_USC_USR_0004.code,
       );
     }
 
@@ -68,7 +67,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
 
     const updatedUser = await this.repository.update(
       targetUserID,
-      sanitizedData
+      sanitizedData,
     );
 
     const output = updatedUser ? { ...updatedUser, password: "" } : null;
@@ -79,7 +78,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
   private sanitizeData(
     loggedUser: User,
     targetUser: User,
-    data: UpdateUserInputDTO
+    data: UpdateUserInputDTO,
   ): UpdateUserInputDTO {
     const sanitizedData: UpdateUserInputDTO = { ...data };
 
@@ -103,7 +102,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
 
   private async validateUniqueFields(
     targetUser: User,
-    data: UpdateUserInputDTO
+    data: UpdateUserInputDTO,
   ): Promise<void> {
     if (data?.name && data.name !== targetUser.name) {
       const userToChangeExists = await this.repository.findByName(data.name);
@@ -112,7 +111,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
         throw new BadRequestError(
           "Name already in use",
           { name: "Name already in use" },
-          useCasesErrors.E_0_USC_USR_0005.code
+          useCasesErrors.E_0_USC_USR_0005.code,
         );
       }
     }
@@ -124,7 +123,7 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
         throw new BadRequestError(
           "Email already in use",
           { email: "Email already in use" },
-          useCasesErrors.E_0_USC_USR_0005.code
+          useCasesErrors.E_0_USC_USR_0005.code,
         );
       }
     }

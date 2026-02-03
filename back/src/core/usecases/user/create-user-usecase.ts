@@ -1,4 +1,4 @@
-import { User } from "@/core/entities/user";
+import { User } from "@/core/entities/user/user";
 import { EncryptInterface } from "@/core/ports/infrastructure/protocols/encryption/encrypt-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import { AlreadyExistError } from "@/core/shared/errors/api-errors";
@@ -8,7 +8,7 @@ import { CreateUserUseCaseInterface } from "@/core/usecases/user/create-user-use
 export class CreateUserUseCase implements CreateUserUseCaseInterface {
   constructor(
     private readonly repository: UserRepositoryInterface,
-    private readonly encrypt: EncryptInterface
+    private readonly encrypt: EncryptInterface,
   ) {}
 
   public async execute(data: CreateUserInputDTO): Promise<User | null> {

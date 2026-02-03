@@ -1,4 +1,4 @@
-import { User, UserValidProps } from "@/core/entities/user";
+import { User, UserValidProps } from "@/core/entities/user/user";
 import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
 
 export type UpdateUserInputProps = Pick<User, "id">;

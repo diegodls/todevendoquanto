@@ -1,5 +1,5 @@
 import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
-import { User } from "@/core/entities/user";
+import { User } from "@/core/entities/user/user";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
   ListUsersQueryProps,
