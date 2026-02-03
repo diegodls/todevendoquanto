@@ -23,6 +23,7 @@ type CreateExpenseInput = {
   name: string;
   description: string;
   amount: number;
+  currentInstallment: number;
   totalInstallments: number;
   paymentDay: Date;
   expirationDay: Date;
@@ -139,7 +140,10 @@ export class Expense {
     const name = ExpenseName.create(input.name);
     const amount = Money.fromCents(input.amount, input.currency);
     const totalAmount = amount.multiply(input.totalInstallments);
-    const installmentInfo = InstallmentInfo.create(1, input.totalInstallments);
+    const installmentInfo = InstallmentInfo.create(
+      input.currentInstallment,
+      input.totalInstallments,
+    );
     const paymentSchedule = PaymentSchedule.create(
       input.paymentDay,
       input.expirationDay,

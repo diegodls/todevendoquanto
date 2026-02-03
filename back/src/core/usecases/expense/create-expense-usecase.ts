@@ -14,18 +14,18 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
   constructor(
     private readonly repository: ExpenseRepositoryInterface,
     private readonly generateUuid: GenerateUuidInterface,
-    private readonly dateProvider: DateProviderInterface
+    private readonly dateProvider: DateProviderInterface,
   ) {}
 
   public async execute(
     userId: string,
-    expense: CreateExpenseInputDTO
+    expense: CreateExpenseInputDTO,
   ): Promise<CreateExpenseOutputDTO[]> {
     const expensesToCreate: Expense[] = [];
 
     const installmentId = this.generateUuid.execute();
 
-    for (let i = 0; i < expense.totalInstallment; i++) {
+    for (let i = 0; i < expense.totalInstallments; i++) {
       const currentInstallment = i + 1;
 
       const paymentDay =
@@ -35,17 +35,17 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
 
       const expirationDay = this.dateProvider.addMonthStrict(
         expense.expirationDay,
-        i
+        i,
       );
 
       const paymentStartAt = this.dateProvider.addMonthStrict(
         expense.paymentStartAt,
-        i
+        i,
       );
 
       const paymentEndAt = this.dateProvider.addMonthStrict(
         expense.paymentEndAt,
-        i
+        i,
       );
 
       const expenseToBeCreated = Expense.create({
@@ -68,7 +68,7 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
       throw new InternalError(
         "Wasn't possible to create expense, try again later!",
         {},
-        expenseUseCaseErrors.E_0_BLU_ADM_0001.code
+        expenseUseCaseErrors.E_0_BLU_ADM_0001.code,
       );
     }
 
