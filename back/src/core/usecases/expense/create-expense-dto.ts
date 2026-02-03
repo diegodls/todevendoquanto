@@ -23,7 +23,7 @@ export type CreateExpenseInputDTO = {
   status: ExpenseStatusType;
   tags: string[];
   currentInstallment: number;
-  totalInstallment: number;
+  totalInstallments: number;
   paymentDay: Date;
   expirationDay: Date;
   paymentStartAt: Date;

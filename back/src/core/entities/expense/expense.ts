@@ -23,6 +23,7 @@ type CreateExpenseInput = {
   name: string;
   description: string;
   amount: number;
+  currentInstallment: number;
   totalInstallments: number;
   paymentDay: Date;
   expirationDay: Date;
