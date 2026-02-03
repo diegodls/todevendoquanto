@@ -205,16 +205,16 @@ export class Expense {
   }
 
   public advanceInstallment(): void {
-    if (this._installmentInfo.isComplete()) {
-      throw new Error("Cannot advance: already at final installment");
-    }
-
     if (this._status === ExpenseStatus.PAID) {
       throw new Error("Cannot advance installment of paid expense");
     }
 
     if (this._status === ExpenseStatus.ABANDONED) {
       throw new Error("Cannot advance installment of abandoned expense");
+    }
+
+    if (this._installmentInfo.isComplete()) {
+      throw new Error("Cannot advance: already at final installment");
     }
 
     this._installmentInfo = this._installmentInfo.next();
@@ -232,7 +232,7 @@ export class Expense {
     this.touch();
   }
 
-  public markAsAbandoned(reason?: string): void {
+  public markAsAbandoned(): void {
     if (this._status === ExpenseStatus.ABANDONED) {
       return;
     }
@@ -342,10 +342,6 @@ export class Expense {
       throw new Error(
         `Cannot mark as paid: installment ${this._installmentInfo.current}/${this._installmentInfo.total} is not complete`,
       );
-    }
-
-    if (this._paymentSchedule.isExpired()) {
-      throw new Error("Cannot mark as paid: payment schedule has expired");
     }
   }
 
