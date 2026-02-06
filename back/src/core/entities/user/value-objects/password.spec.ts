@@ -234,6 +234,7 @@ describe("Password", () => {
     it("should not expose password through toString", () => {
       const password = Password.create("Secret123!");
 
+      // toString não deve existir ou não deve retornar a senha
       const stringified = String(password);
 
       expect(stringified).not.toContain("Secret123!");
@@ -324,6 +325,7 @@ describe("Password", () => {
       const sensitivePassword = "MySecretP@ss123";
 
       try {
+        // Força um erro interno (simulação)
         const password = Password.create(sensitivePassword);
         password.equals(null as any);
       } catch (error) {
