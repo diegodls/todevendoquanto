@@ -311,7 +311,7 @@ describe("UserRole", () => {
       const json = JSON.stringify(user);
       const parsed = JSON.parse(json);
 
-      expect(parsed.role).toBe("ADMIN"); // string, não objeto
+      expect(parsed.role).toBe("ADMIN");
     });
 
     it("should serialize in arrays", () => {
@@ -337,7 +337,7 @@ describe("UserRole", () => {
       const parsed = JSON.parse(json);
       const deserialized = UserRole.create(parsed.role);
 
-      expect(deserialized).toBe(UserRole.BASIC); // mesma instância
+      expect(deserialized).toBe(UserRole.BASIC);
     });
 
     it("should work in API response simulation", () => {
