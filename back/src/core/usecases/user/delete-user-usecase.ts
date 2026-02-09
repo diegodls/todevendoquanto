@@ -1,17 +1,18 @@
-import { User } from "@/core/entities/user/user";
+import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
   NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
 import { useCasesErrors } from "@/core/shared/errors/usecases/user-usecase-errors";
+import { DeleteUserByIDOutputDTO } from "@/core/usecases/user/delete-user-dto";
 
 import { DeleteUserUseCaseInterface } from "@/core/usecases/user/delete-user-usecase-interface";
 
 export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
   constructor(private readonly repository: UserRepositoryInterface) {}
 
-  public async execute(id: User["id"]): Promise<User | null> {
+  public async execute(id: UserId): Promise<DeleteUserByIDOutputDTO> {
     const userToBeDeleted = await this.repository.findById(id);
 
     if (!userToBeDeleted) {
@@ -22,7 +23,7 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
       );
     }
 
-    if (userToBeDeleted.role === "ADMIN") {
+    if (!userToBeDeleted.role.canDeleteContent()) {
       throw new UnauthorizedError(
         "You cannot perform this action",
         {},

@@ -2,29 +2,35 @@ import {
   PaginationProps,
   PaginationQueryInput,
 } from "@/application/dtos/shared/pagination-dto";
-import { UserRoleType, UserValidProps } from "@/core/entities/user/user";
-import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
 
-export type UserListOrderProps = UserValidProps;
+export type ListUserOrderProps = {
+  name: string;
+  email: string;
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isActive: boolean;
+};
 
-export type UserListOrderPropsKeys = keyof UserListOrderProps;
+export type ListUserOrderPropsKeys = keyof ListUserOrderProps;
 
-export type UserValidQueryProps = Partial<
-  Pick<UserValidProps, "name" | "email" | "isActive"> & {
-    roles?: UserRoleType[];
-  }
->;
+export type UserValidQueryProps = {
+  name: string;
+  email: string;
+  isActive: boolean;
+  roles: string[];
+};
 
 type DateFilterProps = {
-  created_after?: Date;
-  created_before?: Date;
-  updated_after?: Date;
-  updated_before?: Date;
+  created_after?: string;
+  created_before?: string;
+  updated_after?: string;
+  updated_before?: string;
 };
 
 export type ListUsersQueryProps = UserValidQueryProps & DateFilterProps;
 
-export type ListUsersQueryInput = PropsToString<ListUsersQueryProps>;
+export type ListUsersQueryInput = ListUsersQueryProps;
 
 export type UserListRequestPaginatedQuery = PaginationQueryInput &
   ListUsersQueryInput;

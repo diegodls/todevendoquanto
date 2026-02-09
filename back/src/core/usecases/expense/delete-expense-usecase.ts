@@ -1,5 +1,5 @@
-import { Expense } from "@/core/entities/expense/expense";
-import { User } from "@/core/entities/user/user";
+import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
+import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
@@ -14,7 +14,7 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
     private readonly expenseRepository: ExpenseRepositoryInterface,
     private readonly userRepository: UserRepositoryInterface,
   ) {}
-  async execute(id: Expense["id"], userId: User["id"]): Promise<void> {
+  async execute(id: ExpenseId, userId: UserId): Promise<void> {
     const expenseExists = await this.expenseRepository.findById(id);
 
     if (!expenseExists) {
@@ -28,7 +28,7 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
     const user = await this.userRepository.findById(userId);
 
     const userCanDelete =
-      user && (user.id === expenseExists.userId || user?.role === "ADMIN");
+      user && (user.id === expenseExists.userId || user.canDeleteContent());
 
     if (!userCanDelete) {
       throw new UnauthorizedError(

@@ -1,9 +1,12 @@
+import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
 import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
+import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { InstallmentInfo } from "@/core/entities/expense/value-objects/installment-info";
 import { Money } from "@/core/entities/expense/value-objects/money";
 import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
 import { Tags } from "@/core/entities/expense/value-objects/tags";
-import { ExpenseId, InstallmentId, UserId } from "@/core/entities/shared/types";
+
+import { UserId } from "@/core/entities/user/value-objects/user-id";
 
 export const ExpenseStatus = {
   ABANDONED: "ABANDONED",
@@ -67,7 +70,7 @@ export class Expense {
   private _updatedAt: Date;
 
   private constructor(props: ExpenseProps, id?: ExpenseId) {
-    this._id = id ?? crypto.randomUUID();
+    this._id = id ?? ExpenseId.create();
     this._userId = props.userId;
     this._createdAt = props.createdAt;
     this._installmentId = props.installmentId;
@@ -124,7 +127,7 @@ export class Expense {
     return this._userId;
   }
 
-  get installmentId(): string {
+  get installmentId(): InstallmentId {
     return this._installmentId;
   }
 

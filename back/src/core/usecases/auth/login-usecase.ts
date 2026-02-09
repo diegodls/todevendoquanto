@@ -1,3 +1,5 @@
+import { Password } from "@/core/entities/user/value-objects/password";
+import { Email } from "@/core/entities/user/value-objects/user-email";
 import { CompareInterface } from "@/core/ports/infrastructure/protocols/encryption/compare-interface";
 import { JwtGenerateTokenInterface } from "@/core/ports/infrastructure/protocols/jwt/jwt-generate-token-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
@@ -13,21 +15,33 @@ export class LoginUseCase implements LoginUseCaseInterface {
   constructor(
     private readonly repository: UserRepositoryInterface,
     private readonly compare: CompareInterface,
-    private readonly generateToken: JwtGenerateTokenInterface
+    private readonly generateToken: JwtGenerateTokenInterface,
   ) {}
 
   public async execute(data: LoginUserInputDTO): Promise<LoginUserOutputDTO> {
-    const { email, password } = data;
+    let userEmail: Email;
+    let userPassword: Password;
 
-    const userExists = await this.repository.findByEmail(email);
+    try {
+      userEmail = Email.create(data.email);
+      userPassword = Password.create(data.password);
+    } catch (error) {
+      throw new UnauthorizedError("Wrong credentials!");
+    }
+
+    const userExists = await this.repository.findByEmail(userEmail);
 
     if (!userExists) {
       throw new UnauthorizedError("Wrong credentials!");
     }
 
+    if (!userExists.isActive) {
+      throw new UnauthorizedError("User account is deactivated");
+    }
+
     const isPasswordValid = await this.compare.execute(
-      password,
-      userExists.password
+      userPassword.getValue(),
+      userExists.hashedPassword,
     );
 
     if (!isPasswordValid) {
@@ -35,11 +49,11 @@ export class LoginUseCase implements LoginUseCaseInterface {
     }
 
     const payload: LoginUserPayloadType = {
-      email: userExists.email,
-      role: userExists.role,
+      email: userExists.email.toString(),
+      role: userExists.role.toString(),
     };
 
-    const token = this.generateToken.execute(payload, userExists.id);
+    const token = this.generateToken.execute(payload, userExists.id.toString());
 
     return { token };
   }

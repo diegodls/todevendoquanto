@@ -1,11 +1,10 @@
-import { UserRole } from "@/core/entities/user/user";
 import { JwtPayloadInterface } from "@/core/ports/infrastructure/protocols/jwt/jwt-verify-token-interface";
 import z from "zod";
 
 export const JwtPayloadInterfaceSchema = z
   .object({
     email: z.email(),
-    role: z.string().pipe(z.enum(UserRole)),
+    role: z.string(),
     sub: z.string(),
     iat: z.number(),
     exp: z.number(),

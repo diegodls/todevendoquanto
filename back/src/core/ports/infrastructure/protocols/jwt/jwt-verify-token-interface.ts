@@ -1,9 +1,7 @@
-import { User } from "../../../../entities/user/user";
-
 export interface JwtPayloadInterface {
-  email: User["email"];
-  role: User["role"];
-  sub: User["id"];
+  email: string;
+  role: string;
+  sub: string;
   iat: number;
   exp: number;
   // when change, need change the express type in "./@types/express/index.ts"

@@ -1,6 +1,9 @@
 import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
 import { User } from "@/core/entities/user/user";
+import { Email } from "@/core/entities/user/value-objects/user-email";
+import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
+import { DeleteUserByIDOutputDTO } from "@/core/usecases/user/delete-user-dto";
 import {
   ListUsersQueryProps,
   ListUsersRequestDTO,
@@ -10,17 +13,19 @@ import {
   PrismaClientGenerated,
   PrismaGenerated,
 } from "@/infrastructure/repositories/prisma/config/prisma-client";
+import { UserRoleMapper } from "@/infrastructure/repositories/prisma/mappers/user/user-role-mapper";
 import { prismaUserEntityParser } from "@/infrastructure/repositories/prisma/utils/prisma-user-to-entity-parser";
 import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
 import { queryFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils/query-filter-to-prisma-where";
+import { User as UserP } from "./../../../../generated/prisma/index.d";
 
 type PrismaUserWhereInput = PrismaGenerated.UserWhereInput;
 export class UserRepositoryPrisma implements UserRepositoryInterface {
   constructor(private readonly prismaORMClient: PrismaClientGenerated) {}
 
-  async findById(id: string): Promise<User | null> {
+  async findById(id: UserId): Promise<User | null> {
     const userExists = await this.prismaORMClient.user.findFirst({
-      where: { id },
+      where: { id: id.toString() },
     });
 
     if (!userExists) {
@@ -32,9 +37,9 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
     return output;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: Email): Promise<User | null> {
     const userExists = await this.prismaORMClient.user.findFirst({
-      where: { email },
+      where: { email: email.toString() },
     });
 
     if (!userExists) {
@@ -61,7 +66,20 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async create(user: User): Promise<User | null> {
-    const createdUser = await this.prismaORMClient.user.create({ data: user });
+    const rawRole = UserRoleMapper.toPersistence(user.role);
+
+    const data: UserP = {
+      id: user.id.toString(),
+      name: user.name,
+      hashedPassword: user.hashedPassword,
+      email: user.email.toString(),
+      role: rawRole,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isActive: user.isActive,
+    };
+
+    const createdUser = await this.prismaORMClient.user.create({ data });
 
     if (!createdUser) {
       return null;
@@ -72,9 +90,9 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
     return output;
   }
 
-  async update(id: User["id"], data: UpdateUserInputDTO): Promise<User | null> {
+  async update(id: UserId, data: UpdateUserInputDTO): Promise<User | null> {
     const updatedUser = await this.prismaORMClient.user.update({
-      where: { id },
+      where: { id: id.toString() },
       data,
     });
 
@@ -83,10 +101,14 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
     return parsedUser;
   }
 
-  async deleteById(id: User["id"]): Promise<User | null> {
-    const output = await this.prismaORMClient.user.delete({ where: { id } });
+  async deleteById(id: UserId): Promise<DeleteUserByIDOutputDTO> {
+    const deleteUser = await this.prismaORMClient.user.delete({
+      where: { id: id.toString() },
+    });
 
-    return output ? prismaUserEntityParser(output) : null;
+    const output = { id: deleteUser.id };
+
+    return output;
   }
 
   async list(filters: ListUsersRequestDTO): Promise<PaginatedResponse<User>> {
@@ -127,7 +149,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
 
     if (usersList.length > 0) {
       const parsedUsersList: User[] = usersList.map((user) => {
-        return prismaUserEntityParser({ ...user, password: "" });
+        return prismaUserEntityParser({ ...user, hashedPassword: "" });
       });
 
       output.data = parsedUsersList;

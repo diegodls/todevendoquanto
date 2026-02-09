@@ -1,7 +1,7 @@
 interface JwtPayloadInterface {
-  email: User["email"];
-  role: User["role"];
-  sub: User["id"];
+  email: string;
+  role: string;
+  sub: string;
   iat: number;
   exp: number;
 }

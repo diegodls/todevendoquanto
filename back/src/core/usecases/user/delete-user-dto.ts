@@ -1,10 +1,7 @@
-import { User } from "@/core/entities/user/user";
-import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
-
-export type DeleteUserByIDProps = Pick<User, "id">;
+export type DeleteUserByIDProps = { id: string };
 
 export type DeleteUserByIDInputDTO = DeleteUserByIDProps;
 
-export type DeleteUserByIDQueryInput = PropsToString<DeleteUserByIDInputDTO>;
+export type DeleteUserByIDQueryInput = DeleteUserByIDProps;
 
 export type DeleteUserByIDOutputDTO = DeleteUserByIDProps;

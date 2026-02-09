@@ -1,8 +1,11 @@
+import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
 import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
+import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { InstallmentInfo } from "@/core/entities/expense/value-objects/installment-info";
 import { Money } from "@/core/entities/expense/value-objects/money";
 import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
 import { Tags } from "@/core/entities/expense/value-objects/tags";
+import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { describe, expect, it } from "vitest";
 import { Expense, ExpenseStatus } from "./expense";
 
@@ -17,8 +20,8 @@ describe("Expense", () => {
     expirationDay: new Date(2026, 0, 20),
     paymentStartAt: new Date(2026, 0, 1),
     paymentEndAt: new Date(2026, 0, 31),
-    userId: "user-123",
-    installmentId: "inst-123",
+    userId: UserId.create(),
+    installmentId: InstallmentId.create(),
     tags: ["streaming", "entertainment"],
   };
 
@@ -85,14 +88,15 @@ describe("Expense", () => {
       const expense = Expense.create(validInput);
 
       expect(expense.id).toBeDefined();
-      expect(typeof expense.id).toBe("string");
+      expect(typeof expense.id.toString()).toBe("string");
     });
 
     it("should use provided ID", () => {
-      const customId = "custom-id-123";
-      const expense = Expense.create(validInput, customId);
+      const validUuid = "69038c60-f297-4792-90cb-ab74c3a391d0";
+      const from = ExpenseId.from(validUuid);
+      const expense = Expense.create(validInput, from);
 
-      expect(expense.id).toBe(customId);
+      expect(expense.id.toString()).toBe(from.toString());
     });
 
     it("should set creation and update timestamps", () => {
@@ -110,6 +114,9 @@ describe("Expense", () => {
 
   describe("restore", () => {
     it("should restore expense from persistence", () => {
+      const userId = UserId.create();
+      const installmentId = InstallmentId.create();
+
       const props = {
         name: ExpenseName.create("netflix"),
         description: "Streaming",
@@ -124,15 +131,17 @@ describe("Expense", () => {
           new Date(2026, 0, 1),
           new Date(2026, 0, 31),
         ),
-        userId: "user-123",
-        installmentId: "inst-123",
+        userId,
+        installmentId,
         createdAt: new Date(2025, 11, 1),
         updatedAt: new Date(2025, 11, 15),
       };
 
-      const expense = Expense.restore("expense-123", props);
+      const expenseId = ExpenseId.from("550e8400-e29b-41d4-a716-446655440000");
 
-      expect(expense.id).toBe("expense-123");
+      const expense = Expense.restore(expenseId, props);
+
+      expect(expense.id.toString()).toBe(expenseId.toString());
       expect(expense.status).toBe(ExpenseStatus.PAID);
       expect(expense.createdAt).toEqual(props.createdAt);
     });
@@ -180,6 +189,10 @@ describe("Expense", () => {
 
   describe("invariants validation", () => {
     it("should validate amount consistency on restore", () => {
+      const userId = UserId.create();
+      const installmentId = InstallmentId.create();
+      const expenseId = ExpenseId.from("550e8400-e29b-41d4-a716-446655440000");
+
       const props = {
         name: ExpenseName.create("netflix"),
         description: "Streaming",
@@ -194,18 +207,22 @@ describe("Expense", () => {
           new Date(2026, 0, 1),
           new Date(2026, 0, 31),
         ),
-        userId: "user-123",
-        installmentId: "inst-123",
+        userId,
+        installmentId,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      expect(() => Expense.restore("id", props)).toThrow(
+      expect(() => Expense.restore(expenseId, props)).toThrow(
         "Total amount (100) must equal amount (49.9) × installments (12)",
       );
     });
 
     it("should validate currency consistency", () => {
+      const userId = UserId.create();
+      const installmentId = InstallmentId.create();
+      const expenseId = ExpenseId.from("550e8400-e29b-41d4-a716-446655440000");
+
       const props = {
         name: ExpenseName.create("netflix"),
         description: "Streaming",
@@ -220,18 +237,22 @@ describe("Expense", () => {
           new Date(2026, 0, 1),
           new Date(2026, 0, 31),
         ),
-        userId: "user-123",
-        installmentId: "inst-123",
+        userId,
+        installmentId,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      expect(() => Expense.restore("id", props)).toThrow(
+      expect(() => Expense.restore(expenseId, props)).toThrow(
         "Amount and totalAmount must have same currency",
       );
     });
 
     it("should validate status consistency", () => {
+      const userId = UserId.create();
+      const installmentId = InstallmentId.create();
+      const expenseId = ExpenseId.from("550e8400-e29b-41d4-a716-446655440000");
+
       const props = {
         name: ExpenseName.create("netflix"),
         description: "Streaming",
@@ -246,13 +267,13 @@ describe("Expense", () => {
           new Date(2026, 0, 1),
           new Date(2026, 0, 31),
         ),
-        userId: "user-123",
-        installmentId: "inst-123",
+        userId,
+        installmentId,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      expect(() => Expense.restore("id", props)).toThrow(
+      expect(() => Expense.restore(expenseId, props)).toThrow(
         "Expense marked as PAID but installment is 3/12",
       );
     });
@@ -281,6 +302,9 @@ describe("Expense", () => {
   });
 
   describe("Expense - Domain Methods", () => {
+    const userId = UserId.create();
+    const installmentId = InstallmentId.create();
+
     const validInput = {
       name: "Netflix Subscription",
       description: "Monthly streaming service",
@@ -291,8 +315,8 @@ describe("Expense", () => {
       expirationDay: new Date(2026, 0, 20),
       paymentStartAt: new Date(2026, 0, 1),
       paymentEndAt: new Date(2026, 0, 31),
-      userId: "user-123",
-      installmentId: "inst-123",
+      userId,
+      installmentId,
       tags: ["streaming"],
     };
 
