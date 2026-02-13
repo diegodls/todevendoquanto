@@ -1,9 +1,10 @@
 import { User } from "@/core/entities/user/user";
-import { JwtPayloadInterface } from "@/core/ports/infrastructure/protocols/jwt/jwt-verify-token-interface";
+import { UserId } from "@/core/entities/user/value-objects/user-id";
+import { UserRole } from "@/core/entities/user/value-objects/user-role";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
-  BadRequestError,
-  NotModifiedError,
+  InternalError,
+  NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
 import { useCasesErrors } from "@/core/shared/errors/usecases/user-usecase-errors";
@@ -17,115 +18,127 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
   constructor(private readonly repository: UserRepositoryInterface) {}
 
   public async execute(
-    loggedUserJWT: JwtPayloadInterface,
-    targetUserID: User["id"],
     data: UpdateUserInputDTO,
   ): Promise<UpdateUserOutputDTO | null> {
-    const loggedUser: User | null = await this.repository.findById(
-      loggedUserJWT.sub,
-    );
+    const requestingUserId: UserId = UserId.from(data.requestingUserId);
 
-    if (!loggedUser) {
-      throw new UnauthorizedError(
-        "Invalid authentication: user not found!",
+    const requestingUser: User | null =
+      await this.repository.findById(requestingUserId);
+
+    if (!requestingUser) {
+      throw new NotFoundError(
+        "Requesting user not found",
         {},
         useCasesErrors.E_0_USC_USR_0003.code,
       );
     }
 
-    const isLoggedUserAdmin: boolean = loggedUser.role === "ADMIN";
-
-    if (!isLoggedUserAdmin) {
-      delete data.role;
-      delete data.isActive;
-    }
+    const targetUserId: UserId = UserId.from(data.targetUserId);
 
     const targetUser: User | null =
-      await this.repository.findById(targetUserID);
+      await this.repository.findById(targetUserId);
 
     if (!targetUser) {
-      throw new BadRequestError(
+      throw new NotFoundError(
         "The user to be updated was not found with given ID!",
       );
     }
 
-    if (!isLoggedUserAdmin && loggedUser.id !== targetUser.id) {
-      throw new UnauthorizedError(
-        "You don't have the permissions",
-        {},
-        useCasesErrors.E_0_USC_USR_0004.code,
-      );
-    }
-
-    const sanitizedData = this.sanitizeData(loggedUser, targetUser, data);
-
-    await this.validateUniqueFields(targetUser, sanitizedData);
-
-    if (Object.keys(sanitizedData).length <= 0) {
-      throw new NotModifiedError();
-    }
-
-    const updatedUser = await this.repository.update(
-      targetUserID,
-      sanitizedData,
+    const hasBeenModified: boolean = this.applyUpdates(
+      requestingUser,
+      targetUser,
+      data,
     );
 
-    const output = updatedUser ? { ...updatedUser, password: "" } : null;
+    let output: UpdateUserOutputDTO = {
+      id: targetUser?.id.toString(),
+      name: targetUser.name,
+      email: targetUser.email.toString(),
+      role: targetUser.role.toString(),
+      createdAt: targetUser.createdAt.toISOString(),
+      updatedAt: targetUser.updatedAt.toISOString(),
+      isActive: targetUser.isActive,
+    };
+
+    if (!hasBeenModified) {
+      return output;
+    }
+
+    const updatedUser = await this.repository.update(targetUser);
+
+    if (!updatedUser) {
+      throw new InternalError("User no modified, try again later");
+    }
 
     return output;
   }
 
-  private sanitizeData(
-    loggedUser: User,
+  private applyUpdates(
+    requestingUser: User,
     targetUser: User,
     data: UpdateUserInputDTO,
-  ): UpdateUserInputDTO {
-    const sanitizedData: UpdateUserInputDTO = { ...data };
+  ): boolean {
+    let hasBeenModified: boolean = false;
 
-    const isAdmin = loggedUser.role === "ADMIN";
+    const isSelfUpdate = requestingUser.id.equals(targetUser.id);
+    const isAdmin = requestingUser.isAdmin();
 
-    if (!isAdmin) {
-      delete sanitizedData.role;
-      delete sanitizedData.isActive;
+    if (!isSelfUpdate && !isAdmin) {
+      throw new UnauthorizedError("Only admins can update other users info");
     }
 
-    if (targetUser.email === sanitizedData?.email) {
-      delete sanitizedData.email;
+    if (data.name !== undefined) {
+      targetUser.changeName(data.name);
+      hasBeenModified = true;
     }
 
-    if (targetUser.name === sanitizedData?.name) {
-      delete sanitizedData.name;
+    if (data.email !== undefined) {
+      if (!isAdmin) {
+        throw new UnauthorizedError("Only admins can update email");
+      }
+      targetUser.changeEmail(data.email);
+      hasBeenModified = true;
     }
 
-    return sanitizedData;
-  }
+    if (data.role !== undefined) {
+      if (!isAdmin) {
+        throw new UnauthorizedError("Only admins can update role");
+      }
 
-  private async validateUniqueFields(
-    targetUser: User,
-    data: UpdateUserInputDTO,
-  ): Promise<void> {
-    if (data?.name && data.name !== targetUser.name) {
-      const userToChangeExists = await this.repository.findByName(data.name);
+      const newRole = UserRole.create(data.role);
 
-      if (userToChangeExists) {
-        throw new BadRequestError(
-          "Name already in use",
-          { name: "Name already in use" },
-          useCasesErrors.E_0_USC_USR_0005.code,
-        );
+      if (newRole.isAdmin()) {
+        targetUser.promoteToAdmin();
+        hasBeenModified = true;
+      } else if (newRole.isBasic()) {
+        targetUser.demoteToBasic();
+        hasBeenModified = true;
       }
     }
 
-    if (data?.email && data.email !== targetUser.email) {
-      const userToChangeExists = await this.repository.findByEmail(data.email);
-
-      if (userToChangeExists) {
-        throw new BadRequestError(
-          "Email already in use",
-          { email: "Email already in use" },
-          useCasesErrors.E_0_USC_USR_0005.code,
+    if (data.isActive !== undefined) {
+      if (!isAdmin) {
+        throw new UnauthorizedError(
+          "Only admins can activate/deactivate users",
         );
       }
+
+      if (data.isActive && !targetUser.isActive) {
+        targetUser.activate();
+        hasBeenModified = true;
+      } else if (!data.isActive && targetUser.isActive) {
+        targetUser.deactivate();
+        hasBeenModified = true;
+      }
     }
+
+    if (isSelfUpdate && data.isActive === false && isAdmin) {
+      throw new UnauthorizedError("Admins cannot deactivate themselves");
+    }
+
+    if (isSelfUpdate && data.role === "BASIC" && isAdmin) {
+      throw new UnauthorizedError("Admins cannot demote themselves");
+    }
+    return hasBeenModified;
   }
 }

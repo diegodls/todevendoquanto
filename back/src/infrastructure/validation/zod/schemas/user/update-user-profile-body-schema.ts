@@ -1,6 +1,5 @@
-import { UserRole } from "@/core/entities/user/user";
 import {
-  UpdateUserInputDTO,
+  UpdateUserBodyDTO,
   UpdateUserInputParams,
 } from "@/core/usecases/user/update-user-dto";
 import { StringToBoolean } from "@/infrastructure/validation/zod/helpers/string-to-boolean";
@@ -25,10 +24,7 @@ export const UpdateUserBodySchema = z
   .object({
     name: z.string().min(6).max(255).optional(),
     email: z.email().optional(),
-    role: z
-      .string()
-      .transform((value) => value.toUpperCase())
-      .pipe(z.enum(UserRole)),
+    role: z.string().transform((value) => value.toUpperCase()),
     isActive: StringToBoolean.optional(),
   })
-  .strip() satisfies z.ZodType<UpdateUserInputDTO>;
+  .strip() satisfies z.ZodType<UpdateUserBodyDTO>;
