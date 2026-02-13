@@ -17,9 +17,7 @@ import { UpdateUserUseCaseInterface } from "@/core/usecases/user/update-user-use
 export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
   constructor(private readonly repository: UserRepositoryInterface) {}
 
-  public async execute(
-    data: UpdateUserInputDTO,
-  ): Promise<UpdateUserOutputDTO | null> {
+  public async execute(data: UpdateUserInputDTO): Promise<UpdateUserOutputDTO> {
     const requestingUserId: UserId = UserId.from(data.requestingUserId);
 
     const requestingUser: User | null =
