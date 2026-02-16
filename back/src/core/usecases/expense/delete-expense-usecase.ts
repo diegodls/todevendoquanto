@@ -7,15 +7,19 @@ import {
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
 import { deleteExpenseUseCaseErrors } from "@/core/shared/errors/usecases/expense-usecase-errors";
+import { DeleteExpenseInputDTO } from "@/core/usecases/expense/delete-expense-dto";
 import { DeleteExpenseUseCaseInterface } from "@/core/usecases/expense/delete-expense-usecase-interface";
+import { id } from "zod/locales";
 
 export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
   constructor(
     private readonly expenseRepository: ExpenseRepositoryInterface,
     private readonly userRepository: UserRepositoryInterface,
   ) {}
-  async execute(id: ExpenseId, userId: UserId): Promise<void> {
-    const expenseExists = await this.expenseRepository.findById(id);
+  async execute(data: DeleteExpenseInputDTO): Promise<void> {
+    const expenseId = ExpenseId.from(data.expenseId);
+
+    const expenseExists = await this.expenseRepository.findById(expenseId);
 
     if (!expenseExists) {
       throw new NotFoundError(
@@ -25,7 +29,9 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
       );
     }
 
-    const user = await this.userRepository.findById(userId);
+    const requestingUserId = UserId.from(data.requestingUserId);
+
+    const user = await this.userRepository.findById(requestingUserId);
 
     const userCanDelete =
       user && (user.id === expenseExists.userId || user.canDeleteContent());
@@ -38,6 +44,6 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
       );
     }
 
-    await this.expenseRepository.delete(id);
+    await this.expenseRepository.delete(expenseId);
   }
 }

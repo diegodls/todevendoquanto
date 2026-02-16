@@ -1,6 +1,5 @@
-import { Expense } from "@/core/entities/expense/expense";
-import { User } from "@/core/entities/user/user";
+import { DeleteExpenseInputDTO } from "@/core/usecases/expense/delete-expense-dto";
 
 export interface DeleteExpenseUseCaseInterface {
-  execute: (id: Expense["id"], userId: User["id"]) => Promise<void>;
+  execute: (data: DeleteExpenseInputDTO) => Promise<void>;
 }
