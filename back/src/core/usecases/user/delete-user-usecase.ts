@@ -5,7 +5,6 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
-import { useCasesErrors } from "@/core/shared/errors/usecases/user-usecase-errors";
 import {
   DeleteUserByIDInputDTO,
   DeleteUserByIDOutputDTO,
@@ -19,28 +18,31 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
   public async execute(
     data: DeleteUserByIDInputDTO,
   ): Promise<DeleteUserByIDOutputDTO> {
-    const requestingUserId = UserId.from(data.requestingUserId);
+    let requestingUserId = UserId.from(data.requestingUserId);
 
     const requestingUser = await this.repository.findById(requestingUserId);
+
+    if (!requestingUser) {
+      throw new NotFoundError("User not found");
+    }
 
     const targetUserId = UserId.from(data.targetUserId);
 
     const targetUser = await this.repository.findById(targetUserId);
 
     if (!targetUser) {
-      throw new NotFoundError(
-        "User not found",
-        {},
-        useCasesErrors.E_0_USC_USR_0008.code,
-      );
+      throw new NotFoundError("User not found");
     }
 
-    if (!targetUser.role.canDeleteContent()) {
-      throw new UnauthorizedError(
-        "You cannot perform this action",
-        {},
-        useCasesErrors.E_0_USC_USR_0009.code,
-      );
+    const isSelfDelete = requestingUser.id.equals(targetUser.id);
+    const isAdmin = requestingUser.isAdmin();
+
+    if (!isSelfDelete && !isAdmin) {
+      throw new UnauthorizedError("Only admins can delete other users");
+    }
+
+    if (isSelfDelete && isAdmin) {
+      throw new UnauthorizedError("Only admins can delete other admins");
     }
 
     const deletedUser = await this.repository.deleteById(targetUserId);
