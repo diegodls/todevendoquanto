@@ -1,7 +1,7 @@
 import { USER_ROUTES_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
 import { CreateUserUseCase } from "@/core/usecases/user/create-user-usecase";
 import { DeleteUserUseCase } from "@/core/usecases/user/delete-user-usecase";
-import { ListUserUseCase } from "@/core/usecases/user/list-user-usecase";
+import { ListUsersUseCase } from "@/core/usecases/user/list-users-usecase";
 import { UpdateUserUseCase } from "@/core/usecases/user/update-user-usecase";
 import { authenticatedExpressHttpAdapter } from "@/infrastructure/http/express/adapters/http-adapter-express";
 import { CreateUserController } from "@/infrastructure/http/express/controllers/user/create-user-controller";
@@ -25,7 +25,7 @@ const userRepository = new UserRepositoryPrisma(prisma);
 const createUserUseCase = new CreateUserUseCase(userRepository, encrypt);
 const createUserController = new CreateUserController(createUserUseCase);
 
-const listUsersUseCase = new ListUserUseCase(userRepository);
+const listUsersUseCase = new ListUsersUseCase(userRepository);
 const listUserController = new ListUserController(listUsersUseCase);
 
 const deleteUseCase = new DeleteUserUseCase(userRepository);
@@ -42,7 +42,7 @@ authenticatedUserRouter.use(ensureIsAuthenticated(jwtVerifyToken));
 authenticatedUserRouter.patch(
   USER_ROUTES_PATH.update,
   ensureIsAuthenticated(jwtVerifyToken),
-  authenticatedExpressHttpAdapter(updateController)
+  authenticatedExpressHttpAdapter(updateController),
 );
 
 const adminUserRouter = Router();
@@ -50,17 +50,17 @@ adminUserRouter.use(ensureIsAuthenticated(jwtVerifyToken), ensureIsAdmin());
 
 adminUserRouter.get(
   USER_ROUTES_PATH.list,
-  authenticatedExpressHttpAdapter(listUserController)
+  authenticatedExpressHttpAdapter(listUserController),
 );
 
 adminUserRouter.post(
   USER_ROUTES_PATH.create,
-  authenticatedExpressHttpAdapter(createUserController)
+  authenticatedExpressHttpAdapter(createUserController),
 );
 
 adminUserRouter.delete(
   USER_ROUTES_PATH.delete,
-  authenticatedExpressHttpAdapter(deleteController)
+  authenticatedExpressHttpAdapter(deleteController),
 );
 
 usersRouter.use(authenticatedUserRouter);

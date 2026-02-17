@@ -1,7 +1,7 @@
 import {
   PaginationDirection,
   PaginationProps,
-  PaginationQueryInput,
+  PaginationQueryStringInput,
 } from "@/application/dtos/shared/pagination-dto";
 import { BadRequestError } from "@/core/shared/errors/api-errors";
 
@@ -10,7 +10,7 @@ import z from "zod";
 
 export function createPaginationSchema<T extends readonly string[]>(
   orderByKeys: T,
-  defaultOrderBy: T[number]
+  defaultOrderBy: T[number],
 ) {
   if (!orderByKeys.includes(defaultOrderBy)) {
     throw new BadRequestError(`Invalid keyword to sort: ${defaultOrderBy}`);
@@ -24,7 +24,7 @@ export function createPaginationSchema<T extends readonly string[]>(
         .optional()
         .pipe(z.number().int().positive().default(1)),
 
-      page_size: z
+      pageSize: z
         .string()
         .transform(Number)
         .optional()
@@ -32,20 +32,20 @@ export function createPaginationSchema<T extends readonly string[]>(
 
       order: z.enum(PaginationDirection).optional().default("asc"),
 
-      order_by: z
+      orderBy: z
         .enum(toZodEnum(orderByKeys))
         .optional()
         .default(defaultOrderBy),
     })
     .strip() satisfies z.ZodType<
     PaginationProps<T[number]>,
-    PaginationQueryInput
+    PaginationQueryStringInput
   >;
 }
 
 export function mergeWithPagination<T extends z.ZodObject>(
   filterSchema: T,
-  defaultOrderKey: keyof z.infer<T>
+  defaultOrderKey: keyof z.infer<T>,
 ) {
   const filterKeys = Object.keys(filterSchema.shape);
 
@@ -53,24 +53,8 @@ export function mergeWithPagination<T extends z.ZodObject>(
 
   const PaginationSchema = createPaginationSchema(
     validOrderKeys,
-    defaultOrderKey as string
+    defaultOrderKey as string,
   );
 
-  return PaginationSchema.merge(filterSchema);
+  return PaginationSchema.extend(filterSchema);
 }
-
-/*
-
-page: z
-        .string()
-        .transform(Number)
-        .pipe(z.number().int().positive().default(Number(1))).def(1)
-        .optional(),
-
-      page_size: z
-        .string()
-        .transform(Number)
-        .pipe(z.number().int().positive().max(100).default(20))
-        .optional(),
-
-*/

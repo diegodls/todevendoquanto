@@ -7,8 +7,8 @@ import { Email } from "@/core/entities/user/value-objects/user-email";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
-  ListUsersQueryProps,
-  ListUsersRequestDTO,
+  ListUsersInputDTO,
+  ListUsersRequestQueryProps,
 } from "@/core/usecases/user/list-user-dto";
 import {
   PrismaClientGenerated,
@@ -17,10 +17,18 @@ import {
 import { UserRoleMapper } from "@/infrastructure/repositories/prisma/mappers/user/user-role-mapper";
 
 import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
-import { queryFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils/query-filter-to-prisma-where";
 
 import { Password } from "@/core/entities/user/value-objects/password";
 import { User as PrismaUser } from "@/prisma";
+
+export type GenericFilterMapper<
+  TFilterObject extends object,
+  TPrismaWhere extends object,
+> = {
+  [K in keyof TFilterObject]?: (
+    value: NonNullable<TFilterObject[K]>,
+  ) => TPrismaWhere;
+};
 
 type PrismaUserWhereInput = PrismaGenerated.UserWhereInput;
 export class UserRepositoryPrisma implements UserRepositoryInterface {
@@ -117,47 +125,47 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async list(
-    filters: ListUsersRequestDTO,
+    filters: ListUsersInputDTO,
   ): Promise<PaginatedResponse<EntityUser>> {
-    const { page, page_size, order, order_by, ...filtersOptions } = filters;
+    const { page, pageSize, order, orderBy, ...filtersOptions } = filters;
 
-    const custom_current_page = page || 1;
+    const customCurrentPage = page || 1;
 
-    const custom_current_page_size = page_size || 10;
+    const customCurrentPageSize = pageSize || 10;
 
-    const customWhere: PrismaUserWhereInput = queryFiltersToPrisma<
-      ListUsersQueryProps,
+    const customWhere: PrismaUserWhereInput = this.buildPrismaWhere<
+      ListUsersRequestQueryProps,
       PrismaUserWhereInput
     >(filtersOptions, listUsersFilters);
 
-    const [total_items, usersList] = await Promise.all([
+    const [totalItems, usersList] = await Promise.all([
       this.prismaORMClient.user.count({ where: customWhere }),
       this.prismaORMClient.user.findMany({
         where: customWhere,
-        skip: (custom_current_page - 1) * custom_current_page_size,
-        take: custom_current_page_size,
-        orderBy: { [order_by || "name"]: order || "asc" },
+        skip: (customCurrentPage - 1) * customCurrentPageSize,
+        take: customCurrentPageSize,
+        orderBy: { [orderBy || "name"]: order || "asc" },
       }),
     ]);
 
-    const total_pages = Math.ceil(total_items / custom_current_page_size);
+    const totalPages = Math.ceil(totalItems / customCurrentPageSize);
 
     let output: PaginatedResponse<EntityUser> = {
       data: [],
       meta: {
-        page: custom_current_page,
-        page_size: custom_current_page_size,
-        has_previous_page: custom_current_page > 1,
-        has_next_page: custom_current_page < total_pages,
-        total_items,
-        total_pages,
+        page: customCurrentPage,
+        pageSize: customCurrentPageSize,
+        hasPreviousPage: customCurrentPage > 1,
+        hasNextPage: customCurrentPage < totalPages,
+        totalItems,
+        totalPages,
       },
     };
 
     if (usersList.length > 0) {
-      const parsedUsersList: EntityUser[] = usersList.map((user) => {
-        return this.toDomain({ ...user, hashedPassword: "" });
-      });
+      const parsedUsersList: EntityUser[] = usersList.map((user) =>
+        this.toDomain(user),
+      );
 
       output.data = parsedUsersList;
     }
@@ -202,4 +210,35 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
 
     return output;
   }
+
+  private buildPrismaWhere = <
+    TFilters extends object,
+    TPrismaWhere extends object,
+  >(
+    filters: TFilters,
+    query: GenericFilterMapper<TFilters, TPrismaWhere>,
+  ): TPrismaWhere => {
+    const where = {} as TPrismaWhere;
+
+    for (const key in query) {
+      const filterKey = key as keyof TFilters;
+
+      const inputValue = filters[filterKey];
+
+      if (
+        inputValue !== undefined &&
+        inputValue !== null &&
+        inputValue !== ""
+      ) {
+        const mapperFunction = query[filterKey];
+
+        if (mapperFunction) {
+          const whereClause = (mapperFunction as any)(inputValue);
+          Object.assign(where, whereClause);
+        }
+      }
+    }
+
+    return where;
+  };
 }

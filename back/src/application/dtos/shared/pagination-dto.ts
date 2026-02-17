@@ -6,20 +6,20 @@ export type PaginationDirection = (typeof PaginationDirection)[number];
 
 export type PaginationProps<TOrderBy extends string = string> = {
   page?: number;
-  page_size?: number;
+  pageSize?: number;
   order?: PaginationDirection;
-  order_by?: TOrderBy;
+  orderBy?: TOrderBy;
 };
 
-export type PaginationQueryInput = PropsToString<PaginationProps>;
+export type PaginationQueryStringInput = PropsToString<PaginationProps>;
 
 type PaginatedResponseMeta = {
   page: number;
-  page_size: number;
-  has_next_page: boolean;
-  has_previous_page: boolean;
-  total_pages: number;
-  total_items: number;
+  pageSize: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  totalPages: number;
+  totalItems: number;
 };
 
 export type PaginatedResponse<T> = {
