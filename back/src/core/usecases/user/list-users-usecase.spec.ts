@@ -1,8 +1,12 @@
 // core/use-cases/user/list-users/list-users.usecase.spec.ts
 
 import { User } from "@/core/entities/user/user";
+import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
-import { UnauthorizedError } from "@/core/shared/errors/api-errors";
+import {
+  NotFoundError,
+  UnauthorizedError,
+} from "@/core/shared/errors/api-errors";
 import { ListUsersUseCase } from "@/core/usecases/user/list-users-usecase";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -114,85 +118,104 @@ describe("ListUsersUseCase", () => {
       "Only admins can list users",
     );
   });
-}); /*
-      
-      it('should throw UserNotFoundError when requesting user does not exist', async () => {
-        const input = {
-          requestingUserId: UserId.create().toString(),
-        };
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(null);
+  it("should throw NotFoundError when requesting user does not exist", async () => {
+    const input = {
+      requestingUserId: UserId.create().toString(),
+    };
 
-        await expect(listUsersUseCase.execute(input))
-          .rejects
-          .toThrow(UserNotFoundError);
+    vi.spyOn(userRepository, "findById").mockResolvedValue(null);
 
-        expect(userRepository.list).not.toHaveBeenCalled();
+    await expect(listUsersUseCase.execute(input)).rejects.toThrow(
+      NotFoundError,
+    );
+
+    expect(userRepository.list).not.toHaveBeenCalled();
+  });
+
+  describe("pagination", () => {
+    it("should use default pagination when not provided", async () => {
+      const input = {
+        requestingUserId: adminUser.id.toString(),
+      };
+
+      vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+      vi.spyOn(userRepository, "list").mockResolvedValue({
+        data: users,
+        meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
       });
+
+      await listUsersUseCase.execute(input);
+
+      expect(userRepository.list).toHaveBeenCalledWith(expect.any(Object));
+    });
+  });
+
+  it("should use custom pagination when provided", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      page: 10,
+      pageSize: 5,
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      meta: {
+        totalItems: 15,
+        hasNextPage: true,
+        hasPreviousPage: true,
+        page: 1,
+        pageSize: 10,
+        totalPages: 100,
+      },
     });
 
-    describe('pagination', () => {
-      it('should use default pagination when not provided', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-        };
+    await listUsersUseCase.execute(input);
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          total: 3,
-        });
+    expect(userRepository.list).toHaveBeenCalledWith({
+      requestingUserId: input.requestingUserId,
+      page: 10,
+      pageSize: 5,
+    });
+  });
 
-        await listUsersUseCase.execute(input);
+  it("should default to page 1 when page is 0 or negative", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      page: 0,
+    };
 
-        expect(userRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
-          expect.any(Object),
-          { page: 1, limit: 10 } // ← defaults
-        );
-      });
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      meta: {
+        totalItems: 3,
+        hasNextPage: true,
+        hasPreviousPage: true,
+        page: 1,
+        pageSize: 10,
+        totalPages: 100,
+      },
+    });
 
-      it('should use custom pagination when provided', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          page: 2,
-          limit: 5,
-        };
+    await listUsersUseCase.execute(input);
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          total: 15,
-        });
+    const paginationArg = (userRepository.list as any).mock.calls[0][0];
 
-        await listUsersUseCase.execute(input);
+    console.log(paginationArg);
 
-        expect(userRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
-          expect.any(Object),
-          { page: 2, limit: 5 }
-        );
-      });
-
-      it('should default to page 1 when page is 0 or negative', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          page: 0,
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          total: 3,
-        });
-
-        await listUsersUseCase.execute(input);
-
-        const paginationArg = (userRepository.list as any).mock.calls[0][2];
-        expect(paginationArg.page).toBe(1);
-      });
-
-      it('should limit to 100 items per page maximum', async () => {
+    expect(paginationArg.page).toBe(1);
+  });
+}); /*
+          it('should limit to 100 items per page maximum', async () => {
         const input = {
           requestingUserId: adminUser.id.toString(),
           limit: 500,
@@ -201,7 +224,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 3,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -220,7 +250,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 15, // 15 total users
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         const result = await listUsersUseCase.execute(input);
@@ -228,7 +265,14 @@ describe("ListUsersUseCase", () => {
         expect(result.pagination).toEqual({
           page: 2,
           limit: 5,
-          total: 15,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
           totalPages: 3, // Math.ceil(15 / 5)
           hasNext: true, // page 2 of 3
           hasPrevious: true, // page 2 > 1
@@ -245,7 +289,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 15,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         const result = await listUsersUseCase.execute(input);
@@ -264,7 +315,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 15,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         const result = await listUsersUseCase.execute(input);
@@ -284,7 +342,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 1,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -305,7 +370,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 1,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -326,7 +398,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 1,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -347,7 +426,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 3,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -370,7 +456,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 1,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -409,7 +502,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 3,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -431,7 +531,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 3,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -453,7 +560,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 3,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -475,7 +589,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 3,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         await listUsersUseCase.execute(input);
@@ -525,7 +646,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: [users[0]],
-          total: 1,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         const result = await listUsersUseCase.execute(input);
@@ -549,7 +677,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
-          total: 3,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         const result = await listUsersUseCase.execute(input);
@@ -569,7 +704,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: [],
-          total: 0,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         const result = await listUsersUseCase.execute(input);
@@ -587,7 +729,14 @@ describe("ListUsersUseCase", () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
         vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: [users[0]],
-          total: 1,
+          meta: {
+          totalItems: 3,
+          hasNextPage: true,
+          hasPreviousPage: true,
+          page: 1,
+          pageSize: 10,
+          totalPages: 100,
+        },
         });
 
         const result = await listUsersUseCase.execute(input);

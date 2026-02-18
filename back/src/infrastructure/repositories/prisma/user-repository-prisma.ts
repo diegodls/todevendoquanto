@@ -129,9 +129,9 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   ): Promise<PaginatedResponse<EntityUser>> {
     const { page, pageSize, order, orderBy, ...filtersOptions } = filters;
 
-    const customCurrentPage = page || 1;
+    const customCurrentPage = page && page > 0 ? page : 1;
 
-    const customCurrentPageSize = pageSize || 10;
+    const customCurrentPageSize = pageSize && pageSize > 0 ? pageSize : 10;
 
     const customWhere: PrismaUserWhereInput = this.buildPrismaWhere<
       ListUsersRequestQueryProps,

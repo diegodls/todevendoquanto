@@ -28,7 +28,7 @@ export function createPaginationSchema<T extends readonly string[]>(
         .string()
         .transform(Number)
         .optional()
-        .pipe(z.number().int().positive().max(100).default(20)),
+        .pipe(z.number().int().positive().max(100).default(10)),
 
       order: z.enum(PaginationDirection).optional().default("asc"),
 
