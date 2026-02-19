@@ -1,3 +1,4 @@
+import { PaginationParams } from "@/application/dtos/shared/pagination-dto";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
@@ -51,5 +52,13 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
     };
 
     return output;
+  }
+
+  private buildPagination(data: ListUsersInputDTO): PaginationParams {
+    const page = data.page && data.page > 0 ? data.page : 1;
+
+    const pageSize = data.pageSize && data.pageSize > 0 ? data.pageSize : 10;
+
+    return { page, pageSize };
   }
 }

@@ -1,15 +1,20 @@
 import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
 
+export type PaginationSort<TOrderBy extends string = string> = {
+  order?: PaginationDirection;
+  orderBy?: TOrderBy;
+};
 export const PaginationDirection = ["asc", "desc"] as const;
 
 export type PaginationDirection = (typeof PaginationDirection)[number];
 
-export type PaginationProps<TOrderBy extends string = string> = {
+export type PaginationParams = {
   page?: number;
   pageSize?: number;
-  order?: PaginationDirection;
-  orderBy?: TOrderBy;
 };
+
+export type PaginationProps<T extends string = string> = PaginationSort<T> &
+  PaginationParams;
 
 export type PaginationQueryStringInput = PropsToString<PaginationProps>;
 
