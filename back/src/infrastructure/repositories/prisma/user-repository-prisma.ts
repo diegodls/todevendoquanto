@@ -1,4 +1,7 @@
-import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
+import {
+  PaginatedResponse,
+  PaginationProps,
+} from "@/application/dtos/shared/pagination-dto";
 import {
   User as EntityUser,
   UserProps as EntityUserProps,
@@ -7,7 +10,8 @@ import { Email } from "@/core/entities/user/value-objects/user-email";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
-  ListUsersInputDTO,
+  ListUsersFilterProps,
+  ListUserSortProps,
   ListUsersRequestQueryProps,
 } from "@/core/usecases/user/list-user-dto";
 import {
@@ -125,18 +129,20 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async list(
-    filters: ListUsersInputDTO,
+    filters: ListUsersFilterProps,
+    sort: ListUserSortProps,
+    pagination: PaginationProps,
   ): Promise<PaginatedResponse<EntityUser>> {
-    const { page, pageSize, order, orderBy, ...filtersOptions } = filters;
+    const customCurrentPage =
+      pagination.page && pagination.page > 0 ? pagination.page : 1;
 
-    const customCurrentPage = page && page > 0 ? page : 1;
-
-    const customCurrentPageSize = pageSize && pageSize > 0 ? pageSize : 10;
+    const customCurrentPageSize =
+      pagination.pageSize && pagination.pageSize > 0 ? pagination.pageSize : 10;
 
     const customWhere: PrismaUserWhereInput = this.buildPrismaWhere<
       ListUsersRequestQueryProps,
       PrismaUserWhereInput
-    >(filtersOptions, listUsersFilters);
+    >(filters, listUsersFilters);
 
     const [totalItems, usersList] = await Promise.all([
       this.prismaORMClient.user.count({ where: customWhere }),
@@ -144,7 +150,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
         where: customWhere,
         skip: (customCurrentPage - 1) * customCurrentPageSize,
         take: customCurrentPageSize,
-        orderBy: { [orderBy || "name"]: order || "asc" },
+        orderBy: { [pagination.orderBy || "name"]: pagination.order || "asc" },
       }),
     ]);
 

@@ -27,6 +27,8 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
     if (!requestingUser.isAdmin()) {
       throw new UnauthorizedError("Only admins can list users");
     }
+PAREI AQUI, TEM QUE SEPARAR O FILTER/SORT/ETC... 
+    const sortProps = data.
 
     const repositoryData = await this.repository.list(data);
 
