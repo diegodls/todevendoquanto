@@ -1,8 +1,8 @@
 import {
   ListUserOutputDTO,
-  ListUsersRequestQueryProps,
+  ListUsersInputDTO,
 } from "@/core/usecases/user/list-user-dto";
 
 export interface ListUsersUseCaseInterface {
-  execute(data: ListUsersRequestQueryProps): Promise<ListUserOutputDTO>;
+  execute(data: ListUsersInputDTO): Promise<ListUserOutputDTO>;
 }

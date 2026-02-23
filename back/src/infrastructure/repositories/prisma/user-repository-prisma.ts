@@ -10,9 +10,8 @@ import { Email } from "@/core/entities/user/value-objects/user-email";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
+  ListUserOrderProps,
   ListUsersFilterProps,
-  ListUserSortProps,
-  ListUsersRequestQueryProps,
 } from "@/core/usecases/user/list-user-dto";
 import {
   PrismaClientGenerated,
@@ -130,8 +129,9 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
 
   async list(
     filters: ListUsersFilterProps,
-    sort: ListUserSortProps,
+    order: ListUserOrderProps,
     pagination: PaginationProps,
+    sort: ListUserOrderProps,
   ): Promise<PaginatedResponse<EntityUser>> {
     const customCurrentPage =
       pagination.page && pagination.page > 0 ? pagination.page : 1;
@@ -140,7 +140,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       pagination.pageSize && pagination.pageSize > 0 ? pagination.pageSize : 10;
 
     const customWhere: PrismaUserWhereInput = this.buildPrismaWhere<
-      ListUsersRequestQueryProps,
+      ListUsersFilterProps,
       PrismaUserWhereInput
     >(filters, listUsersFilters);
 
@@ -150,7 +150,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
         where: customWhere,
         skip: (customCurrentPage - 1) * customCurrentPageSize,
         take: customCurrentPageSize,
-        orderBy: { [pagination.orderBy || "name"]: pagination.order || "asc" },
+        orderBy: { [sort.orderBy || "name"]: sort.order || "asc" },
       }),
     ]);
 

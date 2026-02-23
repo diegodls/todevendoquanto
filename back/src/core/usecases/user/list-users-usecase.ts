@@ -1,4 +1,4 @@
-import { PaginationParams } from "@/application/dtos/shared/pagination-dto";
+import { PaginationProps } from "@/application/dtos/shared/pagination-dto";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
@@ -27,10 +27,18 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
     if (!requestingUser.isAdmin()) {
       throw new UnauthorizedError("Only admins can list users");
     }
-PAREI AQUI, TEM QUE SEPARAR O FILTER/SORT/ETC... 
-    const sortProps = data.
 
-    const repositoryData = await this.repository.list(data);
+    const filterProps = data.filters;
+    const orderProps = data.order;
+    const paginationProps = data.pagination;
+    const sortProps = data.sort;
+
+    const repositoryData = await this.repository.list(
+      filterProps,
+      orderProps,
+      paginationProps,
+      sortProps,
+    );
 
     let userList: ListUserOutputProps[] = [];
 
@@ -56,7 +64,7 @@ PAREI AQUI, TEM QUE SEPARAR O FILTER/SORT/ETC...
     return output;
   }
 
-  private buildPagination(data: ListUsersInputDTO): PaginationParams {
+  private buildPagination(data: ListUsersInputDTO): PaginationProps {
     const page = data.page && data.page > 0 ? data.page : 1;
 
     const pageSize = data.pageSize && data.pageSize > 0 ? data.pageSize : 10;

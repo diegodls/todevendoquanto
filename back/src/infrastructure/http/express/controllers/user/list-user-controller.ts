@@ -9,8 +9,8 @@ import {
   ListUsersRequestPaginatedQuery,
 } from "@/core/usecases/user/list-user-dto";
 import { ListUsersUseCase } from "@/core/usecases/user/list-users-usecase";
+import { ListUserSchema } from "@/infrastructure/validation/zod/schemas/user/list-user-schema";
 
-import { ListUserPaginationSchema } from "@/infrastructure/validation/zod/schemas/user/list-user-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class ListUserController implements UserListControllerType {
@@ -26,14 +26,11 @@ export class ListUserController implements UserListControllerType {
   ): Promise<AuthenticatedHttpResponseInterface<ListUserOutputDTO>> {
     const user = request.user;
 
-    const queryProps = requestValidation(
-      "query",
-      request,
-      ListUserPaginationSchema,
-    );
+    const queryProps = requestValidation("query", request, ListUserSchema);
 
     const data: ListUsersInputDTO = {
       requestingUserId: user.sub,
+
       ...queryProps,
     };
 
