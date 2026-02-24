@@ -1,11 +1,17 @@
-import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
+import { PropsToStringOptional } from "@/core/shared/types/helpers/props-to-string";
 
-export type PaginationProps = {
+export type PaginationRequestProps = {
   page?: number;
   pageSize?: number;
 };
 
-export type PaginationQueryStringInput = PropsToString<PaginationProps>;
+export type PaginationRequestQueryProps =
+  PropsToStringOptional<PaginationRequestProps>;
+
+export type PaginationDTO = {
+  page: number;
+  pageSize: number;
+};
 
 type PaginatedResponseMeta = {
   page: number;

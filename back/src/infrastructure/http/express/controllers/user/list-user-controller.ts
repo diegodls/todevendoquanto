@@ -6,7 +6,7 @@ import {
 import {
   ListUserOutputDTO,
   ListUsersInputDTO,
-  ListUsersRequestPaginatedQuery,
+  ListUsersPaginatedQueryParams,
 } from "@/core/usecases/user/list-user-dto";
 import { ListUsersUseCase } from "@/core/usecases/user/list-users-usecase";
 import { ListUserSchema } from "@/infrastructure/validation/zod/schemas/user/list-user-schema";
@@ -21,7 +21,7 @@ export class ListUserController implements UserListControllerType {
       {},
       {},
       {},
-      ListUsersRequestPaginatedQuery
+      ListUsersPaginatedQueryParams
     >,
   ): Promise<AuthenticatedHttpResponseInterface<ListUserOutputDTO>> {
     const user = request.user;
@@ -30,7 +30,6 @@ export class ListUserController implements UserListControllerType {
 
     const data: ListUsersInputDTO = {
       requestingUserId: user.sub,
-
       ...queryProps,
     };
 

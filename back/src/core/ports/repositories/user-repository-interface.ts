@@ -1,21 +1,20 @@
 import {
   PaginatedResponse,
-  PaginationProps,
+  PaginationRequestProps,
 } from "@/application/dtos/shared/pagination-dto";
 import { User } from "@/core/entities/user/user";
 import { Email } from "@/core/entities/user/value-objects/user-email";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import {
-  ListUserOrderProps,
-  ListUsersFilterProps,
+  ListUsersFiltersOptions,
+  ListUsersOrderRequestProps,
 } from "@/core/usecases/user/list-user-dto";
 
 export interface UserRepositoryInterface {
   list(
-    filters: ListUsersFilterProps,
-    order: ListUserOrderProps,
-    pagination: PaginationProps,
-    sort: ListUserOrderProps,
+    filters: ListUsersFiltersOptions,
+    order: ListUsersOrderRequestProps,
+    pagination: PaginationRequestProps,
   ): Promise<PaginatedResponse<User>>;
   findByEmail(email: Email): Promise<User | null>;
   findByName(name: User["name"]): Promise<User | null>;

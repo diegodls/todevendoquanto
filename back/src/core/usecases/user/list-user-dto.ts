@@ -1,16 +1,19 @@
 import {
   PaginatedResponse,
-  PaginationProps,
-  PaginationQueryStringInput,
+  PaginationRequestProps,
+  PaginationRequestQueryProps,
 } from "@/application/dtos/shared/pagination-dto";
-import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
+import {
+  PropsToStringAssertive,
+  PropsToStringOptional,
+} from "@/core/shared/types/helpers/props-to-string";
 
-export const ListUserOrderDirectionOptions = ["asc", " desc"] as const;
+export const ListUserOrderDirectionOptions = ["asc", "desc"] as const;
 
-export type ListUserOrderDirection =
+export type ListUsersOrderDirection =
   (typeof ListUserOrderDirectionOptions)[number];
 
-export type ListUserOrderByPropsA = {
+export type ListUsersOrderByOptions = {
   name: string;
   email: string;
   role: string;
@@ -19,8 +22,8 @@ export type ListUserOrderByPropsA = {
   isActive: boolean;
 };
 
-export const listUserOrderByPropsMap: Record<
-  keyof ListUserOrderByPropsA,
+export const listUsersOrderOptionsMap: Record<
+  keyof ListUsersOrderByOptions,
   true
 > = {
   name: true,
@@ -31,46 +34,40 @@ export const listUserOrderByPropsMap: Record<
   isActive: true,
 };
 
-export type ListUserSortPropsKeys = keyof ListUserOrderByPropsA;
+export const ListUsersOrderByOptionsArrKey = Object.keys(
+  listUsersOrderOptionsMap,
+) as (keyof ListUsersOrderByOptions)[];
 
-export const ListUserOrderByPropsArrKey = Object.keys(
-  listUserOrderByPropsMap,
-) as ListUserSortPropsKeys[];
-
-export type ListUserOrderProps = {
-  order?: ListUserOrderDirection;
-  orderBy?: keyof PropsToString<ListUserOrderByPropsA>;
+export type ListUsersOrderRequestProps = {
+  order: ListUsersOrderDirection;
+  orderBy: keyof PropsToStringAssertive<ListUsersOrderByOptions>;
 };
 
-export type ListUserFilterProps = {
+export type ListUsersOrderQueryParams =
+  PropsToStringOptional<ListUsersOrderRequestProps>;
+
+export type ListUsersFiltersOptions = {
   name?: string;
   email?: string;
   isActive?: boolean;
   roles?: string[];
-};
-
-type ListUserDateFilterProps = {
   created_after?: Date;
   created_before?: Date;
   updated_after?: Date;
   updated_before?: Date;
 };
 
-export type ListUsersFilterProps = ListUserFilterProps &
-  ListUserDateFilterProps;
+export type ListUsersFilterQueryParams =
+  PropsToStringOptional<ListUsersFiltersOptions>;
 
-export type ListUsersFilterQueryStringInput =
-  PropsToString<ListUsersFilterProps>;
+export type ListUsersPaginatedQueryParams = PaginationRequestQueryProps &
+  ListUsersFilterQueryParams;
 
-export type ListUsersRequestPaginatedQuery = PaginationQueryStringInput &
-  ListUsersFilterQueryStringInput;
+export type ListUsersHttpRequestProps = ListUsersFiltersOptions &
+  PaginationRequestProps &
+  ListUsersOrderRequestProps;
 
-export type ListUsersRequestQueryProps = ListUsersFilterProps &
-  ListUserOrderDirection &
-  PaginationProps &
-  ListUserOrderByPropsArrKey;
-
-export type ListUsersInputDTO = ListUsersRequestQueryProps & {
+export type ListUsersInputDTO = ListUsersHttpRequestProps & {
   requestingUserId: string;
 };
 

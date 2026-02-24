@@ -1,5 +1,7 @@
-import { PaginationProps } from "@/application/dtos/shared/pagination-dto";
+import { PaginationDTO } from "@/application/dtos/shared/pagination-dto";
+import { Email } from "@/core/entities/user/value-objects/user-email";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
+import { UserRole } from "@/core/entities/user/value-objects/user-role";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
   NotFoundError,
@@ -7,7 +9,9 @@ import {
 } from "@/core/shared/errors/api-errors";
 import {
   ListUserOutputDTO,
+  ListUsersFiltersOptions,
   ListUsersInputDTO,
+  ListUsersOrderRequestProps,
 } from "@/core/usecases/user/list-user-dto";
 import { ListUsersUseCaseInterface as ListUserUsesCaseInterface } from "@/core/usecases/user/list-users-usecase-interface";
 import { ListUserOutputProps } from "./list-user-dto";
@@ -28,16 +32,16 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
       throw new UnauthorizedError("Only admins can list users");
     }
 
-    const filterProps = data.filters;
-    const orderProps = data.order;
-    const paginationProps = data.pagination;
-    const sortProps = data.sort;
+    const filterProps: ListUsersFiltersOptions = this.buildFilters(data);
+
+    const orderProps: ListUsersOrderRequestProps = this.buildOrder(data);
+
+    const pagination: PaginationDTO = this.buildPagination(data);
 
     const repositoryData = await this.repository.list(
       filterProps,
       orderProps,
-      paginationProps,
-      sortProps,
+      pagination,
     );
 
     let userList: ListUserOutputProps[] = [];
@@ -64,7 +68,62 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
     return output;
   }
 
-  private buildPagination(data: ListUsersInputDTO): PaginationProps {
+  private buildFilters(data: ListUsersInputDTO): ListUsersFiltersOptions {
+    const filters: ListUsersFiltersOptions = {};
+
+    if (data.name !== undefined) {
+      filters.name = data.name;
+    }
+
+    if (data.email !== undefined) {
+      Email.create(data.email);
+      filters.email = data.email;
+    }
+
+    if (data.roles !== undefined) {
+      data.roles.map((role) => {
+        UserRole.create(role);
+        filters.roles?.push(role);
+      });
+    }
+
+    if (data.isActive !== undefined) {
+      filters.isActive = data.isActive;
+    }
+
+    if (data.created_after !== undefined) {
+      filters.created_after = data.created_after;
+    }
+
+    if (data.created_before !== undefined) {
+      filters.created_before = data.created_before;
+    }
+
+    if (data.updated_after !== undefined) {
+      filters.updated_after = data.updated_after;
+    }
+
+    if (data.updated_before !== undefined) {
+      filters.updated_before = data.updated_before;
+    }
+
+    return filters;
+  }
+
+  private buildOrder(data: ListUsersInputDTO): ListUsersOrderRequestProps {
+    const order: ListUsersOrderRequestProps = {
+      orderBy: "name",
+      order: "asc",
+    };
+
+    order.order = data.order;
+
+    order.orderBy = data.orderBy;
+
+    return order;
+  }
+
+  private buildPagination(data: ListUsersInputDTO): PaginationDTO {
     const page = data.page && data.page > 0 ? data.page : 1;
 
     const pageSize = data.pageSize && data.pageSize > 0 ? data.pageSize : 10;

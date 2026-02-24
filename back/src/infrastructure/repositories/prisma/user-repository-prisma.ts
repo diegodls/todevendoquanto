@@ -1,6 +1,6 @@
 import {
   PaginatedResponse,
-  PaginationProps,
+  PaginationDTO,
 } from "@/application/dtos/shared/pagination-dto";
 import {
   User as EntityUser,
@@ -10,8 +10,8 @@ import { Email } from "@/core/entities/user/value-objects/user-email";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
-  ListUserOrderProps,
-  ListUsersFilterProps,
+  ListUsersFiltersOptions,
+  ListUsersOrderRequestProps,
 } from "@/core/usecases/user/list-user-dto";
 import {
   PrismaClientGenerated,
@@ -128,19 +128,12 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async list(
-    filters: ListUsersFilterProps,
-    order: ListUserOrderProps,
-    pagination: PaginationProps,
-    sort: ListUserOrderProps,
+    filters: ListUsersFiltersOptions,
+    order: ListUsersOrderRequestProps,
+    pagination: PaginationDTO,
   ): Promise<PaginatedResponse<EntityUser>> {
-    const customCurrentPage =
-      pagination.page && pagination.page > 0 ? pagination.page : 1;
-
-    const customCurrentPageSize =
-      pagination.pageSize && pagination.pageSize > 0 ? pagination.pageSize : 10;
-
     const customWhere: PrismaUserWhereInput = this.buildPrismaWhere<
-      ListUsersFilterProps,
+      ListUsersFiltersOptions,
       PrismaUserWhereInput
     >(filters, listUsersFilters);
 
@@ -148,21 +141,21 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       this.prismaORMClient.user.count({ where: customWhere }),
       this.prismaORMClient.user.findMany({
         where: customWhere,
-        skip: (customCurrentPage - 1) * customCurrentPageSize,
-        take: customCurrentPageSize,
-        orderBy: { [sort.orderBy || "name"]: sort.order || "asc" },
+        skip: (pagination.page - 1) * pagination.pageSize,
+        take: pagination.pageSize,
+        orderBy: { [order.orderBy]: order.order },
       }),
     ]);
 
-    const totalPages = Math.ceil(totalItems / customCurrentPageSize);
+    const totalPages = Math.ceil(totalItems / pagination.pageSize);
 
     let output: PaginatedResponse<EntityUser> = {
       data: [],
       meta: {
-        page: customCurrentPage,
-        pageSize: customCurrentPageSize,
-        hasPreviousPage: customCurrentPage > 1,
-        hasNextPage: customCurrentPage < totalPages,
+        page: pagination.page,
+        pageSize: pagination.pageSize,
+        hasPreviousPage: pagination.page > 1,
+        hasNextPage: pagination.page < totalPages,
         totalItems,
         totalPages,
       },
