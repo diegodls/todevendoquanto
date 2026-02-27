@@ -1,14 +1,14 @@
-import {
-  PaginatedResponse,
-  PaginationDTO,
-} from "@/application/dtos/shared/pagination-dto";
+import { PaginationDTO } from "@/application/dtos/shared/pagination-dto";
 import {
   User as EntityUser,
   UserProps as EntityUserProps,
 } from "@/core/entities/user/user";
 import { Email } from "@/core/entities/user/value-objects/user-email";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
-import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
+import {
+  PaginatedResult,
+  UserRepositoryInterface,
+} from "@/core/ports/repositories/user-repository-interface";
 import {
   ListUsersFiltersOptions,
   ListUsersOrderRequestProps,
@@ -131,43 +131,32 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
     filters: ListUsersFiltersOptions,
     order: ListUsersOrderRequestProps,
     pagination: PaginationDTO,
-  ): Promise<PaginatedResponse<EntityUser>> {
-    const customWhere: PrismaUserWhereInput = this.buildPrismaWhere<
+  ): Promise<PaginatedResult<EntityUser>> {
+    const where: PrismaUserWhereInput = this.buildPrismaWhere<
       ListUsersFiltersOptions,
       PrismaUserWhereInput
     >(filters, listUsersFilters);
 
+    const skip = (pagination.page - 1) * pagination.pageSize;
+
+    const take = pagination.pageSize;
+
+    const orderBy = { [order.orderBy]: order.order };
+
     const [totalItems, usersList] = await Promise.all([
-      this.prismaORMClient.user.count({ where: customWhere }),
+      this.prismaORMClient.user.count({ where }),
       this.prismaORMClient.user.findMany({
-        where: customWhere,
-        skip: (pagination.page - 1) * pagination.pageSize,
-        take: pagination.pageSize,
-        orderBy: { [order.orderBy]: order.order },
+        where,
+        skip,
+        take,
+        orderBy,
       }),
     ]);
 
-    const totalPages = Math.ceil(totalItems / pagination.pageSize);
-
-    let output: PaginatedResponse<EntityUser> = {
-      data: [],
-      meta: {
-        page: pagination.page,
-        pageSize: pagination.pageSize,
-        hasPreviousPage: pagination.page > 1,
-        hasNextPage: pagination.page < totalPages,
-        totalItems,
-        totalPages,
-      },
+    let output: PaginatedResult<EntityUser> = {
+      data: usersList.map((user) => this.toDomain(user)),
+      total: totalItems,
     };
-
-    if (usersList.length > 0) {
-      const parsedUsersList: EntityUser[] = usersList.map((user) =>
-        this.toDomain(user),
-      );
-
-      output.data = parsedUsersList;
-    }
 
     return output;
   }

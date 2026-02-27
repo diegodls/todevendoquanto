@@ -13,7 +13,7 @@ export type PaginationDTO = {
   pageSize: number;
 };
 
-type PaginatedResponseMeta = {
+export type PaginatedResponseMeta = {
   page: number;
   pageSize: number;
   hasNextPage: boolean;

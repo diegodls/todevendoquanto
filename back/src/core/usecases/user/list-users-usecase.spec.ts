@@ -7,6 +7,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
+import { ListUsersInputDTO } from "@/core/usecases/user/list-user-dto";
 import { ListUsersUseCase } from "@/core/usecases/user/list-users-usecase";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -154,7 +155,11 @@ describe("ListUsersUseCase", () => {
 
       await listUsersUseCase.execute(input);
 
-      expect(userRepository.list).toHaveBeenCalledWith(expect.any(Object));
+      expect(userRepository.list).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.any(Object),
+        expect.any(Object),
+      );
     });
   });
 
@@ -180,15 +185,18 @@ describe("ListUsersUseCase", () => {
 
     await listUsersUseCase.execute(input);
 
-    expect(userRepository.list).toHaveBeenCalledWith({
-      requestingUserId: input.requestingUserId,
-      page: 10,
-      pageSize: 5,
-    });
+    expect(userRepository.list).toHaveBeenCalledWith(
+      {},
+      {
+        order: "asc",
+        orderBy: "name",
+      },
+      { page: 10, pageSize: 5 },
+    );
   });
 
   it("should default to page 1 when page is 0 or negative", async () => {
-    const input = {
+    const input: ListUsersInputDTO = {
       requestingUserId: adminUser.id.toString(),
       page: 0,
     };
@@ -208,108 +216,102 @@ describe("ListUsersUseCase", () => {
 
     await listUsersUseCase.execute(input);
 
-    const paginationArg = (userRepository.list as any).mock.calls[0][0];
-
-    console.log(paginationArg);
+    const paginationArg = (userRepository.list as any).mock.calls[0][2];
 
     expect(paginationArg.page).toBe(1);
   });
+
+  it("should limit to 100 items per page maximum", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      pageSize: 500,
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      meta: {
+        totalItems: 3,
+        hasNextPage: true,
+        hasPreviousPage: true,
+        page: 1,
+        pageSize: 10,
+        totalPages: 100,
+      },
+    });
+
+    await listUsersUseCase.execute(input);
+
+    const paginationArg = (userRepository.list as any).mock.calls[0][2];
+
+    expect(paginationArg.pageSize).toBe(100);
+  });
+
+  it("should return correct pagination metadata", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      page: 2,
+      pageSize: 5,
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      meta: {
+        totalItems: 3,
+        hasNextPage: true,
+        hasPreviousPage: true,
+        page: 1,
+        pageSize: 10,
+        totalPages: 100,
+      },
+    });
+
+    const result = await listUsersUseCase.execute(input);
+
+    expect(result.meta).toEqual({
+      page: 1,
+      pageSize: 10,
+      hasPreviousPage: true,
+      hasNextPage: true,
+      totalItems: 3,
+      totalPages: 100,
+    });
+  });
+
+  it("should indicate no next page on last page", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      page: 3,
+      pageSize: 5,
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      meta: {
+        totalItems: 3,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        page: 1,
+        pageSize: 10,
+        totalPages: 100,
+      },
+    });
+
+    const result = await listUsersUseCase.execute(input);
+
+    expect(result.meta.hasNextPage).toBe(false);
+    expect(result.meta.hasPreviousPage).toBe(false);
+  });
 }); /*
-          it('should limit to 100 items per page maximum', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          limit: 500,
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          meta: {
-          totalItems: 3,
-          hasNextPage: true,
-          hasPreviousPage: true,
-          page: 1,
-          pageSize: 10,
-          totalPages: 100,
-        },
-        });
-
-        await listUsersUseCase.execute(input);
-
-        const paginationArg = (userRepository.list as any).mock.calls[0][2];
-        expect(paginationArg.limit).toBe(100);
-      });
-
-      it('should return correct pagination metadata', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          page: 2,
-          limit: 5,
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          meta: {
-          totalItems: 3,
-          hasNextPage: true,
-          hasPreviousPage: true,
-          page: 1,
-          pageSize: 10,
-          totalPages: 100,
-        },
-        });
-
-        const result = await listUsersUseCase.execute(input);
-
-        expect(result.pagination).toEqual({
-          page: 2,
-          limit: 5,
-          meta: {
-          totalItems: 3,
-          hasNextPage: true,
-          hasPreviousPage: true,
-          page: 1,
-          pageSize: 10,
-          totalPages: 100,
-        },
-          totalPages: 3, // Math.ceil(15 / 5)
-          hasNext: true, // page 2 of 3
-          hasPrevious: true, // page 2 > 1
-        });
-      });
-
-      it('should indicate no next page on last page', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          page: 3,
-          limit: 5,
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          meta: {
-          totalItems: 3,
-          hasNextPage: true,
-          hasPreviousPage: true,
-          page: 1,
-          pageSize: 10,
-          totalPages: 100,
-        },
-        });
-
-        const result = await listUsersUseCase.execute(input);
-
-        expect(result.pagination.hasNext).toBe(false);
-        expect(result.pagination.hasPrevious).toBe(true);
-      });
-
       it('should indicate no previous page on first page', async () => {
         const input = {
           requestingUserId: adminUser.id.toString(),
           page: 1,
-          limit: 5,
+          pageSize: 5,
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
@@ -327,8 +329,8 @@ describe("ListUsersUseCase", () => {
 
         const result = await listUsersUseCase.execute(input);
 
-        expect(result.pagination.hasPrevious).toBe(false);
-        expect(result.pagination.hasNext).toBe(true);
+        expect(result.meta.hasPrevious).toBe(false);
+        expect(result.meta.hasNext).toBe(true);
       });
     });
 
@@ -717,8 +719,8 @@ describe("ListUsersUseCase", () => {
         const result = await listUsersUseCase.execute(input);
 
         expect(result.users).toEqual([]);
-        expect(result.pagination.total).toBe(0);
-        expect(result.pagination.totalPages).toBe(0);
+        expect(result.meta.total).toBe(0);
+        expect(result.meta.totalPages).toBe(0);
       });
 
       it('should return dates in ISO format', async () => {

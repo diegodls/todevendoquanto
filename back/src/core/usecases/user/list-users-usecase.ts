@@ -1,4 +1,7 @@
-import { PaginationDTO } from "@/application/dtos/shared/pagination-dto";
+import {
+  PaginatedResponseMeta,
+  PaginationDTO,
+} from "@/application/dtos/shared/pagination-dto";
 import { Email } from "@/core/entities/user/value-objects/user-email";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRole } from "@/core/entities/user/value-objects/user-role";
@@ -11,6 +14,7 @@ import {
   ListUserOutputDTO,
   ListUsersFiltersOptions,
   ListUsersInputDTO,
+  ListUsersOrderRequestOptionalProps,
   ListUsersOrderRequestProps,
 } from "@/core/usecases/user/list-user-dto";
 import { ListUsersUseCaseInterface as ListUserUsesCaseInterface } from "@/core/usecases/user/list-users-usecase-interface";
@@ -34,7 +38,8 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
 
     const filterProps: ListUsersFiltersOptions = this.buildFilters(data);
 
-    const orderProps: ListUsersOrderRequestProps = this.buildOrder(data);
+    const orderProps: ListUsersOrderRequestOptionalProps =
+      this.buildOrder(data);
 
     const pagination: PaginationDTO = this.buildPagination(data);
 
@@ -44,25 +49,26 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
       pagination,
     );
 
-    let userList: ListUserOutputProps[] = [];
+    const userList: ListUserOutputProps[] = repositoryData.data.map((user) => {
+      return {
+        id: user.id.toString(),
+        name: user.name.toString(),
+        email: user.email.toString(),
+        role: user.role.toString(),
+        isActive: user.isActive,
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
+      };
+    });
 
-    if (repositoryData.data.length > 0) {
-      userList = repositoryData.data.map((user) => {
-        return {
-          id: user.id.toString(),
-          name: user.name.toString(),
-          email: user.email.toString(),
-          role: user.role.toString(),
-          isActive: user.isActive,
-          createdAt: user.createdAt.toISOString(),
-          updatedAt: user.updatedAt.toISOString(),
-        };
-      });
-    }
+    const paginationMeta = this.buildMetaPagination(
+      pagination,
+      repositoryData.total,
+    );
 
     const output: ListUserOutputDTO = {
       data: userList,
-      meta: repositoryData.meta,
+      meta: paginationMeta,
     };
 
     return output;
@@ -111,23 +117,58 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
   }
 
   private buildOrder(data: ListUsersInputDTO): ListUsersOrderRequestProps {
-    const order: ListUsersOrderRequestProps = {
+    const defaultOrder: ListUsersOrderRequestProps = {
       orderBy: "name",
       order: "asc",
     };
 
-    order.order = data.order;
+    if (data.order !== undefined) {
+      defaultOrder.order = data.order;
+    }
 
-    order.orderBy = data.orderBy;
+    if (data.orderBy !== undefined) {
+      defaultOrder.orderBy = data.orderBy;
+    }
 
-    return order;
+    return defaultOrder;
   }
 
   private buildPagination(data: ListUsersInputDTO): PaginationDTO {
-    const page = data.page && data.page > 0 ? data.page : 1;
+    const defaultPagination: PaginationDTO = {
+      page: 1,
+      pageSize: 10,
+    };
 
-    const pageSize = data.pageSize && data.pageSize > 0 ? data.pageSize : 10;
+    if (data.page && data.page > 0) {
+      defaultPagination.page = data.page;
+    }
 
-    return { page, pageSize };
+    if (data.pageSize && data.pageSize > 0 && data.pageSize <= 100) {
+      defaultPagination.pageSize = data.pageSize;
+    }
+
+    if (data.pageSize && data.pageSize > 100) {
+      defaultPagination.pageSize = 100;
+    }
+
+    return defaultPagination;
+  }
+
+  private buildMetaPagination(
+    data: PaginationDTO,
+    totalItems: number,
+  ): PaginatedResponseMeta {
+    const totalPages = Math.ceil(totalItems / data.pageSize);
+
+    const meta: PaginatedResponseMeta = {
+      page: data.page,
+      pageSize: data.pageSize,
+      hasPreviousPage: data.page > 1,
+      hasNextPage: data.page < totalPages,
+      totalItems,
+      totalPages,
+    };
+
+    return meta;
   }
 }

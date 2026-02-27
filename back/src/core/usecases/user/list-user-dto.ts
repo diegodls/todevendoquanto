@@ -8,10 +8,19 @@ import {
   PropsToStringOptional,
 } from "@/core/shared/types/helpers/props-to-string";
 
-export const ListUserOrderDirectionOptions = ["asc", "desc"] as const;
+export type ListUsersFiltersOptions = {
+  name?: string;
+  email?: string;
+  isActive?: boolean;
+  roles?: string[];
+  created_after?: Date;
+  created_before?: Date;
+  updated_after?: Date;
+  updated_before?: Date;
+};
 
-export type ListUsersOrderDirection =
-  (typeof ListUserOrderDirectionOptions)[number];
+export type ListUsersFilterQueryParams =
+  PropsToStringOptional<ListUsersFiltersOptions>;
 
 export type ListUsersOrderByOptions = {
   name: string;
@@ -21,6 +30,11 @@ export type ListUsersOrderByOptions = {
   updatedAt: Date;
   isActive: boolean;
 };
+
+export const ListUserOrderDirectionOptions = ["asc", "desc"] as const;
+
+export type ListUsersOrderDirection =
+  (typeof ListUserOrderDirectionOptions)[number];
 
 export const listUsersOrderOptionsMap: Record<
   keyof ListUsersOrderByOptions,
@@ -38,34 +52,25 @@ export const ListUsersOrderByOptionsArrKey = Object.keys(
   listUsersOrderOptionsMap,
 ) as (keyof ListUsersOrderByOptions)[];
 
+export type ListUsersOrderRequestOptionalProps = {
+  order?: ListUsersOrderDirection;
+  orderBy?: keyof PropsToStringAssertive<ListUsersOrderByOptions>;
+};
+
 export type ListUsersOrderRequestProps = {
   order: ListUsersOrderDirection;
   orderBy: keyof PropsToStringAssertive<ListUsersOrderByOptions>;
 };
 
 export type ListUsersOrderQueryParams =
-  PropsToStringOptional<ListUsersOrderRequestProps>;
-
-export type ListUsersFiltersOptions = {
-  name?: string;
-  email?: string;
-  isActive?: boolean;
-  roles?: string[];
-  created_after?: Date;
-  created_before?: Date;
-  updated_after?: Date;
-  updated_before?: Date;
-};
-
-export type ListUsersFilterQueryParams =
-  PropsToStringOptional<ListUsersFiltersOptions>;
+  PropsToStringOptional<ListUsersOrderRequestOptionalProps>;
 
 export type ListUsersPaginatedQueryParams = PaginationRequestQueryProps &
   ListUsersFilterQueryParams;
 
 export type ListUsersHttpRequestProps = ListUsersFiltersOptions &
   PaginationRequestProps &
-  ListUsersOrderRequestProps;
+  ListUsersOrderRequestOptionalProps;
 
 export type ListUsersInputDTO = ListUsersHttpRequestProps & {
   requestingUserId: string;

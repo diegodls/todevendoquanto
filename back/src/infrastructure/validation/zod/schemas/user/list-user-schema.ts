@@ -5,7 +5,7 @@ import {
   ListUsersHttpRequestProps,
   ListUsersOrderByOptionsArrKey,
   ListUsersOrderQueryParams,
-  ListUsersOrderRequestProps,
+  ListUsersOrderRequestOptionalProps,
 } from "@/core/usecases/user/list-user-dto";
 import { toZodEnum } from "@/infrastructure/validation/zod/helpers/to-zod-enum";
 import { DateSchema } from "@/infrastructure/validation/zod/schemas/shared/date-schema";
@@ -40,7 +40,7 @@ const ListUsersOrderOptionsSchema = z
       .pipe(z.enum(toZodEnum(ListUsersOrderByOptionsArrKey))),
   })
   .strip() satisfies z.ZodType<
-  ListUsersOrderRequestProps,
+  ListUsersOrderRequestOptionalProps,
   ListUsersOrderQueryParams
 >;
 
