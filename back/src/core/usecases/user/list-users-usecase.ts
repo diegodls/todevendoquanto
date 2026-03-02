@@ -87,6 +87,7 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
     }
 
     if (data.roles !== undefined) {
+      filters.roles = [];
       data.roles.map((role) => {
         UserRole.create(role);
         filters.roles?.push(role);
@@ -160,11 +161,19 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
   ): PaginatedResponseMeta {
     const totalPages = Math.ceil(totalItems / data.pageSize);
 
+    const page = data.pageSize < totalItems ? data.page : 1;
+
+    const pageSize = data.pageSize;
+
+    const hasPreviousPage = page > 1;
+
+    const hasNextPage = page < totalPages;
+
     const meta: PaginatedResponseMeta = {
-      page: data.page,
-      pageSize: data.pageSize,
-      hasPreviousPage: data.page > 1,
-      hasNextPage: data.page < totalPages,
+      page,
+      pageSize,
+      hasPreviousPage,
+      hasNextPage,
       totalItems,
       totalPages,
     };
