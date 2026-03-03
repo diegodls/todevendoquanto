@@ -7,13 +7,16 @@ import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRole } from "@/core/entities/user/value-objects/user-role";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
+  BadRequestError,
   NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
 import {
+  ListUserOrderDirectionOptions,
   ListUserOutputDTO,
   ListUsersFiltersOptions,
   ListUsersInputDTO,
+  ListUsersOrderByOptionsArrKey,
   ListUsersOrderRequestOptionalProps,
   ListUsersOrderRequestProps,
 } from "@/core/usecases/user/list-user-dto";
@@ -118,16 +121,27 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
   }
 
   private buildOrder(data: ListUsersInputDTO): ListUsersOrderRequestProps {
-    const defaultOrder: ListUsersOrderRequestProps = {
+    let defaultOrder: ListUsersOrderRequestProps = {
       orderBy: "name",
       order: "asc",
     };
 
     if (data.order !== undefined) {
+      if (!ListUserOrderDirectionOptions.includes(data.order)) {
+        throw new BadRequestError(
+          `Invalid sorting type: ${data.order}, valid types: ${ListUserOrderDirectionOptions}`,
+        );
+      }
+
       defaultOrder.order = data.order;
     }
 
     if (data.orderBy !== undefined) {
+      if (!ListUsersOrderByOptionsArrKey.includes(data.orderBy)) {
+        throw new BadRequestError(
+          `Invalid sorting field: ${data.orderBy}, valid types: ${ListUsersOrderByOptionsArrKey}`,
+        );
+      }
       defaultOrder.orderBy = data.orderBy;
     }
 

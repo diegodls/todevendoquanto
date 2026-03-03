@@ -4,12 +4,71 @@ import { User } from "@/core/entities/user/user";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
+  BadRequestError,
   NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
-import { ListUsersInputDTO } from "@/core/usecases/user/list-user-dto";
+import {
+  ListUserOrderDirectionOptions,
+  ListUsersInputDTO,
+} from "@/core/usecases/user/list-user-dto";
 import { ListUsersUseCase } from "@/core/usecases/user/list-users-usecase";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+let listUsersUseCase: ListUsersUseCase;
+let userRepository: UserRepositoryInterface;
+
+const validHashedPassword = "$2b$10$hashedPassword";
+
+let adminUser: User;
+let basicUser: User;
+let users: User[];
+
+beforeEach(() => {
+  userRepository = {
+    list: vi.fn(),
+    findByEmail: vi.fn(),
+    findByName: vi.fn(),
+    findById: vi.fn(),
+    deleteById: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+  };
+
+  listUsersUseCase = new ListUsersUseCase(userRepository);
+
+  adminUser = User.create(
+    {
+      name: "Admin User",
+      email: "admin@example.com",
+      role: "ADMIN",
+    },
+    validHashedPassword,
+  );
+
+  basicUser = User.create(
+    {
+      name: "Basic User",
+      email: "basic@example.com",
+    },
+    validHashedPassword,
+  );
+
+  users = [
+    User.create(
+      { name: "User One", email: "user1@example.com" },
+      validHashedPassword,
+    ),
+    User.create(
+      { name: "User Two", email: "user2@example.com" },
+      validHashedPassword,
+    ),
+    User.create(
+      { name: "User Three", email: "user3@example.com", role: "ADMIN" },
+      validHashedPassword,
+    ),
+  ];
+});
 
 describe("ListUsersUseCase", () => {
   let listUsersUseCase: ListUsersUseCase;
@@ -418,260 +477,255 @@ describe("filters", () => {
       expect.any(Object),
     );
   });
-}); /*
 
-      it('should combine multiple filters', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          name: 'John',
-          role: 'ADMIN',
-          isActive: true,
-        };
+  it("should combine multiple filters", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      name: "John",
+      roles: ["ADMIN"],
+      isActive: true,
+    };
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          total: 3
-        });
-
-        await listUsersUseCase.execute(input);
-
-        expect(userRepository.list).toHaveBeenCalledWith(
-          {
-            name: 'John',
-            role: 'ADMIN',
-            isActive: true,
-          },
-          expect.any(Object),
-          expect.any(Object)
-        );
-      });
-
-      it('should throw ValidationError when role filter is invalid', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          role: 'SUPER_ADMIN',
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-
-        await expect(listUsersUseCase.execute(input))
-          .rejects
-          .toThrow(ValidationError);
-
-        expect(userRepository.list).not.toHaveBeenCalled();
-      });
-
-      it('should pass empty filters when none provided', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          total: 3
-        });
-
-        await listUsersUseCase.execute(input);
-
-        expect(userRepository.list).toHaveBeenCalledWith(
-          {}, // ← empty filters
-          expect.any(Object),
-          expect.any(Object)
-        );
-      });
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      total: 3,
     });
 
-    describe('sorting', () => {
-      it('should use default sort when not provided', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-        };
+    await listUsersUseCase.execute(input);
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          total: 3
-        });
+    expect(userRepository.list).toHaveBeenCalledWith(
+      {
+        name: "John",
+        roles: ["ADMIN"],
+        isActive: true,
+      },
+      expect.any(Object),
+      expect.any(Object),
+    );
+  });
 
-        await listUsersUseCase.execute(input);
+  it("should throw when role filter is invalid", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      roles: ["SUPER_ADMIN"],
+    };
 
-        expect(userRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
-          { field: 'createdAt', order: 'desc' }, // ← defaults
-          expect.any(Object)
-        );
-      });
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
 
-      it('should sort by name ascending', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          sortBy: 'name' as const,
-          order: 'asc' as const,
-        };
+    await expect(listUsersUseCase.execute(input)).rejects.toThrow();
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          total: 3
-        });
+    expect(userRepository.list).not.toHaveBeenCalled();
+  });
 
-        await listUsersUseCase.execute(input);
+  it("should pass empty filters when none provided", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+    };
 
-        expect(userRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
-          { field: 'name', order: 'asc' },
-          expect.any(Object)
-        );
-      });
-
-      it('should sort by email descending', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          sortBy: 'email' as const,
-          order: 'desc' as const,
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          total: 3
-        });
-
-        await listUsersUseCase.execute(input);
-
-        expect(userRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
-          { field: 'email', order: 'desc' },
-          expect.any(Object)
-        );
-      });
-
-      it('should throw ValidationError for invalid sort field', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          sortBy: 'invalid' as any,
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-
-        await expect(listUsersUseCase.execute(input))
-          .rejects
-          .toThrow(ValidationError);
-
-        expect(userRepository.list).not.toHaveBeenCalled();
-      });
-
-      it('should throw ValidationError for invalid sort order', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          order: 'invalid' as any,
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-
-        await expect(listUsersUseCase.execute(input))
-          .rejects
-          .toThrow(ValidationError);
-      });
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      total: 3,
     });
 
-    describe('output', () => {
-      it('should map users to DTOs correctly', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-        };
+    await listUsersUseCase.execute(input);
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: [users[0]],
-          total: 3
-        });
-
-        const result = await listUsersUseCase.execute(input);
-
-        expect(result.users[0]).toEqual({
-          id: users[0].id.toString(),
-          name: users[0].name,
-          email: users[0].email.toString(),
-          role: users[0].role.toString(),
-          isActive: users[0].isActive,
-          createdAt: users[0].createdAt.toISOString(),
-          updatedAt: users[0].updatedAt.toISOString(),
-        });
-      });
-
-      it('should not return hashedPassword in output', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: users,
-          total: 3
-        });
-
-        const result = await listUsersUseCase.execute(input);
-
-        result.users.forEach(user => {
-          expect(user).not.toHaveProperty('password');
-          expect(user).not.toHaveProperty('hashedPassword');
-        });
-      });
-
-      it('should return empty array when no users found', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-          name: 'NonExistent',
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: [],
-          total: 3
-        });
-
-        const result = await listUsersUseCase.execute(input);
-
-        expect(result.users).toEqual([]);
-        expect(result.meta.total).toBe(0);
-        expect(result.meta.totalPages).toBe(0);
-      });
-
-      it('should return dates in ISO format', async () => {
-        const input = {
-          requestingUserId: adminUser.id.toString(),
-        };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, 'list').mockResolvedValue({
-          data: [users[0]],
-          total: 3
-        });
-
-        const result = await listUsersUseCase.execute(input);
-
-        expect(result.users[0].createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
-        expect(result.users[0].updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
-      });
-    });
-
-    describe('validation', () => {
-      it('should throw ValidationError when requesting user ID is invalid', async () => {
-        const input = {
-          requestingUserId: 'invalid-uuid',
-        };
-
-        await expect(listUsersUseCase.execute(input))
-          .rejects
-          .toThrow(ValidationError);
-
-        expect(userRepository.findById).not.toHaveBeenCalled();
-        expect(userRepository.list).not.toHaveBeenCalled();
-      });
-    });
+    expect(userRepository.list).toHaveBeenCalledWith(
+      {}, // ← empty filters
+      expect.any(Object),
+      expect.any(Object),
+    );
   });
 });
-*/
+
+describe("sorting", () => {
+  it("should use default sort when not provided", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      total: 3,
+    });
+
+    await listUsersUseCase.execute(input);
+
+    expect(userRepository.list).toHaveBeenCalledWith(
+      expect.any(Object),
+      { orderBy: "name", order: "asc" },
+      expect.any(Object),
+    );
+  });
+
+  it("should sort by name ascending", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      orderBy: "name" as const,
+      order: "asc" as const,
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      total: 3,
+    });
+
+    await listUsersUseCase.execute(input);
+
+    expect(userRepository.list).toHaveBeenCalledWith(
+      expect.any(Object),
+      { orderBy: "name", order: "asc" },
+      expect.any(Object),
+    );
+  });
+
+  it("should sort by email descending", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      orderBy: "email" as const,
+      order: "desc" as const,
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      total: 3,
+    });
+
+    await listUsersUseCase.execute(input);
+
+    expect(userRepository.list).toHaveBeenCalledWith(
+      expect.any(Object),
+      { orderBy: "email", order: "desc" },
+      expect.any(Object),
+    );
+  });
+
+  it("should throw BadRequestError for invalid order field", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      order: "invalid" as any,
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+
+    await expect(listUsersUseCase.execute(input)).rejects.toThrow(
+      new BadRequestError(
+        `Invalid sorting type: ${input.order}, valid types: ${ListUserOrderDirectionOptions}`,
+      ),
+    );
+
+    expect(userRepository.list).not.toHaveBeenCalledWith();
+  });
+
+  it("should throw BadRequestError for invalid orderBy field", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+      orderBy: "invalid" as any,
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+
+    await expect(listUsersUseCase.execute(input)).rejects.toThrow(
+      BadRequestError,
+    );
+  });
+});
+
+describe("output", () => {
+  it("should map users to DTOs correctly", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: [users[0]],
+      total: 3,
+    });
+
+    const result = await listUsersUseCase.execute(input);
+
+    expect(result.data[0]).toEqual({
+      id: users[0].id.toString(),
+      name: users[0].name,
+      email: users[0].email.toString(),
+      role: users[0].role.toString(),
+      isActive: users[0].isActive,
+      createdAt: users[0].createdAt.toISOString(),
+      updatedAt: users[0].updatedAt.toISOString(),
+    });
+  });
+  it("should not return hashedPassword in output", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: users,
+      total: 3,
+    });
+
+    const result = await listUsersUseCase.execute(input);
+
+    result.data.forEach((user) => {
+      expect(user).not.toHaveProperty("password");
+      expect(user).not.toHaveProperty("hashedPassword");
+    });
+  });
+
+  it("should return empty array when no users found", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: [],
+      total: 0,
+    });
+
+    const result = await listUsersUseCase.execute(input);
+
+    expect(result.data).toEqual([]);
+    expect(result.meta.totalItems).toBe(0);
+    expect(result.meta.totalPages).toBe(0);
+  });
+  it("should return dates in ISO format", async () => {
+    const input = {
+      requestingUserId: adminUser.id.toString(),
+    };
+
+    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, "list").mockResolvedValue({
+      data: [users[0]],
+      total: 3,
+    });
+
+    const result = await listUsersUseCase.execute(input);
+
+    expect(result.data[0].createdAt).toMatch(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+    );
+    expect(result.data[0].updatedAt).toMatch(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+    );
+  });
+});
+
+describe("validation", () => {
+  it("should throw BadRequestError when requesting user ID is invalid", async () => {
+    const input = {
+      requestingUserId: "invalid-uuid",
+    };
+
+    await expect(listUsersUseCase.execute(input)).rejects.toThrow();
+
+    expect(userRepository.findById).not.toHaveBeenCalled();
+    expect(userRepository.list).not.toHaveBeenCalled();
+  });
+});
