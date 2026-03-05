@@ -27,7 +27,7 @@ describe("DeleteUserUseCase", () => {
       findByName: vi.fn(),
       findById: vi.fn(),
       deleteById: vi.fn(),
-      create: vi.fn(),
+      save: vi.fn(),
       update: vi.fn(),
     };
 

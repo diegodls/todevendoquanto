@@ -31,7 +31,7 @@ beforeEach(() => {
     findByName: vi.fn(),
     findById: vi.fn(),
     deleteById: vi.fn(),
-    create: vi.fn(),
+    save: vi.fn(),
     update: vi.fn(),
   };
 
@@ -87,7 +87,7 @@ describe("ListUsersUseCase", () => {
       findByName: vi.fn(),
       findById: vi.fn(),
       deleteById: vi.fn(),
-      create: vi.fn(),
+      save: vi.fn(),
       update: vi.fn(),
     };
 
@@ -355,7 +355,7 @@ describe("filters", () => {
       findByName: vi.fn(),
       findById: vi.fn(),
       deleteById: vi.fn(),
-      create: vi.fn(),
+      save: vi.fn(),
       update: vi.fn(),
     };
 

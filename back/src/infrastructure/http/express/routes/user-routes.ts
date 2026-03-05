@@ -10,15 +10,15 @@ import { ListUserController } from "@/infrastructure/http/express/controllers/us
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/user/update-user-controller";
 import { ensureIsAdmin } from "@/infrastructure/http/express/middleware/ensure-is-admin";
 import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
-import { Encrypt } from "@/infrastructure/protocols/encryption/encrypt";
 import { JwtVerifyToken } from "@/infrastructure/protocols/jwt/jwt-verify-token";
+import { PasswordHasher } from "@/infrastructure/protocols/passwordHasher";
 import { prisma } from "@/infrastructure/repositories/prisma/config/prisma-client";
 import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-repository-prisma";
 import { Router } from "express";
 
 const jwtVerifyToken = new JwtVerifyToken();
 
-const encrypt = new Encrypt();
+const encrypt = new PasswordHasher();
 
 const userRepository = new UserRepositoryPrisma(prisma);
 

@@ -12,17 +12,19 @@ export class Email {
       throw new Error("Email cannot be empty");
     }
 
-    const trimmedEmail = email.trim().toLowerCase();
+    let normalized = email.trim().toLowerCase();
 
-    if (!this.isValid(trimmedEmail)) {
+    normalized = this.normalizeAccents(normalized);
+
+    if (!this.isValid(normalized)) {
       throw new Error("Email format is invalid");
     }
 
-    if (trimmedEmail.length > 254) {
+    if (normalized.length > 254) {
       throw new Error("Email exceeds maximum length of 254 characters");
     }
 
-    return new Email(trimmedEmail);
+    return new Email(normalized);
   }
 
   private static isValid(email: string): boolean {
@@ -53,6 +55,10 @@ export class Email {
     }
 
     return true;
+  }
+
+  private static normalizeAccents(email: string): string {
+    return email.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
   public toString(): string {

@@ -37,6 +37,41 @@ type PrismaUserWhereInput = PrismaGenerated.UserWhereInput;
 export class UserRepositoryPrisma implements UserRepositoryInterface {
   constructor(private readonly prismaORMClient: PrismaClientGenerated) {}
 
+  async save(user: EntityUser): Promise<void> {
+    const rawRole = UserRoleMapper.toPersistence(user.role);
+
+    const data: PrismaUser = {
+      id: user.id.toString(),
+      name: user.name,
+      hashedPassword: user.hashedPassword,
+      email: user.email.toString(),
+      role: rawRole,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isActive: user.isActive,
+    };
+
+    await this.prismaORMClient.user.create({ data });
+  }
+
+  async deleteById(id: UserId): Promise<EntityUser | null> {
+    const deleteUser = await this.prismaORMClient.user.delete({
+      where: { id: id.toString() },
+    });
+
+    const output = this.toDomain(deleteUser);
+
+    return output;
+  }
+
+  async exists(email: Email): Promise<boolean> {
+    const count = await this.prismaORMClient.user.count({
+      where: { email: email.toString() },
+    });
+
+    return count > 0;
+  }
+
   async findById(id: UserId): Promise<EntityUser | null> {
     const userExists = await this.prismaORMClient.user.findFirst({
       where: { id: id.toString() },
@@ -79,54 +114,6 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
     return output;
   }
 
-  async create(user: EntityUser): Promise<EntityUser | null> {
-    const rawRole = UserRoleMapper.toPersistence(user.role);
-
-    const data: PrismaUser = {
-      id: user.id.toString(),
-      name: user.name,
-      hashedPassword: user.hashedPassword,
-      email: user.email.toString(),
-      role: rawRole,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      isActive: user.isActive,
-    };
-
-    const createdUser = await this.prismaORMClient.user.create({ data });
-
-    if (!createdUser) {
-      return null;
-    }
-
-    const output = this.toDomain(createdUser);
-
-    return output;
-  }
-
-  async update(user: EntityUser): Promise<EntityUser | null> {
-    const persistenceUser = this.toPersistence(user);
-
-    const updatedUser = await this.prismaORMClient.user.update({
-      where: { id: user.id.toString() },
-      data: persistenceUser,
-    });
-
-    const parsedUser: EntityUser = this.toDomain(updatedUser);
-
-    return parsedUser;
-  }
-
-  async deleteById(id: UserId): Promise<EntityUser | null> {
-    const deleteUser = await this.prismaORMClient.user.delete({
-      where: { id: id.toString() },
-    });
-
-    const output = this.toDomain(deleteUser);
-
-    return output;
-  }
-
   async list(
     filters: ListUsersFiltersOptions,
     order: ListUsersOrderRequestProps,
@@ -159,6 +146,19 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
     };
 
     return output;
+  }
+
+  async update(user: EntityUser): Promise<EntityUser | null> {
+    const persistenceUser = this.toPersistence(user);
+
+    const updatedUser = await this.prismaORMClient.user.update({
+      where: { id: user.id.toString() },
+      data: persistenceUser,
+    });
+
+    const parsedUser: EntityUser = this.toDomain(updatedUser);
+
+    return parsedUser;
   }
 
   private toDomain(prismaUser: PrismaUser): EntityUser {

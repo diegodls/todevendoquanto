@@ -1,7 +1,7 @@
 import { CreateUserProps, User } from "@/core/entities/user/user";
 import { Password } from "@/core/entities/user/value-objects/password";
 import { Email } from "@/core/entities/user/value-objects/user-email";
-import { EncryptInterface } from "@/core/ports/infrastructure/protocols/encryption/encrypt-interface";
+import { PasswordHasherInterface } from "@/core/ports/infrastructure/protocols/passwordHasher-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import { AlreadyExistError } from "@/core/shared/errors/api-errors";
 import {
@@ -13,49 +13,42 @@ import { CreateUserUseCaseInterface } from "@/core/usecases/user/create-user-use
 export class CreateUserUseCase implements CreateUserUseCaseInterface {
   constructor(
     private readonly repository: UserRepositoryInterface,
-    private readonly encrypt: EncryptInterface,
+    private readonly passwordHasher: PasswordHasherInterface,
   ) {}
 
   public async execute(data: CreateUserInputDTO): Promise<CreateUserOutputDTO> {
     const email = Email.create(data.email);
-
     const password = Password.create(data.password);
 
-    const userWithNameExists = await this.repository.findByName(data.name);
-
-    if (userWithNameExists) {
-      throw new AlreadyExistError("User already exists with given name");
-    }
-
-    const userWithEmailExists = await this.repository.findByEmail(email);
+    const userWithEmailExists = await this.repository.exists(email);
 
     if (userWithEmailExists) {
       throw new AlreadyExistError("User already exists with given email");
     }
 
-    const hashedPassword = await this.encrypt.execute(password.getValue());
+    const hashedPassword = await this.passwordHasher.hash(password.getValue());
 
     const props: CreateUserProps = {
       name: data.name,
-      email: email.toString(),
+      email: data.email,
       role: data.role,
     };
 
-    const userToBeCreated = User.create(props, hashedPassword);
+    const userToBeCreated: User = User.create(props, hashedPassword);
 
-    const createdUser = await this.repository.create(userToBeCreated);
+    await this.repository.save(userToBeCreated);
 
-    if (!createdUser) {
+    if (!userToBeCreated) {
       throw new AlreadyExistError("User already exists with given email");
     }
 
     const output: CreateUserOutputDTO = {
-      id: createdUser.id.toString(),
-      name: createdUser.name,
-      email: createdUser.email.toString(),
-      role: createdUser.role.toString(),
-      isActive: createdUser.isActive,
-      createdAt: createdUser.createdAt.toISOString(),
+      id: userToBeCreated.id.toString(),
+      name: userToBeCreated.name,
+      email: userToBeCreated.email.toString(),
+      role: userToBeCreated.role.toString(),
+      isActive: userToBeCreated.isActive,
+      createdAt: userToBeCreated.createdAt.toISOString(),
     };
 
     return output;

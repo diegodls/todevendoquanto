@@ -25,7 +25,7 @@ describe("UpdateUserUseCase", () => {
       deleteById: vi.fn(),
       list: vi.fn(),
       findByName: vi.fn(),
-      create: vi.fn(),
+      save: vi.fn(),
       findById: vi.fn(),
       findByEmail: vi.fn(),
       update: vi.fn(),
