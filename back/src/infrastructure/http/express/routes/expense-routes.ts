@@ -6,7 +6,6 @@ import { CreateExpenseController } from "@/infrastructure/http/express/controlle
 import { DeleteExpenseController } from "@/infrastructure/http/express/controllers/expense/delete-expense-controller";
 import { ensureIsAuthenticated } from "@/infrastructure/http/express/middleware/ensure-is-authenticated";
 import { DateProvider } from "@/infrastructure/protocols/date/date-provider";
-import { GenerateUuid } from "@/infrastructure/protocols/uuid/generate-uuid";
 import { prisma } from "@/infrastructure/repositories/prisma/config/prisma-client";
 import { ExpenseRepositoryPrisma } from "@/infrastructure/repositories/prisma/expense-repository-prisma";
 import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-repository-prisma";
@@ -14,8 +13,6 @@ import { Router } from "express";
 import { JwtVerifyToken } from "../../../protocols/jwt/jwt-verify-token";
 
 const jwtVerifyToken = new JwtVerifyToken();
-
-const generateUuid = new GenerateUuid();
 
 const dateProvider = new DateProvider();
 
@@ -27,33 +24,32 @@ const expenseRepository = new ExpenseRepositoryPrisma(prisma);
 
 const createExpenseUseCase = new CreateExpenseUseCase(
   expenseRepository,
-  generateUuid,
-  dateProvider
+  dateProvider,
 );
 
 const createExpenseController = new CreateExpenseController(
-  createExpenseUseCase
+  createExpenseUseCase,
 );
 
 const deleteExpenseUseCase = new DeleteExpenseUseCase(
   expenseRepository,
-  userRepository
+  userRepository,
 );
 
 const deleteExpenseController = new DeleteExpenseController(
-  deleteExpenseUseCase
+  deleteExpenseUseCase,
 );
 
 expenseRouter.use(ensureIsAuthenticated(jwtVerifyToken));
 
 expenseRouter.post(
   EXPENSE_ROUTES_PATH.create,
-  authenticatedExpressHttpAdapter(createExpenseController)
+  authenticatedExpressHttpAdapter(createExpenseController),
 );
 
 expenseRouter.delete(
   EXPENSE_ROUTES_PATH.delete,
-  authenticatedExpressHttpAdapter(deleteExpenseController)
+  authenticatedExpressHttpAdapter(deleteExpenseController),
 );
 
 export { expenseRouter };

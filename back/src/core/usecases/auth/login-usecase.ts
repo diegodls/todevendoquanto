@@ -1,7 +1,8 @@
 import { Password } from "@/core/entities/user/value-objects/password";
 import { Email } from "@/core/entities/user/value-objects/user-email";
-import { CompareInterface } from "@/core/ports/infrastructure/protocols/encryption/compare-interface";
+
 import { JwtGenerateTokenInterface } from "@/core/ports/infrastructure/protocols/jwt/jwt-generate-token-interface";
+import { PasswordHasherInterface } from "@/core/ports/infrastructure/protocols/passwordHasher-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import { UnauthorizedError } from "@/core/shared/errors/api-errors";
 import {
@@ -14,7 +15,7 @@ import { LoginUseCaseInterface } from "@/core/usecases/auth/login-usecase-interf
 export class LoginUseCase implements LoginUseCaseInterface {
   constructor(
     private readonly repository: UserRepositoryInterface,
-    private readonly compare: CompareInterface,
+    private readonly passwordHasher: PasswordHasherInterface,
     private readonly generateToken: JwtGenerateTokenInterface,
   ) {}
 
@@ -39,7 +40,7 @@ export class LoginUseCase implements LoginUseCaseInterface {
       throw new UnauthorizedError("User account is deactivated");
     }
 
-    const isPasswordValid = await this.compare.execute(
+    const isPasswordValid = await this.passwordHasher.compare(
       userPassword.getValue(),
       userExists.hashedPassword,
     );

@@ -23,11 +23,12 @@ describe("UpdateUserUseCase", () => {
   beforeEach(() => {
     userRepository = {
       deleteById: vi.fn(),
-      list: vi.fn(),
-      findByName: vi.fn(),
-      save: vi.fn(),
-      findById: vi.fn(),
+      exists: vi.fn(),
       findByEmail: vi.fn(),
+      findByName: vi.fn(),
+      findById: vi.fn(),
+      list: vi.fn(),
+      save: vi.fn(),
       update: vi.fn(),
     };
 

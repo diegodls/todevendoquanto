@@ -1,39 +1,39 @@
 import { ListUsersFiltersOptions } from "@/core/usecases/user/list-user-dto";
 import { PrismaGenerated } from "@/infrastructure/repositories/prisma/config/prisma-client";
-import { GenericFilterMapper } from "@/infrastructure/repositories/prisma/utils/query-filter-to-prisma-where";
+import { GenericFilterMapper } from "@/infrastructure/repositories/prisma/user-repository-prisma";
 
 export const listUsersFilters: GenericFilterMapper<
   ListUsersFiltersOptions,
   PrismaGenerated.UserWhereInput
 > = {
-  name: (value) => ({
+  name: (value: string) => ({
     name: {
       contains: value,
       mode: "insensitive",
     },
   }),
-  email: (value) => ({
+  email: (value: string) => ({
     email: {
       equals: value,
       mode: "insensitive",
     },
   }),
-  isActive: (value) => ({ isActive: value }),
-  roles: (value) => ({
+  isActive: (value: boolean) => ({ isActive: value }),
+  roles: (value: string[]) => ({
     role: {
       in: value,
     },
   }),
-  created_after: (value) => ({
+  created_after: (value: Date) => ({
     createdAt: { gte: new Date(value) },
   }),
-  created_before: (value) => ({
+  created_before: (value: Date) => ({
     createdAt: { lte: new Date(value) },
   }),
-  updated_after: (value) => ({
+  updated_after: (value: Date) => ({
     updatedAt: { gte: new Date(value) },
   }),
-  updated_before: (value) => ({
+  updated_before: (value: Date) => ({
     updatedAt: { lte: new Date(value) },
   }),
 };
