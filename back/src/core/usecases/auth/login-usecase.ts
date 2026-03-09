@@ -25,6 +25,7 @@ export class LoginUseCase implements LoginUseCaseInterface {
 
     try {
       userEmail = Email.create(data.email);
+
       userPassword = Password.create(data.password);
     } catch (error) {
       throw new UnauthorizedError("Wrong credentials!");

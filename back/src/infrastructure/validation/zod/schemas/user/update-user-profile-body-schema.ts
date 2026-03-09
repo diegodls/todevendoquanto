@@ -24,7 +24,10 @@ export const UpdateUserBodySchema = z
   .object({
     name: z.string().min(6).max(255).optional(),
     email: z.email().optional(),
-    role: z.string().transform((value) => value.toUpperCase()),
+    role: z
+      .string()
+      .transform((value) => value.toUpperCase())
+      .optional(),
     isActive: StringToBoolean.optional(),
   })
   .strip() satisfies z.ZodType<UpdateUserBodyDTO>;

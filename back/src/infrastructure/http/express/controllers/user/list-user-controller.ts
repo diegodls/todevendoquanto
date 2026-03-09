@@ -28,6 +28,9 @@ export class ListUserController implements UserListControllerType {
 
     const queryProps = requestValidation("query", request, ListUserSchema);
 
+    console.log("list-user-controller ~> queryProps");
+    console.log(queryProps);
+
     const data: ListUsersInputDTO = {
       requestingUserId: user.sub,
       ...queryProps,

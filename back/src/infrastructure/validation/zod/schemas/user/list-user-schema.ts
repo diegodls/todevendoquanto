@@ -12,11 +12,26 @@ import { DateSchema } from "@/infrastructure/validation/zod/schemas/shared/date-
 import { PaginationSchema } from "@/infrastructure/validation/zod/schemas/shared/pagination-schema";
 import z from "zod";
 
+const IS_ACTIVE_TRULY_OPTIONS: string[] = [
+  "true",
+  "yes",
+  "affirmative",
+  "1",
+  "+",
+  "ok",
+];
+
 const ListUsersFilterOptionsSchema = z
   .object({
     name: z.string().optional(),
     email: z.email().optional(),
-    isActive: z.string().transform(Boolean).optional(),
+    isActive: z
+      .string()
+      .transform((value: string) => {
+        if (IS_ACTIVE_TRULY_OPTIONS.includes(value)) return true;
+        return false;
+      })
+      .optional(),
     roles: z
       .string()
       .transform((value) => value.toUpperCase().split(","))
@@ -33,11 +48,11 @@ const ListUsersFilterOptionsSchema = z
 
 const ListUsersOrderOptionsSchema = z
   .object({
-    order: z.string().optional().pipe(z.enum(ListUserOrderDirectionOptions)),
+    order: z.string().pipe(z.enum(ListUserOrderDirectionOptions)).optional(),
     orderBy: z
       .string()
-      .optional()
-      .pipe(z.enum(toZodEnum(ListUsersOrderByOptionsArrKey))),
+      .pipe(z.enum(toZodEnum(ListUsersOrderByOptionsArrKey)))
+      .optional(),
   })
   .strip() satisfies z.ZodType<
   ListUsersOrderRequestOptionalProps,

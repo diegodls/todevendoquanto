@@ -1,6 +1,7 @@
 import { ListUsersFiltersOptions } from "@/core/usecases/user/list-user-dto";
 import { PrismaGenerated } from "@/infrastructure/repositories/prisma/config/prisma-client";
 import { GenericFilterMapper } from "@/infrastructure/repositories/prisma/user-repository-prisma";
+import { Role } from "@/prisma";
 
 export const listUsersFilters: GenericFilterMapper<
   ListUsersFiltersOptions,
@@ -21,7 +22,7 @@ export const listUsersFilters: GenericFilterMapper<
   isActive: (value: boolean) => ({ isActive: value }),
   roles: (value: string[]) => ({
     role: {
-      in: value,
+      in: value.map((r) => Role[r as keyof typeof Role]),
     },
   }),
   created_after: (value: Date) => ({
