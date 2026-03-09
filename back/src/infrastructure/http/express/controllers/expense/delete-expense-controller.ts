@@ -3,7 +3,10 @@ import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
 } from "@/core/shared/types/http-request-response";
-import { DeleteExpenseParamsInput } from "@/core/usecases/expense/delete-expense-dto";
+import {
+  DeleteExpenseInputDTO,
+  DeleteExpenseParamsInput,
+} from "@/core/usecases/expense/delete-expense-dto";
 import { DeleteExpenseUseCaseInterface } from "@/core/usecases/expense/delete-expense-usecase-interface";
 import { DeleteExpenseByIdSchema } from "@/infrastructure/validation/zod/schemas/expense/delete-expense-by-id-schema";
 import { schemaParser } from "@/infrastructure/validation/zod/validation/schema-parser";
@@ -16,13 +19,18 @@ export class DeleteExpenseController implements DeleteExpenseControllerType {
       {},
       DeleteExpenseParamsInput,
       {}
-    >
+    >,
   ): Promise<AuthenticatedHttpResponseInterface<{}>> {
     const user = request.user;
 
     const { id } = schemaParser(request.params, DeleteExpenseByIdSchema, "");
 
-    await this.usecase.execute(id, user.sub);
+    const data: DeleteExpenseInputDTO = {
+      requestingUserId: user.sub,
+      expenseId: id,
+    };
+
+    await this.usecase.execute(data);
 
     const output: AuthenticatedHttpResponseInterface<{}> = {
       statusCode: 204,

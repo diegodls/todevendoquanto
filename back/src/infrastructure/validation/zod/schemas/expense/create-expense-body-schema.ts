@@ -100,14 +100,14 @@ export const CreateExpenseBodySchema = z
               }
             },
           })
-          .default("PAYING")
+          .default("PAYING"),
       ),
 
     tags: z
       .array(
         z.string({
           error: zodDefaultErrorHandler,
-        })
+        }),
       )
       .optional()
       .default([""]),
@@ -118,7 +118,7 @@ export const CreateExpenseBodySchema = z
       })
       .default(1),
 
-    totalInstallment: z
+    totalInstallments: z
       .number({
         error: zodDefaultErrorHandler,
       })

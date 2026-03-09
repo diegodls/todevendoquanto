@@ -1,52 +1,106 @@
-import { PaginatedResponse } from "@/application/dtos/shared/pagination-dto";
-import { User } from "@/core/entities/user";
-import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
+import { PaginationDTO } from "@/application/dtos/shared/pagination-dto";
 import {
-  ListUsersQueryProps,
-  ListUsersRequestDTO,
+  User as EntityUser,
+  UserProps as EntityUserProps,
+} from "@/core/entities/user/user";
+import { Email } from "@/core/entities/user/value-objects/user-email";
+import { UserId } from "@/core/entities/user/value-objects/user-id";
+import {
+  PaginatedResult,
+  UserRepositoryInterface,
+} from "@/core/ports/repositories/user-repository-interface";
+import {
+  ListUsersFiltersOptions,
+  ListUsersOrderRequestProps,
 } from "@/core/usecases/user/list-user-dto";
-import { UpdateUserInputDTO } from "@/core/usecases/user/update-user-dto";
 import {
   PrismaClientGenerated,
   PrismaGenerated,
 } from "@/infrastructure/repositories/prisma/config/prisma-client";
-import { prismaUserEntityParser } from "@/infrastructure/repositories/prisma/utils/prisma-user-to-entity-parser";
+import { UserRoleMapper } from "@/infrastructure/repositories/prisma/mappers/user/user-role-mapper";
+
 import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
-import { queryFiltersToPrisma } from "@/infrastructure/repositories/prisma/utils/query-filter-to-prisma-where";
+
+import { Password } from "@/core/entities/user/value-objects/password";
+import { User as PrismaUser } from "@/prisma";
+
+export type GenericFilterMapper<
+  TFilterObject extends object,
+  TPrismaWhere extends object,
+> = {
+  [K in keyof TFilterObject]?: (
+    value: NonNullable<TFilterObject[K]>,
+  ) => TPrismaWhere;
+};
 
 type PrismaUserWhereInput = PrismaGenerated.UserWhereInput;
 export class UserRepositoryPrisma implements UserRepositoryInterface {
   constructor(private readonly prismaORMClient: PrismaClientGenerated) {}
 
-  async findById(id: string): Promise<User | null> {
+  async save(user: EntityUser): Promise<void> {
+    const rawRole = UserRoleMapper.toPersistence(user.role);
+
+    const data: PrismaUser = {
+      id: user.id.toString(),
+      name: user.name,
+      hashedPassword: user.hashedPassword,
+      email: user.email.toString(),
+      role: rawRole,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isActive: user.isActive,
+    };
+
+    await this.prismaORMClient.user.create({ data });
+  }
+
+  async deleteById(id: UserId): Promise<EntityUser | null> {
+    const deleteUser = await this.prismaORMClient.user.delete({
+      where: { id: id.toString() },
+    });
+
+    const output = this.toDomain(deleteUser);
+
+    return output;
+  }
+
+  async exists(email: Email): Promise<boolean> {
+    const count = await this.prismaORMClient.user.count({
+      where: { email: email.toString() },
+    });
+
+    return count > 0;
+  }
+
+  async findById(id: UserId): Promise<EntityUser | null> {
     const userExists = await this.prismaORMClient.user.findFirst({
-      where: { id },
+      where: { id: id.toString() },
     });
 
     if (!userExists) {
       return null;
     }
 
-    const output = prismaUserEntityParser(userExists);
+    const output = this.toDomain(userExists);
 
     return output;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: Email): Promise<EntityUser | null> {
     const userExists = await this.prismaORMClient.user.findFirst({
-      where: { email },
+      where: { email: email.toString() },
     });
 
     if (!userExists) {
       return null;
     }
 
-    const output = prismaUserEntityParser(userExists);
+    const output = this.toDomain(userExists);
 
     return output;
   }
 
-  async findByName(name: string): Promise<User | null> {
+  async findByName(name: string): Promise<EntityUser | null> {
     const userExists = await this.prismaORMClient.user.findFirst({
       where: { name },
     });
@@ -55,84 +109,124 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       return null;
     }
 
-    const output = prismaUserEntityParser(userExists);
+    const output = this.toDomain(userExists);
 
     return output;
   }
 
-  async create(user: User): Promise<User | null> {
-    const createdUser = await this.prismaORMClient.user.create({ data: user });
+  async list(
+    filters: ListUsersFiltersOptions,
+    order: ListUsersOrderRequestProps,
+    pagination: PaginationDTO,
+  ): Promise<PaginatedResult<EntityUser>> {
+    const where: PrismaUserWhereInput = this.buildPrismaWhere<
+      ListUsersFiltersOptions,
+      PrismaUserWhereInput
+    >(filters, listUsersFilters);
 
-    if (!createdUser) {
-      return null;
-    }
+    const skip = (pagination.page - 1) * pagination.pageSize;
 
-    const output = prismaUserEntityParser(createdUser);
+    const take = pagination.pageSize;
+
+    const orderBy = { [order.orderBy]: order.order };
+
+    const [totalItems, usersList] = await Promise.all([
+      this.prismaORMClient.user.count({ where }),
+      this.prismaORMClient.user.findMany({
+        where,
+        skip,
+        take,
+        orderBy,
+      }),
+    ]);
+
+    let output: PaginatedResult<EntityUser> = {
+      data: usersList.map((user) => this.toDomain(user)),
+      total: totalItems,
+    };
 
     return output;
   }
 
-  async update(id: User["id"], data: UpdateUserInputDTO): Promise<User | null> {
+  async update(user: EntityUser): Promise<EntityUser | null> {
+    const persistenceUser = this.toPersistence(user);
+
     const updatedUser = await this.prismaORMClient.user.update({
-      where: { id },
-      data,
+      where: { id: user.id.toString() },
+      data: persistenceUser,
     });
 
-    const parsedUser = prismaUserEntityParser(updatedUser);
+    const parsedUser: EntityUser = this.toDomain(updatedUser);
 
     return parsedUser;
   }
 
-  async deleteById(id: User["id"]): Promise<User | null> {
-    const output = await this.prismaORMClient.user.delete({ where: { id } });
+  private toDomain(prismaUser: PrismaUser): EntityUser {
+    const userId = UserId.from(prismaUser.id);
+    const userName = prismaUser.name;
+    const userEmail = Email.create(prismaUser.email);
+    const userHashedPassword = Password.create(prismaUser.hashedPassword);
+    const userRole = UserRoleMapper.toDomain(prismaUser.role);
 
-    return output ? prismaUserEntityParser(output) : null;
-  }
-
-  async list(filters: ListUsersRequestDTO): Promise<PaginatedResponse<User>> {
-    const { page, page_size, order, order_by, ...filtersOptions } = filters;
-
-    const custom_current_page = page || 1;
-
-    const custom_current_page_size = page_size || 10;
-
-    const customWhere: PrismaUserWhereInput = queryFiltersToPrisma<
-      ListUsersQueryProps,
-      PrismaUserWhereInput
-    >(filtersOptions, listUsersFilters);
-
-    const [total_items, usersList] = await Promise.all([
-      this.prismaORMClient.user.count({ where: customWhere }),
-      this.prismaORMClient.user.findMany({
-        where: customWhere,
-        skip: (custom_current_page - 1) * custom_current_page_size,
-        take: custom_current_page_size,
-        orderBy: { [order_by || "name"]: order || "asc" },
-      }),
-    ]);
-
-    const total_pages = Math.ceil(total_items / custom_current_page_size);
-
-    let output: PaginatedResponse<User> = {
-      data: [],
-      meta: {
-        page: custom_current_page,
-        page_size: custom_current_page_size,
-        has_previous_page: custom_current_page > 1,
-        has_next_page: custom_current_page < total_pages,
-        total_items,
-        total_pages,
-      },
+    const props: EntityUserProps = {
+      id: userId,
+      name: userName,
+      email: userEmail,
+      hashedPassword: userHashedPassword.getValue(),
+      role: userRole,
+      createdAt: prismaUser.createdAt,
+      updatedAt: prismaUser.updatedAt,
+      isActive: prismaUser.isActive,
     };
 
-    if (usersList.length > 0) {
-      const parsedUsersList: User[] = usersList.map((user) => {
-        return prismaUserEntityParser({ ...user, password: "" });
-      });
-
-      output.data = parsedUsersList;
-    }
+    const output = EntityUser.reconstitute(props);
 
     return output;
   }
+
+  private toPersistence(user: EntityUser): PrismaUser {
+    const output: PrismaUser = {
+      id: user.id.toString(),
+      name: user.name.toString(),
+      email: user.email.toString(),
+      hashedPassword: user.hashedPassword.toString(),
+      role: UserRoleMapper.toPersistence(user.role),
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isActive: user.isActive,
+    };
+
+    return output;
+  }
+
+  private buildPrismaWhere = <
+    TFilters extends object,
+    TPrismaWhere extends object,
+  >(
+    filters: TFilters,
+    query: GenericFilterMapper<TFilters, TPrismaWhere>,
+  ): TPrismaWhere => {
+    const where = {} as TPrismaWhere;
+
+    for (const key in query) {
+      const filterKey = key as keyof TFilters;
+
+      const inputValue = filters[filterKey];
+
+      if (
+        inputValue !== undefined &&
+        inputValue !== null &&
+        inputValue !== ""
+      ) {
+        const mapperFunction = query[filterKey];
+
+        if (mapperFunction) {
+          const whereClause = (mapperFunction as any)(inputValue);
+          Object.assign(where, whereClause);
+        }
+      }
+    }
+
+    return where;
+  };
 }

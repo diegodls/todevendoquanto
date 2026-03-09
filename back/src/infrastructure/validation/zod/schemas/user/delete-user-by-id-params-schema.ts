@@ -1,7 +1,4 @@
-import {
-  DeleteUserByIDInputDTO,
-  DeleteUserByIDQueryInput,
-} from "@/core/usecases/user/delete-user-dto";
+import { DeleteUserByIDQueryInput } from "@/core/usecases/user/delete-user-dto";
 import z from "zod";
 
 export const DeleteUserByIDParamsSchema = z
@@ -17,7 +14,4 @@ export const DeleteUserByIDParamsSchema = z
       },
     }),
   })
-  .strip() satisfies z.ZodType<
-  DeleteUserByIDInputDTO,
-  DeleteUserByIDQueryInput
->;
+  .strip() satisfies z.ZodType<DeleteUserByIDQueryInput>;

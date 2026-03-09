@@ -1,5 +1,8 @@
-import { User } from "@/core/entities/user";
+import {
+  DeleteUserByIDInputDTO,
+  DeleteUserByIDOutputDTO,
+} from "@/core/usecases/user/delete-user-dto";
 
 export interface DeleteUserUseCaseInterface {
-  execute(id: User["id"]): Promise<User | null>;
+  execute(data: DeleteUserByIDInputDTO): Promise<DeleteUserByIDOutputDTO>;
 }

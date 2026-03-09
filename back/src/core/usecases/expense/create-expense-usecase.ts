@@ -1,6 +1,7 @@
 import { Expense } from "@/core/entities/expense/expense";
+import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
+import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { DateProviderInterface } from "@/core/ports/infrastructure/protocols/date/date-provider-interface";
-import { GenerateUuidInterface } from "@/core/ports/infrastructure/protocols/uuid/generate-uuid-interface";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { InternalError } from "@/core/shared/errors/api-errors";
 import { expenseUseCaseErrors } from "@/core/shared/errors/usecases/expense-usecase-errors";
@@ -13,19 +14,20 @@ import { CreateExpenseUseCaseInterface } from "@/core/usecases/expense/create-ex
 export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
   constructor(
     private readonly repository: ExpenseRepositoryInterface,
-    private readonly generateUuid: GenerateUuidInterface,
-    private readonly dateProvider: DateProviderInterface
+    private readonly dateProvider: DateProviderInterface,
   ) {}
 
   public async execute(
     userId: string,
-    expense: CreateExpenseInputDTO
+    expense: CreateExpenseInputDTO,
   ): Promise<CreateExpenseOutputDTO[]> {
     const expensesToCreate: Expense[] = [];
 
-    const installmentId = this.generateUuid.execute();
+    const installmentIdCreated = InstallmentId.create();
 
-    for (let i = 0; i < expense.totalInstallment; i++) {
+    const userIdCreated = UserId.from(userId);
+
+    for (let i = 0; i < expense.totalInstallments; i++) {
       const currentInstallment = i + 1;
 
       const paymentDay =
@@ -35,17 +37,17 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
 
       const expirationDay = this.dateProvider.addMonthStrict(
         expense.expirationDay,
-        i
+        i,
       );
 
       const paymentStartAt = this.dateProvider.addMonthStrict(
         expense.paymentStartAt,
-        i
+        i,
       );
 
       const paymentEndAt = this.dateProvider.addMonthStrict(
         expense.paymentEndAt,
-        i
+        i,
       );
 
       const expenseToBeCreated = Expense.create({
@@ -55,8 +57,8 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
         expirationDay,
         paymentStartAt,
         paymentEndAt,
-        userId,
-        installmentId,
+        userId: userIdCreated,
+        installmentId: installmentIdCreated,
       });
 
       expensesToCreate.push(expenseToBeCreated);
@@ -68,7 +70,7 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
       throw new InternalError(
         "Wasn't possible to create expense, try again later!",
         {},
-        expenseUseCaseErrors.E_0_BLU_ADM_0001.code
+        expenseUseCaseErrors.E_0_BLU_ADM_0001.code,
       );
     }
 

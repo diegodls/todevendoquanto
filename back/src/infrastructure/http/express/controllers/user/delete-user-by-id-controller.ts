@@ -16,15 +16,22 @@ import { requestValidation } from "@/infrastructure/validation/zod/validation/re
 export class DeleteUserByIDController implements DeleteUserByIDControllerType {
   constructor(private readonly usecase: DeleteUserUseCaseInterface) {}
   public async handle(
-    request: AuthenticatedHttpRequestInterface<DeleteUserByIDInputDTO>
+    request: AuthenticatedHttpRequestInterface<DeleteUserByIDInputDTO>,
   ): Promise<AuthenticatedHttpResponseInterface<DeleteUserByIDOutputDTO>> {
+    const requestUserId = request.user.sub;
+
     const { id } = requestValidation(
       "params",
       request,
-      DeleteUserByIDParamsSchema
+      DeleteUserByIDParamsSchema,
     );
 
-    const deletedUser = await this.usecase.execute(id);
+    const input: DeleteUserByIDInputDTO = {
+      requestingUserId: requestUserId,
+      targetUserId: id,
+    };
+
+    const deletedUser = await this.usecase.execute(input);
 
     if (!deletedUser) {
       throw new BadRequestError("User to be deleted not found");

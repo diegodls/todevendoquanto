@@ -17,7 +17,7 @@ export class CreateUserController implements CreateUserControllerInterface {
   constructor(private readonly usecase: CreateUserUseCase) {}
 
   async handle(
-    request: AuthenticatedHttpRequestInterface<CreateUserInputDTO>
+    request: AuthenticatedHttpRequestInterface<CreateUserInputDTO>,
   ): Promise<AuthenticatedHttpResponseInterface<CreateUserOutputDTO>> {
     const input = requestValidation("body", request, CreateUserBodySchema);
 
@@ -27,15 +27,13 @@ export class CreateUserController implements CreateUserControllerInterface {
       throw new InternalError(
         "Internal Server Error",
         {},
-        userControllerErrorCodes.E_0_CTR_USR_0001.code
+        userControllerErrorCodes.E_0_CTR_USR_0001.code,
       );
     }
 
-    const { password, ...userOutput } = createdUser;
-
     const output: AuthenticatedHttpResponseInterface<CreateUserOutputDTO> = {
       statusCode: 200,
-      body: userOutput,
+      body: createdUser,
     };
 
     return output;

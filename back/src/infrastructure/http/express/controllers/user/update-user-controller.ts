@@ -25,14 +25,14 @@ export class UserUpdateController implements UserUpdateControllerType {
       UpdateUserInputDTO,
       {},
       UpdateUserInputParams
-    >
+    >,
   ): Promise<AuthenticatedHttpResponseInterface<UpdateUserOutputDTO>> {
     const loggedUser = request.user;
 
     const userIDToChange = requestValidation(
       "params",
       request,
-      UpdateUserParamsSchema
+      UpdateUserParamsSchema,
     ).id;
 
     if (!String(userIDToChange)) {
@@ -45,11 +45,13 @@ export class UserUpdateController implements UserUpdateControllerType {
 
     const input = requestValidation("body", request, UpdateUserBodySchema);
 
-    const updatedUser = await this.service.execute(
-      loggedUser,
-      userIDToChange,
-      input
-    );
+    const inputData: UpdateUserInputDTO = {
+      requestingUserId: loggedUser.sub,
+      targetUserId: userIDToChange,
+      ...input,
+    };
+
+    const updatedUser = await this.service.execute(inputData);
 
     const output: AuthenticatedHttpResponseInterface<UpdateUserOutputDTO> = {
       statusCode: 200,

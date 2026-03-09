@@ -1,10 +1,25 @@
-import { User, UserValidProps } from "@/core/entities/user";
-import { PropsToString } from "@/core/shared/types/helpers/props-to-string";
+export type UpdateUserInputProps = { id: string };
 
-export type UpdateUserInputProps = Pick<User, "id">;
+export type UpdateUserInputParams = { id: string };
 
-export type UpdateUserInputParams = PropsToString<UpdateUserInputProps>;
+export type UpdateUserBodyDTO = {
+  name?: string;
+  email?: string;
+  role?: string;
+  isActive?: boolean;
+};
 
-export type UpdateUserInputDTO = UserValidProps;
+export type UpdateUserInputDTO = {
+  requestingUserId: string;
+  targetUserId: string;
+} & UpdateUserBodyDTO;
 
-export type UpdateUserOutputDTO = Omit<User, "password"> | null;
+export type UpdateUserOutputDTO = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+};

@@ -1,7 +1,4 @@
-import {
-  DeleteExpenseInputDTO,
-  DeleteExpenseParamsInput,
-} from "@/core/usecases/expense/delete-expense-dto";
+import { DeleteExpenseParamsInput } from "@/core/usecases/expense/delete-expense-dto";
 import z from "zod";
 
 export const DeleteExpenseByIdSchema = z
@@ -17,4 +14,4 @@ export const DeleteExpenseByIdSchema = z
       },
     }),
   })
-  .strip() satisfies z.ZodType<DeleteExpenseInputDTO, DeleteExpenseParamsInput>;
+  .strip() satisfies z.ZodType<DeleteExpenseParamsInput>;

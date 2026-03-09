@@ -1,5 +1,5 @@
 import { Expense } from "@/core/entities/expense/expense";
-import { ExpenseId } from "@/core/entities/shared/types";
+import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { CreateExpenseOutputDTO } from "@/core/usecases/expense/create-expense-dto";
 import { PrismaClientGenerated } from "@/infrastructure/repositories/prisma/config/prisma-client";
@@ -10,7 +10,7 @@ export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
 
   async findById(id: ExpenseId): Promise<Expense | null> {
     const expenseExists = await this.prismaORMClient.expense.findFirst({
-      where: { id },
+      where: { id: id.toString() },
     });
 
     return expenseExists ? ExpenseMapper.toDomain(expenseExists) : null;
@@ -33,6 +33,6 @@ export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
   }
 
   async delete(id: ExpenseId): Promise<void> {
-    await this.prismaORMClient.expense.delete({ where: { id } });
+    await this.prismaORMClient.expense.delete({ where: { id: id.toString() } });
   }
 }
