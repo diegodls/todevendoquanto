@@ -138,6 +138,21 @@ export class Money {
     return new Money(this._amount / divisor, this.currency);
   }
 
+  public split(parts: number): Money[] {
+    if (!Number.isInteger(parts) || parts <= 0) {
+      throw new Error("The split quantity must be a integer positive");
+    }
+
+    const base = Math.floor(this._amount / parts);
+
+    const remainder = this._amount % parts;
+
+    return Array.from(
+      { length: parts },
+      (_, i) => new Money(i < remainder ? base + 1 : base, this._currency),
+    );
+  }
+
   public allocate(ratios: number[]): Money[] {
     if (ratios.length === 0) {
       throw new Error("Ratios array cannot be empty");

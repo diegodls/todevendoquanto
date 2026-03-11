@@ -143,17 +143,19 @@ export class Expense {
     const name = ExpenseName.create(input.name);
     const amount = Money.fromCents(input.amount, input.currency);
     const totalAmount = amount.multiply(input.totalInstallments);
+    const tags = Tags.create(input.tags);
+
     const installmentInfo = InstallmentInfo.create(
       input.currentInstallment,
       input.totalInstallments,
     );
+
     const paymentSchedule = PaymentSchedule.create(
       input.paymentDay,
       input.expirationDay,
       input.paymentStartAt,
       input.paymentEndAt,
     );
-    const tags = Tags.create(input.tags);
 
     return new Expense(
       {
@@ -226,6 +228,54 @@ export class Expense {
 
     this._installmentInfo = this._installmentInfo.next();
     this.touch();
+  }
+
+  public splitIntoInstallments(): Expense[] {
+    if (this._installmentInfo.isSingle()) {
+      return [this];
+    }
+
+    const installments: Expense[] = this._totalAmount
+      .split(this._installmentInfo.total)
+      .map((installmentAmount, i) => {
+        const currentInstallment = i + 1;
+
+        const installmentId: InstallmentId = InstallmentId.create();
+
+        const paymentDay =
+          this._status === "PAYING"
+            ? this.computeDate(this.paymentSchedule.paymentDay, i)
+            : this.paymentSchedule.paymentDay;
+
+        const expirationDay = this.computeDate(
+          this.paymentSchedule.expirationDay,
+          i,
+        );
+
+        const paymentStartAt = this.computeDate(
+          this.paymentSchedule.startAt,
+          i,
+        );
+
+        const paymentEndAt = this.computeDate(this.paymentSchedule.endAt, i);
+
+        const paymentSchedule = {
+          paymentDay,
+          expirationDay,
+          paymentStartAt,
+          paymentEndAt,
+        };
+
+        return new Expense({
+          ...this,
+          installmentId,
+          amount: installmentAmount,
+          currentInstallment,
+          paymentSchedule,
+        });
+      });
+
+    return installments;
   }
 
   public markAsPaid(): void {
@@ -307,6 +357,19 @@ export class Expense {
     return this._amount.multiply(remainingInstallments);
   }
 
+  private computeDate(baseDate: Date, monthsToAdd: number): Date {
+    const year = baseDate.getFullYear();
+    const month = baseDate.getMonth();
+    const day = baseDate.getDate();
+
+    let output = new Date(year, month + monthsToAdd);
+
+    if (output.getDate() !== day) {
+      output = new Date(year, month + monthsToAdd + 1, 0);
+    }
+
+    return output;
+  }
   private validateInvariants(): void {
     if (!this._userId) {
       throw new Error("Expense must belong to a user");
