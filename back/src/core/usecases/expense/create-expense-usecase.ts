@@ -1,7 +1,6 @@
 import { Expense } from "@/core/entities/expense/expense";
 import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
-import { DateProviderInterface } from "@/core/ports/infrastructure/protocols/date/date-provider-interface";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { InternalError } from "@/core/shared/errors/api-errors";
 import { expenseUseCaseErrors } from "@/core/shared/errors/usecases/expense-usecase-errors";
@@ -12,57 +11,41 @@ import {
 import { CreateExpenseUseCaseInterface } from "@/core/usecases/expense/create-expense-usecase-interface";
 
 export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
-  constructor(
-    private readonly repository: ExpenseRepositoryInterface,
-    private readonly dateProvider: DateProviderInterface,
-  ) {}
+  constructor(private readonly repository: ExpenseRepositoryInterface) {}
 
   public async execute(
     userId: string,
     expense: CreateExpenseInputDTO,
   ): Promise<CreateExpenseOutputDTO[]> {
-    const expensesToCreate: Expense[] = [];
-
     const installmentIdCreated = InstallmentId.create();
 
     const userIdCreated = UserId.from(userId);
 
-    for (let i = 0; i < expense.totalInstallments; i++) {
-      const currentInstallment = i + 1;
+    const newExpense = Expense.create({
+      ...expense,
+      userId: userIdCreated,
+      installmentId: installmentIdCreated,
+    });
 
-      const paymentDay =
-        expense.status === "PAYING"
-          ? this.dateProvider.addMonthStrict(expense.paymentDay, i)
-          : expense.paymentDay;
+    const expensesToCreate: Expense[] = newExpense.splitIntoInstallments();
 
-      const expirationDay = this.dateProvider.addMonthStrict(
-        expense.expirationDay,
-        i,
-      );
-
-      const paymentStartAt = this.dateProvider.addMonthStrict(
-        expense.paymentStartAt,
-        i,
-      );
-
-      const paymentEndAt = this.dateProvider.addMonthStrict(
-        expense.paymentEndAt,
-        i,
-      );
-
-      const expenseToBeCreated = Expense.create({
-        ...expense,
-        currentInstallment,
-        paymentDay,
-        expirationDay,
-        paymentStartAt,
-        paymentEndAt,
-        userId: userIdCreated,
-        installmentId: installmentIdCreated,
-      });
-
-      expensesToCreate.push(expenseToBeCreated);
-    }
+    return [
+      {
+        name: "string;",
+        description: "string;",
+        amount: 2,
+        currency: "string;",
+        totalAmount: 2,
+        status: "string;",
+        tags: [],
+        currentInstallment: 1,
+        totalInstallment: 1,
+        paymentDay: "string;",
+        expirationDay: "string;",
+        paymentStartAt: "string;",
+        paymentEndAt: "string;",
+      },
+    ];
 
     const output = await this.repository.create(expensesToCreate);
 

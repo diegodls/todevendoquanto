@@ -1,12 +1,4 @@
-import {
-  ExpenseStatus,
-  expenseStatusValues,
-} from "@/core/entities/expense/expense";
-import { DECIMALS_REGEX } from "@/core/shared/regex/decimals";
-import {
-  CreateExpenseBodyInput,
-  CreateExpenseInputDTO,
-} from "@/core/usecases/expense/create-expense-dto";
+import { CreateExpenseBodyInput } from "@/core/usecases/expense/create-expense-dto";
 import { zodDefaultErrorHandler } from "@/infrastructure/validation/zod/helpers/zod-default-error-handler";
 import { DateSchema } from "@/infrastructure/validation/zod/schemas/shared/date-schema";
 import z from "zod";
@@ -21,30 +13,12 @@ const defaultToday = () => {
 
 export const CreateExpenseBodySchema = z
   .object({
-    name: z
-      .string({ error: zodDefaultErrorHandler })
-      .min(3, { message: "Name must have 3 or more caracteres" })
-      .nonempty({
-        error: (issue) => {
-          if (!issue.input || issue.input.length <= 0) {
-            return `Name can't be empty`;
-          }
-        },
-      }),
+    name: z.string().optional(),
 
-    description: z
-      .string()
-      .max(256, {
-        error: (issue) => {
-          if (issue.maximum) {
-            return `Size of ${256} exceeded on ${issue.path}.`;
-          }
-        },
-      })
-      .default(""),
+    description: z.string().optional().default(""),
 
     amount: z
-      .string({
+      .number({
         error: (issue) => {
           if (issue.code === "invalid_type") {
             return `Invalid type: ${
@@ -54,19 +28,10 @@ export const CreateExpenseBodySchema = z
           return `Error on: ${issue.path}`;
         },
       })
-      .regex(DECIMALS_REGEX, {
-        error: (issue) => {
-          if (issue.code === "invalid_format") {
-            return `Invalid ${issue.input} format`;
-          }
-        },
-      })
-      .transform((value) => parseFloat(value))
-      .optional()
-      .default(0),
+      .optional(),
 
     totalAmount: z
-      .string({
+      .number({
         error: (issue) => {
           if (issue.code === "invalid_type") {
             return `Invalid type: ${
@@ -76,32 +41,9 @@ export const CreateExpenseBodySchema = z
           return `Error on: ${issue.path}`;
         },
       })
-      .regex(DECIMALS_REGEX, {
-        error: (issue) => {
-          if (issue.code === "invalid_format") {
-            return `Invalid ${issue.input} format`;
-          }
-        },
-      })
-      .transform((value) => parseFloat(value))
-      .optional()
-      .default(0),
+      .optional(),
 
-    status: z
-      .string()
-      .toUpperCase()
-      .optional()
-      .pipe(
-        z
-          .enum(ExpenseStatus, {
-            error: (issue) => {
-              if (issue.code === "invalid_value") {
-                return `${issue.input} is no a ${issue.path} valid type, pick one of: ${expenseStatusValues}`;
-              }
-            },
-          })
-          .default("PAYING"),
-      ),
+    status: z.string().toUpperCase().optional(),
 
     tags: z
       .array(
@@ -132,4 +74,4 @@ export const CreateExpenseBodySchema = z
 
     paymentEndAt: DateSchema.default(defaultToday),
   })
-  .strip() satisfies z.ZodType<CreateExpenseInputDTO, CreateExpenseBodyInput>;
+  .strip() satisfies z.ZodType<CreateExpenseBodyInput>;

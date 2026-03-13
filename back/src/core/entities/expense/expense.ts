@@ -1,5 +1,6 @@
 import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
 import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
+import { ExpenseStatus } from "@/core/entities/expense/value-objects/expense-status";
 import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { InstallmentInfo } from "@/core/entities/expense/value-objects/installment-info";
 import { Money } from "@/core/entities/expense/value-objects/money";
@@ -8,26 +9,13 @@ import { Tags } from "@/core/entities/expense/value-objects/tags";
 
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 
-export const ExpenseStatus = {
-  ABANDONED: "ABANDONED",
-  PAID: "PAID",
-  PAYING: "PAYING",
-} as const;
-
-export type ExpenseStatusType =
-  (typeof ExpenseStatus)[keyof typeof ExpenseStatus];
-
-export const expenseStatusValues = Object.values(ExpenseStatus) as [
-  ExpenseStatusType,
-  ...ExpenseStatusType[],
-];
-
 type CreateExpenseInput = {
   name: string;
   description: string;
   amount: number;
   currentInstallment: number;
   totalInstallments: number;
+  status: string;
   paymentDay: Date;
   expirationDay: Date;
   paymentStartAt: Date;
@@ -43,7 +31,7 @@ type ExpenseProps = {
   description: string;
   amount: Money;
   totalAmount: Money;
-  status: ExpenseStatusType;
+  status: ExpenseStatus;
   tags: Tags;
   installmentInfo: InstallmentInfo;
   paymentSchedule: PaymentSchedule;
@@ -63,7 +51,7 @@ export class Expense {
   private _description: string;
   private _amount: Money;
   private _totalAmount: Money;
-  private _status: ExpenseStatusType;
+  private _status: ExpenseStatus;
   private _tags: Tags;
   private _installmentInfo: InstallmentInfo;
   private _paymentSchedule: PaymentSchedule;
@@ -107,7 +95,7 @@ export class Expense {
     return this._totalAmount;
   }
 
-  get status(): ExpenseStatusType {
+  get status(): ExpenseStatus {
     return this._status;
   }
 
@@ -141,9 +129,16 @@ export class Expense {
 
   public static create(input: CreateExpenseInput, id?: ExpenseId): Expense {
     const name = ExpenseName.create(input.name);
+
     const amount = Money.fromCents(input.amount, input.currency);
+
     const totalAmount = amount.multiply(input.totalInstallments);
+
     const tags = Tags.create(input.tags);
+
+    const status = input.status
+      ? ExpenseStatus.fromString(input.status)
+      : ExpenseStatus.paying();
 
     const installmentInfo = InstallmentInfo.create(
       input.currentInstallment,
@@ -163,7 +158,7 @@ export class Expense {
         description: input.description,
         amount,
         totalAmount,
-        status: ExpenseStatus.PAYING,
+        status,
         tags,
         installmentInfo,
         paymentSchedule,
@@ -214,11 +209,11 @@ export class Expense {
   }
 
   public advanceInstallment(): void {
-    if (this._status === ExpenseStatus.PAID) {
+    if (this._status.isPaid()) {
       throw new Error("Cannot advance installment of paid expense");
     }
 
-    if (this._status === ExpenseStatus.ABANDONED) {
+    if (this._status.isAbandoned()) {
       throw new Error("Cannot advance installment of abandoned expense");
     }
 
@@ -235,45 +230,62 @@ export class Expense {
       return [this];
     }
 
-    const installments: Expense[] = this._totalAmount
-      .split(this._installmentInfo.total)
-      .map((installmentAmount, i) => {
-        const currentInstallment = i + 1;
+    const moneySplitted: Money[] = this._totalAmount.split(
+      this._installmentInfo.total,
+    );
 
-        const installmentId: InstallmentId = InstallmentId.create();
+    if (moneySplitted.length !== this._installmentInfo.total) {
+      throw new Error("Splitting expense error");
+    }
 
-        const paymentDay =
-          this._status === "PAYING"
-            ? this.computeDate(this.paymentSchedule.paymentDay, i)
-            : this.paymentSchedule.paymentDay;
+    const installments: Expense[] = [];
 
-        const expirationDay = this.computeDate(
-          this.paymentSchedule.expirationDay,
-          i,
-        );
+    for (let i = 0; i < this._installmentInfo.total; i++) {
+      const paymentDay: Date = this._status.isPaying()
+        ? this.computeDate(this.paymentSchedule.paymentDay, i)
+        : this.paymentSchedule.paymentDay;
 
-        const paymentStartAt = this.computeDate(
-          this.paymentSchedule.startAt,
-          i,
-        );
+      const expirationDay: Date = this.computeDate(
+        this.paymentSchedule.expirationDay,
+        i,
+      );
 
-        const paymentEndAt = this.computeDate(this.paymentSchedule.endAt, i);
+      const paymentStartAt: Date = this.computeDate(
+        this.paymentSchedule.startAt,
+        i,
+      );
 
-        const paymentSchedule = {
-          paymentDay,
-          expirationDay,
-          paymentStartAt,
-          paymentEndAt,
-        };
+      const paymentEndAt: Date = this.computeDate(
+        this.paymentSchedule.endAt,
+        i,
+      );
 
-        return new Expense({
-          ...this,
-          installmentId,
-          amount: installmentAmount,
-          currentInstallment,
-          paymentSchedule,
-        });
+      const paymentSchedule = PaymentSchedule.create(
+        paymentDay,
+        expirationDay,
+        paymentStartAt,
+        paymentEndAt,
+      );
+
+      const newExpense: Expense = new Expense({
+        userId: this._userId,
+        createdAt: this._createdAt,
+        name: this._name,
+        description: this._description,
+        totalAmount: this._totalAmount,
+        status: this._status,
+        tags: this._tags,
+        installmentInfo: this._installmentInfo,
+        installmentId: this._installmentId,
+        amount: moneySplitted[i],
+        paymentSchedule: paymentSchedule,
+        updatedAt: this._updatedAt,
       });
+
+      console.log(newExpense);
+
+      installments.push(newExpense);
+    }
 
     return installments;
   }
@@ -281,53 +293,36 @@ export class Expense {
   public markAsPaid(): void {
     this.assertCanBePaid();
 
-    if (this._status === ExpenseStatus.PAID) {
+    if (this._status.isPaid()) {
       return;
     }
 
-    this._status = ExpenseStatus.PAID;
+    this._status.isPaid();
     this.touch();
   }
 
   public markAsAbandoned(): void {
-    if (this._status === ExpenseStatus.ABANDONED) {
+    if (this._status.isAbandoned()) {
       return;
     }
 
-    this._status = ExpenseStatus.ABANDONED;
+    this._status.isAbandoned();
     this.touch();
   }
 
   public markAsPaying(): void {
-    if (this._status === ExpenseStatus.PAYING) {
+    if (this._status.isPaying()) {
       return;
     }
-
-    if (this._status === ExpenseStatus.PAID) {
-      throw new Error("Cannot change status from PAID to PAYING");
-    }
-
-    this._status = ExpenseStatus.PAYING;
+    this._status.isPaying();
     this.touch();
   }
 
   public isOverdue(referenceDate: Date = new Date()): boolean {
     return (
       this._paymentSchedule.isExpired(referenceDate) &&
-      this._status !== ExpenseStatus.PAID
+      (this._status.isPaying() || this._status.isAbandoned())
     );
-  }
-
-  public isPaid(): boolean {
-    return this._status === ExpenseStatus.PAID;
-  }
-
-  public isAbandoned(): boolean {
-    return this._status === ExpenseStatus.ABANDONED;
-  }
-
-  public isPaying(): boolean {
-    return this._status === ExpenseStatus.PAYING;
   }
 
   public canBePaid(): boolean {
@@ -345,7 +340,7 @@ export class Expense {
 
   public getRemainingAmount(): Money {
     if (this._installmentInfo.isSingle()) {
-      return this._status === ExpenseStatus.PAID
+      return this._status.isPaid()
         ? Money.zero(this._amount.currency)
         : this._amount;
     }
@@ -370,6 +365,7 @@ export class Expense {
 
     return output;
   }
+
   private validateInvariants(): void {
     if (!this._userId) {
       throw new Error("Expense must belong to a user");
@@ -393,10 +389,7 @@ export class Expense {
       );
     }
 
-    if (
-      this._status === ExpenseStatus.PAID &&
-      !this._installmentInfo.isComplete()
-    ) {
+    if (this._status.isPaid() && !this._installmentInfo.isComplete()) {
       throw new Error(
         `Expense marked as PAID but installment is ${this._installmentInfo.current}/${this._installmentInfo.total}`,
       );
@@ -404,7 +397,7 @@ export class Expense {
   }
 
   private assertCanBePaid(): void {
-    if (this._status === ExpenseStatus.ABANDONED) {
+    if (this._status.isAbandoned()) {
       throw new Error("Cannot mark abandoned expense as paid");
     }
 
