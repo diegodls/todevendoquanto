@@ -1,3 +1,4 @@
+import { ExpenseDescription } from "@/core/entities/expense/value-objects/expense-description";
 import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
 import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
 import { ExpenseStatus } from "@/core/entities/expense/value-objects/expense-status";
@@ -9,26 +10,22 @@ import { Tags } from "@/core/entities/expense/value-objects/tags";
 
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 
-type CreateExpenseInput = {
-  name: string;
-  description: string;
-  amount: number;
-  currentInstallment: number;
-  totalInstallments: number;
-  status: string;
-  paymentDay: Date;
-  expirationDay: Date;
-  paymentStartAt: Date;
-  paymentEndAt: Date;
+export type CreateExpenseInput = {
+  name: ExpenseName;
+  description: ExpenseDescription | null;
+  amount: Money;
+  totalAmount: Money;
+  status: ExpenseStatus;
+  tags: Tags;
+  installmentInfo: InstallmentInfo;
+  paymentSchedule: PaymentSchedule;
   userId: UserId;
   installmentId: InstallmentId;
-  tags?: string[];
-  currency?: string;
 };
 
 type ExpenseProps = {
   name: ExpenseName;
-  description: string;
+  description: ExpenseDescription | null;
   amount: Money;
   totalAmount: Money;
   status: ExpenseStatus;
@@ -48,7 +45,7 @@ export class Expense {
   private readonly _installmentId: InstallmentId;
 
   private _name: ExpenseName;
-  private _description: string;
+  private _description: ExpenseDescription | null;
   private _amount: Money;
   private _totalAmount: Money;
   private _status: ExpenseStatus;
@@ -63,7 +60,7 @@ export class Expense {
     this._createdAt = props.createdAt;
     this._installmentId = props.installmentId;
     this._name = props.name;
-    this._description = props.description;
+    this._description = props.description || null;
     this._amount = props.amount;
     this._totalAmount = props.totalAmount;
     this._status = props.status;
@@ -83,7 +80,7 @@ export class Expense {
     return this._name;
   }
 
-  get description(): string {
+  get description(): ExpenseDescription | null {
     return this._description;
   }
 
@@ -128,40 +125,16 @@ export class Expense {
   }
 
   public static create(input: CreateExpenseInput, id?: ExpenseId): Expense {
-    const name = ExpenseName.create(input.name);
-
-    const amount = Money.fromCents(input.amount, input.currency);
-
-    const totalAmount = amount.multiply(input.totalInstallments);
-
-    const tags = Tags.create(input.tags);
-
-    const status = input.status
-      ? ExpenseStatus.fromString(input.status)
-      : ExpenseStatus.paying();
-
-    const installmentInfo = InstallmentInfo.create(
-      input.currentInstallment,
-      input.totalInstallments,
-    );
-
-    const paymentSchedule = PaymentSchedule.create(
-      input.paymentDay,
-      input.expirationDay,
-      input.paymentStartAt,
-      input.paymentEndAt,
-    );
-
     return new Expense(
       {
-        name,
+        name: input.name,
         description: input.description,
-        amount,
-        totalAmount,
-        status,
-        tags,
-        installmentInfo,
-        paymentSchedule,
+        amount: input.amount,
+        totalAmount: input.totalAmount,
+        status: input.status,
+        tags: input.tags,
+        installmentInfo: input.installmentInfo,
+        paymentSchedule: input.paymentSchedule,
         userId: input.userId,
         installmentId: input.installmentId,
         createdAt: new Date(),
@@ -175,18 +148,25 @@ export class Expense {
     return new Expense(props, id);
   }
 
-  public updateDetails(name: string, description: string): void {
+  public updateDetails(name?: string, description?: string): void {
     let hasChanged = false;
-    const newName = ExpenseName.create(name);
 
-    if (!this._name.equals(newName)) {
-      this._name = newName;
-      hasChanged = true;
+    if (name) {
+      const newName = ExpenseName.create(name);
+
+      if (!this._name.equals(newName)) {
+        this._name = newName;
+        hasChanged = true;
+      }
     }
 
-    if (this._description !== description) {
-      this._description = description;
-      hasChanged = true;
+    if (description && this._description) {
+      const newDescription = ExpenseDescription.create(description);
+
+      if (this._description.equals(newDescription)) {
+        this._description = newDescription;
+        hasChanged = true;
+      }
     }
 
     if (hasChanged) {
@@ -206,23 +186,6 @@ export class Expense {
       this._tags = newTags;
       this.touch();
     }
-  }
-
-  public advanceInstallment(): void {
-    if (this._status.isPaid()) {
-      throw new Error("Cannot advance installment of paid expense");
-    }
-
-    if (this._status.isAbandoned()) {
-      throw new Error("Cannot advance installment of abandoned expense");
-    }
-
-    if (this._installmentInfo.isComplete()) {
-      throw new Error("Cannot advance: already at final installment");
-    }
-
-    this._installmentInfo = this._installmentInfo.next();
-    this.touch();
   }
 
   public splitIntoInstallments(): Expense[] {
@@ -381,11 +344,12 @@ export class Expense {
       );
     }
 
-    const expectedTotal = this._amount.multiply(this._installmentInfo.total);
-
-    if (this._totalAmount.amount !== expectedTotal.amount) {
+    if (
+      this._totalAmount.amount !==
+      this._amount.amount * this.installmentInfo.total
+    ) {
       throw new Error(
-        `Total amount (${this._totalAmount.amount}) must equal amount (${this._amount.amount}) × installments (${this._installmentInfo.total})`,
+        `Total amount (${this._totalAmount.amount}) must equal amount (${this._amount.amount}) × installments (${this.installmentInfo.total})`,
       );
     }
 

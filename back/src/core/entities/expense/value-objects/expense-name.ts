@@ -9,7 +9,11 @@ export class ExpenseName {
     }
   }
 
-  public static create(name: string): ExpenseName {
+  public static create(name?: string): ExpenseName {
+    if (!name) {
+      throw new Error("Expense name cannot be empty");
+    }
+
     const trimmed = name.trim();
 
     if (trimmed.length === 0) {

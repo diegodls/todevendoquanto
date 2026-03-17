@@ -25,33 +25,39 @@ describe("ExpenseName", () => {
       expect(expenseName.value).toBe(longName);
     });
 
+    it("should throw if name as not send", () => {
+      expect(() => ExpenseName.create()).toThrow(
+        "Expense name cannot be empty",
+      );
+    });
+
     it("should throw if name is empty", () => {
       expect(() => ExpenseName.create("")).toThrow(
-        "Expense name cannot be empty or whitespace"
+        "Expense name cannot be empty",
       );
     });
 
     it("should throw if name is only whitespace", () => {
       expect(() => ExpenseName.create("         ")).toThrow(
-        "Expense name cannot be empty or whitespace"
+        "Expense name cannot be empty or whitespace",
       );
     });
 
     it("should throw error when name is only tabs and spaces", () => {
       expect(() => ExpenseName.create("\t  \n  ")).toThrow(
-        "Expense name cannot be empty or whitespace"
+        "Expense name cannot be empty or whitespace",
       );
     });
 
     it("should throw if name has less than 3 characters", () => {
       expect(() => ExpenseName.create("Va")).toThrow(
-        "Expense name must have at least 3 characters"
+        "Expense name must have at least 3 characters",
       );
     });
 
     it("should throw if trimmed name results in less tha 3 characters", () => {
       expect(() => ExpenseName.create("   Va   ")).toThrow(
-        "Expense name must have at least 3 characters"
+        "Expense name must have at least 3 characters",
       );
     });
 
@@ -59,7 +65,7 @@ describe("ExpenseName", () => {
       const longName = "v".repeat(101);
 
       expect(() => ExpenseName.create(longName)).toThrow(
-        "Expense name cannot exceed 100 characters"
+        "Expense name cannot exceed 100 characters",
       );
     });
   });

@@ -15,33 +15,13 @@ export const CreateExpenseBodySchema = z
   .object({
     name: z.string().optional(),
 
-    description: z.string().optional().default(""),
+    description: z.string().optional(),
 
-    amount: z
-      .number({
-        error: (issue) => {
-          if (issue.code === "invalid_type") {
-            return `Invalid type: ${
-              issue.input
-            }, expected string, received ${typeof issue.input}`;
-          }
-          return `Error on: ${issue.path}`;
-        },
-      })
-      .optional(),
+    amount: z.number().optional(),
 
-    totalAmount: z
-      .number({
-        error: (issue) => {
-          if (issue.code === "invalid_type") {
-            return `Invalid type: ${
-              issue.input
-            }, expected string, received ${typeof issue.input}`;
-          }
-          return `Error on: ${issue.path}`;
-        },
-      })
-      .optional(),
+    totalAmount: z.number().optional(),
+
+    currency: z.string().optional(),
 
     status: z.string().toUpperCase().optional(),
 
@@ -51,27 +31,26 @@ export const CreateExpenseBodySchema = z
           error: zodDefaultErrorHandler,
         }),
       )
-      .optional()
-      .default([""]),
+      .optional(),
 
     currentInstallment: z
       .number({
         error: zodDefaultErrorHandler,
       })
-      .default(1),
+      .optional(),
 
-    totalInstallments: z
+    totalInstallment: z
       .number({
         error: zodDefaultErrorHandler,
       })
-      .default(1),
+      .optional(),
 
-    paymentDay: DateSchema.default(defaultToday),
+    paymentDay: DateSchema.optional(),
 
-    expirationDay: DateSchema.default(defaultToday),
+    expirationDay: DateSchema.optional(),
 
-    paymentStartAt: DateSchema.default(defaultToday),
+    paymentStartAt: DateSchema.optional(),
 
-    paymentEndAt: DateSchema.default(defaultToday),
+    paymentEndAt: DateSchema.optional(),
   })
   .strip() satisfies z.ZodType<CreateExpenseBodyInput>;

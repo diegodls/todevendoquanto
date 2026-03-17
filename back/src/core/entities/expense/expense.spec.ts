@@ -1,32 +1,41 @@
+import { ExpenseDescription } from "@/core/entities/expense/value-objects/expense-description";
+import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
+import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
+import { ExpenseStatus } from "@/core/entities/expense/value-objects/expense-status";
 import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
+import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
+import { Tags } from "@/core/entities/expense/value-objects/tags";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
-
 import { describe, expect, it } from "vitest";
-import { Expense } from "./expense";
+import { CreateExpenseInput, Expense } from "./expense";
+import { InstallmentInfo } from "./value-objects/installment-info";
+import { Money } from "./value-objects/money";
 
 describe("Expense", () => {
-  const validInput = {
-    name: "Netflix Subscription",
-    description: "Monthly streaming service",
-    amount: 4990,
-    currentInstallment: 1,
-    totalInstallments: 1,
-    status: "paying",
-    paymentDay: new Date(2026, 0, 15),
-    expirationDay: new Date(2026, 0, 20),
-    paymentStartAt: new Date(2026, 0, 1),
-    paymentEndAt: new Date(2026, 0, 31),
+  const validInput: CreateExpenseInput = {
+    name: ExpenseName.create("Shoes Subscription"),
+    description: ExpenseDescription.create("Monthly vests service"),
+    amount: Money.fromCents(4990),
+    totalAmount: Money.fromCents(4990),
+    installmentInfo: InstallmentInfo.create(1, 1),
+    status: ExpenseStatus.fromString("paying"),
+    paymentSchedule: PaymentSchedule.create(
+      new Date(2026, 0, 15),
+      new Date(2026, 0, 20),
+      new Date(2026, 0, 1),
+      new Date(2026, 0, 31),
+    ),
     userId: UserId.create(),
     installmentId: InstallmentId.create(),
-    tags: ["streaming", "entertainment"],
+    tags: Tags.create(["vests", "entertainment"]),
   };
 
   describe("create", () => {
     it("should create valid expense", () => {
       const expense = Expense.create(validInput);
 
-      expect(expense.name.value).toBe("Netflix Subscription");
-      expect(expense.description).toBe("Monthly streaming service");
+      expect(expense.name.value).toBe("Shoes");
+      expect(expense.description?.toString()).toBe("Monthly vests service");
       expect(expense.amount.cents).toBe(4990);
       expect(expense.totalAmount.cents).toBe(4990);
       expect(expense.status.isPaying()).toBe(true);
@@ -37,71 +46,76 @@ describe("Expense", () => {
   });
 
   it("should create expense with multiple installments", () => {
+    const installmentInfo = InstallmentInfo.create(1, 12);
+
     const expense = Expense.create({
       ...validInput,
-      totalInstallments: 12,
+      installmentInfo,
     });
 
     expect(expense.amount.cents).toBe(4990);
-    expect(expense.totalAmount.cents).toBe(4990 * 12);
+    expect(expense.totalAmount.cents).toBe(4990);
     expect(expense.installmentInfo.total).toBe(12);
   });
-});
-/*
-    it("should always start at installment 1", () => {
-      const expense = Expense.create({
-        ...validInput,
-        totalInstallments: 12,
-      });
 
-      expect(expense.installmentInfo.current).toBe(1);
+  it("should always start at installment 1", () => {
+    const installmentInfo = InstallmentInfo.create(1, 12);
+    const expense = Expense.create({
+      ...validInput,
+      installmentInfo,
     });
 
-    it("should create with custom currency", () => {
-      const expense = Expense.create({
-        ...validInput,
-        currency: "USD",
-      });
+    expect(expense.installmentInfo.current).toBe(1);
+  });
 
-      expect(expense.amount.currency).toBe("USD");
-      expect(expense.totalAmount.currency).toBe("USD");
+  it("should create with custom currency", () => {
+    const amount: Money = Money.fromCents(4990, "USD");
+    const totalAmount: Money = Money.fromCents(4990, "USD");
+
+    const expense = Expense.create({
+      ...validInput,
+      amount,
+      totalAmount,
     });
 
-    it("should create without tags", () => {
-      const expense = Expense.create({
-        ...validInput,
-        tags: undefined,
-      });
+    expect(expense.amount.currency).toBe("USD");
+    expect(expense.totalAmount.currency).toBe("USD");
+  });
 
-      expect(expense.tags.isEmpty()).toBe(true);
+  it("should create without tags", () => {
+    const tags: Tags = Tags.create(undefined);
+
+    const expense = Expense.create({
+      ...validInput,
+      tags,
     });
 
-    it("should generate ID if not provided", () => {
-      const expense = Expense.create(validInput);
+    expect(expense.tags.isEmpty()).toBe(true);
+  });
+  it("should generate ID if not provided", () => {
+    const expense = Expense.create(validInput);
 
-      expect(expense.id).toBeDefined();
-      expect(typeof expense.id.toString()).toBe("string");
-    });
+    expect(expense.id).toBeDefined();
+    expect(typeof expense.id.toString()).toBe("string");
+  });
 
-    it("should use provided ID", () => {
-      const validUuid = "69038c60-f297-4792-90cb-ab74c3a391d0";
-      const from = ExpenseId.from(validUuid);
-      const expense = Expense.create(validInput, from);
+  it("should use provided ID", () => {
+    const validUuid = "69038c60-f297-4792-90cb-ab74c3a391d0";
+    const from = ExpenseId.from(validUuid);
+    const expense = Expense.create(validInput, from);
 
-      expect(expense.id.toString()).toBe(from.toString());
-    });
+    expect(expense.id.toString()).toBe(from.toString());
+  });
+  it("should set creation and update timestamps", () => {
+    const before = new Date();
+    const expense = Expense.create(validInput);
+    const after = new Date();
 
-    it("should set creation and update timestamps", () => {
-      const before = new Date();
-      const expense = Expense.create(validInput);
-      const after = new Date();
-
-      expect(expense.createdAt.getTime()).toBeGreaterThanOrEqual(
-        before.getTime(),
-      );
-      expect(expense.createdAt.getTime()).toBeLessThanOrEqual(after.getTime());
-      expect(expense.updatedAt).toEqual(expense.createdAt);
-    });
+    expect(expense.createdAt.getTime()).toBeGreaterThanOrEqual(
+      before.getTime(),
+    );
+    expect(expense.createdAt.getTime()).toBeLessThanOrEqual(after.getTime());
+    expect(expense.updatedAt).toEqual(expense.createdAt);
   });
 
   describe("restore", () => {
@@ -110,12 +124,12 @@ describe("Expense", () => {
       const installmentId = InstallmentId.create();
 
       const props = {
-        name: ExpenseName.create("netflix"),
-        description: "Streaming",
+        name: ExpenseName.create("Shoes"),
+        description: ExpenseDescription.create("Vests"),
         amount: Money.fromCents(4990),
         totalAmount: Money.fromCents(4990),
-        status: ExpenseStatus.fromString("paying"),
-        tags: Tags.create(["streaming"]),
+        status: ExpenseStatus.fromString("paid"),
+        tags: Tags.create(["vests"]),
         installmentInfo: InstallmentInfo.create(1, 1),
         paymentSchedule: PaymentSchedule.create(
           new Date(2026, 0, 15),
@@ -144,39 +158,38 @@ describe("Expense", () => {
       expect(() =>
         Expense.create({
           ...validInput,
-          name: "ab",
+          name: ExpenseName.create("ab"),
         }),
       ).toThrow("Expense name must have at least 3 characters");
     });
+  });
 
-    it("should throw error on invalid amount", () => {
-      expect(() =>
-        Expense.create({
-          ...validInput,
-          amount: -100,
-        }),
-      ).toThrow("Cents cannot be negative");
-    });
+  it("should throw error on invalid amount", () => {
+    expect(() =>
+      Expense.create({
+        ...validInput,
+        amount: Money.fromCents(-150),
+      }),
+    ).toThrow("Cents cannot be negative");
+  });
 
-    it("should throw error on invalid installments", () => {
-      expect(() =>
-        Expense.create({
-          ...validInput,
-          totalInstallments: 0,
-        }),
-      ).toThrow("Installment numbers must be positive");
-    });
+  it("should throw error on invalid installments", () => {
+    expect(() =>
+      Expense.create({
+        ...validInput,
+        installmentInfo: InstallmentInfo.create(0, 0),
+      }),
+    ).toThrow("Installment numbers must be positive");
+  });
+  it("should throw error on too many tags", () => {
+    const manyTags = Array.from({ length: 11 }, (_, i) => `tag-${i}`);
 
-    it("should throw error on too many tags", () => {
-      const manyTags = Array.from({ length: 11 }, (_, i) => `tag-${i}`);
-
-      expect(() =>
-        Expense.create({
-          ...validInput,
-          tags: manyTags,
-        }),
-      ).toThrow("Maximum of 10 tags exceeded");
-    });
+    expect(() =>
+      Expense.create({
+        ...validInput,
+        tags: Tags.create(manyTags),
+      }),
+    ).toThrow("Maximum of 10 tags exceeded");
   });
 
   describe("invariants validation", () => {
@@ -186,8 +199,8 @@ describe("Expense", () => {
       const expenseId = ExpenseId.from("550e8400-e29b-41d4-a716-446655440000");
 
       const props = {
-        name: ExpenseName.create("netflix"),
-        description: "Streaming",
+        name: ExpenseName.create("Shoes"),
+        description: ExpenseDescription.create("Vests"),
         amount: Money.fromCents(4990),
         totalAmount: Money.fromCents(10000),
         status: ExpenseStatus.fromString("paying"),
@@ -205,10 +218,16 @@ describe("Expense", () => {
         updatedAt: new Date(),
       };
 
+      console.log(`amount: ${props.amount.amount}`);
+      console.log(`totalAmount: ${props.totalAmount.amount}`);
+      console.log(`installmentInfo: ${props.installmentInfo.total}`);
+
       expect(() => Expense.restore(expenseId, props)).toThrow(
         "Total amount (100) must equal amount (49.9) × installments (12)",
       );
     });
+  });
+}); /*
 
     it("should validate currency consistency", () => {
       const userId = UserId.create();
@@ -216,8 +235,8 @@ describe("Expense", () => {
       const expenseId = ExpenseId.from("550e8400-e29b-41d4-a716-446655440000");
 
       const props = {
-        name: ExpenseName.create("netflix"),
-        description: "Streaming",
+        name: ExpenseName.create("Shoes"),
+        description: "Vests",
         amount: Money.fromCents(4990, "USD"),
         totalAmount: Money.fromCents(4990, "BRL"),
         status: ExpenseStatus.fromString("paying"),
@@ -246,8 +265,8 @@ describe("Expense", () => {
       const expenseId = ExpenseId.from("550e8400-e29b-41d4-a716-446655440000");
 
       const props = {
-        name: ExpenseName.create("netflix"),
-        description: "Streaming",
+        name: ExpenseName.create("Shoes"),
+        description: "Vests",
         amount: Money.fromCents(4990),
         totalAmount: Money.fromCents(4990 * 12),
         status: ExpenseStatus.fromString("paid"),
@@ -298,8 +317,8 @@ describe("Expense", () => {
     const installmentId = InstallmentId.create();
 
     const validInput = {
-      name: "Netflix Subscription",
-      description: "Monthly streaming service",
+      name: "Shoes Subscription",
+      description: "Monthly vests service",
       amount: 4990,
       currentInstallment: 1,
       totalInstallments: 1,
@@ -310,7 +329,7 @@ describe("Expense", () => {
       paymentEndAt: new Date(2026, 0, 31),
       userId,
       installmentId,
-      tags: ["streaming"],
+      tags: ["vests"],
     };
 
     describe("updateDetails", () => {
@@ -318,10 +337,10 @@ describe("Expense", () => {
         const expense = Expense.create(validInput);
         const originalUpdatedAt = expense.updatedAt;
 
-        expense.updateDetails("Spotify Premium", "Monthly streaming service");
+        expense.updateDetails("Spotify Premium", "Monthly vests service");
 
         expect(expense.name.value).toBe("Spotify Premium");
-        expect(expense.description).toBe("Monthly streaming service");
+        expect(expense.description).toBe("Monthly vests service");
         expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
           originalUpdatedAt.getTime(),
         );
@@ -330,9 +349,9 @@ describe("Expense", () => {
       it("should update description", () => {
         const expense = Expense.create(validInput);
 
-        expense.updateDetails("Netflix Subscription", "Premium plan");
+        expense.updateDetails("Shoes Subscription", "Premium plan");
 
-        expect(expense.name.value).toBe("Netflix Subscription");
+        expect(expense.name.value).toBe("Shoes Subscription");
         expect(expense.description).toBe("Premium plan");
       });
 
@@ -340,10 +359,10 @@ describe("Expense", () => {
         const expense = Expense.create(validInput);
         const originalUpdatedAt = expense.updatedAt;
 
-        expense.updateDetails("Spotify Premium", "Music streaming");
+        expense.updateDetails("Spotify Premium", "Music vests");
 
         expect(expense.name.value).toBe("Spotify Premium");
-        expect(expense.description).toBe("Music streaming");
+        expect(expense.description).toBe("Music vests");
         expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
           originalUpdatedAt.getTime(),
         );
@@ -355,8 +374,8 @@ describe("Expense", () => {
 
         setTimeout(() => {
           expense.updateDetails(
-            "Netflix Subscription",
-            "Monthly streaming service",
+            "Shoes Subscription",
+            "Monthly vests service",
           );
           expect(expense.updatedAt).toEqual(originalUpdatedAt);
         }, 10);
@@ -386,9 +405,9 @@ describe("Expense", () => {
       it("should normalize name", () => {
         const expense = Expense.create(validInput);
 
-        expense.updateDetails("  NETFLIX  ", "description");
+        expense.updateDetails("  SHOES  ", "description");
 
-        expect(expense.name.value).toBe("NETFLIX");
+        expect(expense.name.value).toBe("SHOES");
       });
     });
 
@@ -405,7 +424,7 @@ describe("Expense", () => {
       it("should not add duplicate tag", () => {
         const expense = Expense.create(validInput);
 
-        expense.addTag("streaming");
+        expense.addTag("vests");
 
         expect(expense.tags.size()).toBe(1);
       });
@@ -445,9 +464,9 @@ describe("Expense", () => {
       it("should remove existing tag", () => {
         const expense = Expense.create(validInput);
 
-        expense.removeTag("streaming");
+        expense.removeTag("vests");
 
-        expect(expense.tags.has("streaming")).toBe(false);
+        expect(expense.tags.has("vests")).toBe(false);
         expect(expense.tags.isEmpty()).toBe(true);
       });
 
@@ -455,7 +474,7 @@ describe("Expense", () => {
         const expense = Expense.create(validInput);
         const originalUpdatedAt = expense.updatedAt;
 
-        expense.removeTag("streaming");
+        expense.removeTag("vests");
 
         expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
           originalUpdatedAt.getTime(),
@@ -474,7 +493,7 @@ describe("Expense", () => {
       it("should normalize tag before removing", () => {
         const expense = Expense.create(validInput);
 
-        expense.removeTag("STREAMING");
+        expense.removeTag("VESTS");
 
         expect(expense.tags.isEmpty()).toBe(true);
       });

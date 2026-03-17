@@ -1,8 +1,9 @@
 export type CreateExpenseBodyInput = {
-  name: string;
+  name?: string;
   description?: string;
   amount?: number;
   totalAmount?: number;
+  currency?: string;
   status?: string;
   tags?: string[];
   currentInstallment?: number;
@@ -14,10 +15,11 @@ export type CreateExpenseBodyInput = {
 };
 
 export type CreateExpenseInputDTO = {
-  name: string;
+  name?: string;
   description?: string;
-  amount?: string;
-  totalAmount?: string;
+  amount?: number;
+  totalAmount?: number;
+  currency?: string;
   status?: string;
   tags?: string[];
   currentInstallment?: number;

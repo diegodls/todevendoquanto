@@ -14,8 +14,8 @@ export class ExpenseMapper {
   static toDomain(raw: PrismaExpense): EntityExpense {
     const expenseId = ExpenseId.from(raw.id);
     const name = ExpenseName.create(raw.name);
-    const amount = Money.fromCents(raw.amount, raw.currency);
-    const totalAmount = Money.fromCents(raw.totalAmount, raw.currency);
+    const amount = Money.fromDecimal(raw.amount, raw.currency);
+    const totalAmount = Money.fromDecimal(raw.totalAmount, raw.currency);
     const installmentInfo = InstallmentInfo.create(
       raw.currentInstallment,
       raw.totalInstallment,
