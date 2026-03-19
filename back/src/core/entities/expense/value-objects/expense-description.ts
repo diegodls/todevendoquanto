@@ -39,12 +39,12 @@ export class ExpenseDescription {
     return new ExpenseDescription({ value: trimmed });
   }
 
-  public toString(): string {
+  get value(): string {
     return this._value;
   }
 
   public equals(other: ExpenseDescription): boolean {
     if (other === null || other === undefined) return false;
-    return this._value === other.toString();
+    return this._value === other.value;
   }
 }

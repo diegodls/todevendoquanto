@@ -5,15 +5,17 @@ import { describe, expect, it } from "vitest";
 
 describe("Description Value Object", () => {
   it("should create a valid description with normal text", () => {
-    const desc = ExpenseDescription.create("This is a valid description");
-    expect(desc.toString()).toBe("This is a valid description");
+    const description = ExpenseDescription.create(
+      "This is a valid description",
+    );
+    expect(description.value).toBe("This is a valid description");
   });
 
   it("should automatically trim whitespace from ends", () => {
-    const desc = ExpenseDescription.create("  Trimmed content  ");
-    expect(desc.toString()).toBe("Trimmed content");
-    expect(desc.toString().startsWith(" ")).toBe(false);
-    expect(desc.toString().endsWith(" ")).toBe(false);
+    const description = ExpenseDescription.create("  Trimmed content  ");
+    expect(description.value).toBe("Trimmed content");
+    expect(description.value.startsWith(" ")).toBe(false);
+    expect(description.value.endsWith(" ")).toBe(false);
   });
 
   it("should throw error if description is empty", () => {
@@ -33,8 +35,8 @@ describe("Description Value Object", () => {
   });
 
   it("should accept description with exactly minimum length", () => {
-    const desc = ExpenseDescription.create("One"); // 3 chars
-    expect(desc.toString()).toBe("One");
+    const description = ExpenseDescription.create("One"); // 3 chars
+    expect(description.value).toBe("One");
   });
 
   it("should throw error if description is too long (more than 500 chars)", () => {
@@ -49,8 +51,8 @@ describe("Description Value Object", () => {
 
   it("should accept description with exactly maximum length", () => {
     const maxString = "a".repeat(500);
-    const desc = ExpenseDescription.create(maxString);
-    expect(desc.toString().length).toBe(500);
+    const description = ExpenseDescription.create(maxString);
+    expect(description.value.length).toBe(500);
   });
 
   it("should throw error if description contains HTML tags", () => {
@@ -63,39 +65,40 @@ describe("Description Value Object", () => {
   });
 
   it("should allow special characters but not HTML tags", () => {
-    const desc = ExpenseDescription.create(
+    const description = ExpenseDescription.create(
       "Cost is $100 & taxes are 10% <--- not a tag",
     );
+
     const safeDesc = ExpenseDescription.create("Cost is $100 & taxes are 10%");
-    expect(safeDesc.toString()).toBe("Cost is $100 & taxes are 10%");
+    expect(safeDesc.value).toBe("Cost is $100 & taxes are 10%");
   });
 
   it("should be immutable (value cannot be changed after creation)", () => {
-    const desc = ExpenseDescription.create("Initial Value");
+    const description = ExpenseDescription.create("Initial Value");
 
     expect(() => {
       // @ts-ignore - for tests
-      desc._value = "Hacked";
+      description._value = "Hacked";
     }).toThrow();
 
-    expect(desc.toString()).toBe("Initial Value");
+    expect(description.value).toBe("Initial Value");
   });
 
   it("should check equality correctly", () => {
-    const desc1 = ExpenseDescription.create("Same Text");
-    const desc2 = ExpenseDescription.create("Same Text");
-    const desc3 = ExpenseDescription.create("Different Text");
+    const description1 = ExpenseDescription.create("Same Text");
+    const description2 = ExpenseDescription.create("Same Text");
+    const description3 = ExpenseDescription.create("Different Text");
 
-    expect(desc1.equals(desc2)).toBe(true);
-    expect(desc1.equals(desc3)).toBe(false);
+    expect(description1.equals(description2)).toBe(true);
+    expect(description1.equals(description3)).toBe(false);
     // @ts-ignore - for tests
-    expect(desc1.equals(null)).toBe(false);
+    expect(description1.equals(null)).toBe(false);
   });
 
   it("should create a new instance for updates (immutable pattern)", () => {
-    const desc1 = ExpenseDescription.create("First Value");
-    const desc2 = ExpenseDescription.create("Second Value");
-    expect(desc1).not.toBe(desc2);
-    expect(desc1.toString()).not.toBe(desc2.toString());
+    const description1 = ExpenseDescription.create("First Value");
+    const description2 = ExpenseDescription.create("Second Value");
+    expect(description1).not.toBe(description2);
+    expect(description1.value).not.toBe(description2.value);
   });
 });

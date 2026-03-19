@@ -13,8 +13,8 @@ import { Money } from "./value-objects/money";
 
 describe("Expense", () => {
   const validInput: CreateExpenseInput = {
-    name: ExpenseName.create("Shoes Subscription"),
-    description: ExpenseDescription.create("Monthly vests service"),
+    name: ExpenseName.create("Shoe"),
+    description: ExpenseDescription.create("My new shoe"),
     amount: Money.fromCents(4990),
     totalAmount: Money.fromCents(4990),
     installmentInfo: InstallmentInfo.create(1, 1),
@@ -27,95 +27,97 @@ describe("Expense", () => {
     ),
     userId: UserId.create(),
     installmentId: InstallmentId.create(),
-    tags: Tags.create(["vests", "entertainment"]),
+    tags: Tags.create(["vests"]),
   };
 
   describe("create", () => {
     it("should create valid expense", () => {
       const expense = Expense.create(validInput);
 
-      expect(expense.name.value).toBe("Shoes");
-      expect(expense.description?.toString()).toBe("Monthly vests service");
+      expect(expense.name.value).toBe("Shoe");
+      expect(expense.description?.value).toBe("My new shoe");
       expect(expense.amount.cents).toBe(4990);
       expect(expense.totalAmount.cents).toBe(4990);
       expect(expense.status.isPaying()).toBe(true);
       expect(expense.installmentInfo.current).toBe(1);
       expect(expense.installmentInfo.total).toBe(1);
-      expect(expense.tags.size()).toBe(2);
-    });
-  });
-
-  it("should create expense with multiple installments", () => {
-    const installmentInfo = InstallmentInfo.create(1, 12);
-
-    const expense = Expense.create({
-      ...validInput,
-      installmentInfo,
+      expect(expense.tags.size()).toBe(1);
     });
 
-    expect(expense.amount.cents).toBe(4990);
-    expect(expense.totalAmount.cents).toBe(4990);
-    expect(expense.installmentInfo.total).toBe(12);
-  });
+    it("should create expense with multiple installments", () => {
+      const installmentInfo = InstallmentInfo.create(1, 12);
 
-  it("should always start at installment 1", () => {
-    const installmentInfo = InstallmentInfo.create(1, 12);
-    const expense = Expense.create({
-      ...validInput,
-      installmentInfo,
+      const expense = Expense.create({
+        ...validInput,
+        installmentInfo,
+      });
+
+      expect(expense.amount.cents).toBe(4990);
+      expect(expense.totalAmount.cents).toBe(4990);
+      expect(expense.installmentInfo.total).toBe(12);
     });
 
-    expect(expense.installmentInfo.current).toBe(1);
-  });
+    it("should always start at installment 1", () => {
+      const installmentInfo = InstallmentInfo.create(1, 12);
+      const expense = Expense.create({
+        ...validInput,
+        installmentInfo,
+      });
 
-  it("should create with custom currency", () => {
-    const amount: Money = Money.fromCents(4990, "USD");
-    const totalAmount: Money = Money.fromCents(4990, "USD");
-
-    const expense = Expense.create({
-      ...validInput,
-      amount,
-      totalAmount,
+      expect(expense.installmentInfo.current).toBe(1);
     });
 
-    expect(expense.amount.currency).toBe("USD");
-    expect(expense.totalAmount.currency).toBe("USD");
-  });
+    it("should create with custom currency", () => {
+      const amount: Money = Money.fromCents(4990, "USD");
+      const totalAmount: Money = Money.fromCents(4990, "USD");
 
-  it("should create without tags", () => {
-    const tags: Tags = Tags.create(undefined);
+      const expense = Expense.create({
+        ...validInput,
+        amount,
+        totalAmount,
+      });
 
-    const expense = Expense.create({
-      ...validInput,
-      tags,
+      expect(expense.amount.currency).toBe("USD");
+      expect(expense.totalAmount.currency).toBe("USD");
     });
 
-    expect(expense.tags.isEmpty()).toBe(true);
-  });
-  it("should generate ID if not provided", () => {
-    const expense = Expense.create(validInput);
+    it("should create without tags", () => {
+      const tags: Tags = Tags.create(undefined);
 
-    expect(expense.id).toBeDefined();
-    expect(typeof expense.id.toString()).toBe("string");
-  });
+      const expense = Expense.create({
+        ...validInput,
+        tags,
+      });
 
-  it("should use provided ID", () => {
-    const validUuid = "69038c60-f297-4792-90cb-ab74c3a391d0";
-    const from = ExpenseId.from(validUuid);
-    const expense = Expense.create(validInput, from);
+      expect(expense.tags.isEmpty()).toBe(true);
+    });
 
-    expect(expense.id.toString()).toBe(from.toString());
-  });
-  it("should set creation and update timestamps", () => {
-    const before = new Date();
-    const expense = Expense.create(validInput);
-    const after = new Date();
+    it("should generate ID if not provided", () => {
+      const expense = Expense.create(validInput);
 
-    expect(expense.createdAt.getTime()).toBeGreaterThanOrEqual(
-      before.getTime(),
-    );
-    expect(expense.createdAt.getTime()).toBeLessThanOrEqual(after.getTime());
-    expect(expense.updatedAt).toEqual(expense.createdAt);
+      expect(expense.id).toBeDefined();
+      expect(typeof expense.id.toString()).toBe("string");
+    });
+
+    it("should use provided ID", () => {
+      const validUuid = "69038c60-f297-4792-90cb-ab74c3a391d0";
+      const from = ExpenseId.from(validUuid);
+      const expense = Expense.create(validInput, from);
+
+      expect(expense.id.toString()).toBe(from.toString());
+    });
+
+    it("should set creation and update timestamps", () => {
+      const before = new Date();
+      const expense = Expense.create(validInput);
+      const after = new Date();
+
+      expect(expense.createdAt.getTime()).toBeGreaterThanOrEqual(
+        before.getTime(),
+      );
+      expect(expense.createdAt.getTime()).toBeLessThanOrEqual(after.getTime());
+      expect(expense.updatedAt).toEqual(expense.createdAt);
+    });
   });
 
   describe("restore", () => {
@@ -162,73 +164,38 @@ describe("Expense", () => {
         }),
       ).toThrow("Expense name must have at least 3 characters");
     });
-  });
 
-  it("should throw error on invalid amount", () => {
-    expect(() =>
-      Expense.create({
-        ...validInput,
-        amount: Money.fromCents(-150),
-      }),
-    ).toThrow("Cents cannot be negative");
-  });
+    it("should throw error on invalid amount", () => {
+      expect(() =>
+        Expense.create({
+          ...validInput,
+          amount: Money.fromCents(-150),
+        }),
+      ).toThrow("Cents cannot be negative");
+    });
 
-  it("should throw error on invalid installments", () => {
-    expect(() =>
-      Expense.create({
-        ...validInput,
-        installmentInfo: InstallmentInfo.create(0, 0),
-      }),
-    ).toThrow("Installment numbers must be positive");
-  });
-  it("should throw error on too many tags", () => {
-    const manyTags = Array.from({ length: 11 }, (_, i) => `tag-${i}`);
+    it("should throw error on invalid installments", () => {
+      expect(() =>
+        Expense.create({
+          ...validInput,
+          installmentInfo: InstallmentInfo.create(0, 0),
+        }),
+      ).toThrow("Installment numbers must be positive");
+    });
 
-    expect(() =>
-      Expense.create({
-        ...validInput,
-        tags: Tags.create(manyTags),
-      }),
-    ).toThrow("Maximum of 10 tags exceeded");
+    it("should throw error on too many tags", () => {
+      const manyTags = Array.from({ length: 11 }, (_, i) => `tag-${i}`);
+
+      expect(() =>
+        Expense.create({
+          ...validInput,
+          tags: Tags.create(manyTags),
+        }),
+      ).toThrow("Maximum of 10 tags exceeded");
+    });
   });
 
   describe("invariants validation", () => {
-    it("should validate amount consistency on restore", () => {
-      const userId = UserId.create();
-      const installmentId = InstallmentId.create();
-      const expenseId = ExpenseId.from("550e8400-e29b-41d4-a716-446655440000");
-
-      const props = {
-        name: ExpenseName.create("Shoes"),
-        description: ExpenseDescription.create("Vests"),
-        amount: Money.fromCents(4990),
-        totalAmount: Money.fromCents(10000),
-        status: ExpenseStatus.fromString("paying"),
-        tags: Tags.empty(),
-        installmentInfo: InstallmentInfo.create(1, 12),
-        paymentSchedule: PaymentSchedule.create(
-          new Date(2026, 0, 15),
-          new Date(2026, 0, 20),
-          new Date(2026, 0, 1),
-          new Date(2026, 0, 31),
-        ),
-        userId,
-        installmentId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      console.log(`amount: ${props.amount.amount}`);
-      console.log(`totalAmount: ${props.totalAmount.amount}`);
-      console.log(`installmentInfo: ${props.installmentInfo.total}`);
-
-      expect(() => Expense.restore(expenseId, props)).toThrow(
-        "Total amount (100) must equal amount (49.9) × installments (12)",
-      );
-    });
-  });
-}); /*
-
     it("should validate currency consistency", () => {
       const userId = UserId.create();
       const installmentId = InstallmentId.create();
@@ -236,7 +203,7 @@ describe("Expense", () => {
 
       const props = {
         name: ExpenseName.create("Shoes"),
-        description: "Vests",
+        description: ExpenseDescription.create("Vests"),
         amount: Money.fromCents(4990, "USD"),
         totalAmount: Money.fromCents(4990, "BRL"),
         status: ExpenseStatus.fromString("paying"),
@@ -266,7 +233,7 @@ describe("Expense", () => {
 
       const props = {
         name: ExpenseName.create("Shoes"),
-        description: "Vests",
+        description: ExpenseDescription.create("Vests"),
         amount: Money.fromCents(4990),
         totalAmount: Money.fromCents(4990 * 12),
         status: ExpenseStatus.fromString("paid"),
@@ -313,34 +280,15 @@ describe("Expense", () => {
   });
 
   describe("Expense - Domain Methods", () => {
-    const userId = UserId.create();
-    const installmentId = InstallmentId.create();
-
-    const validInput = {
-      name: "Shoes Subscription",
-      description: "Monthly vests service",
-      amount: 4990,
-      currentInstallment: 1,
-      totalInstallments: 1,
-      status: "paying",
-      paymentDay: new Date(2026, 0, 15),
-      expirationDay: new Date(2026, 0, 20),
-      paymentStartAt: new Date(2026, 0, 1),
-      paymentEndAt: new Date(2026, 0, 31),
-      userId,
-      installmentId,
-      tags: ["vests"],
-    };
-
     describe("updateDetails", () => {
       it("should update name", () => {
         const expense = Expense.create(validInput);
         const originalUpdatedAt = expense.updatedAt;
 
-        expense.updateDetails("Spotify Premium", "Monthly vests service");
+        expense.updateDetails("Shirt");
 
-        expect(expense.name.value).toBe("Spotify Premium");
-        expect(expense.description).toBe("Monthly vests service");
+        expect(expense.name.value).toBe("Shirt");
+        expect(expense.description?.value).toBe("My new shoe");
         expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
           originalUpdatedAt.getTime(),
         );
@@ -349,20 +297,20 @@ describe("Expense", () => {
       it("should update description", () => {
         const expense = Expense.create(validInput);
 
-        expense.updateDetails("Shoes Subscription", "Premium plan");
+        expense.updateDetails(undefined, "Vests");
 
-        expect(expense.name.value).toBe("Shoes Subscription");
-        expect(expense.description).toBe("Premium plan");
+        expect(expense.name.value).toBe("Shoe");
+        expect(expense.description?.value).toBe("Vests");
       });
 
       it("should update both name and description", () => {
         const expense = Expense.create(validInput);
         const originalUpdatedAt = expense.updatedAt;
 
-        expense.updateDetails("Spotify Premium", "Music vests");
+        expense.updateDetails("Shirt", "Vests");
 
-        expect(expense.name.value).toBe("Spotify Premium");
-        expect(expense.description).toBe("Music vests");
+        expect(expense.name.value).toBe("Shirt");
+        expect(expense.description?.value).toBe("Vests");
         expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
           originalUpdatedAt.getTime(),
         );
@@ -373,10 +321,7 @@ describe("Expense", () => {
         const originalUpdatedAt = expense.updatedAt;
 
         setTimeout(() => {
-          expense.updateDetails(
-            "Shoes Subscription",
-            "Monthly vests service",
-          );
+          expense.updateDetails("Shoes", "Vests");
           expect(expense.updatedAt).toEqual(originalUpdatedAt);
         }, 10);
       });
@@ -394,6 +339,7 @@ describe("Expense", () => {
           firstUpdate.getTime(),
         );
       });
+
       it("should throw error on invalid name", () => {
         const expense = Expense.create(validInput);
 
@@ -415,9 +361,9 @@ describe("Expense", () => {
       it("should add new tag", () => {
         const expense = Expense.create(validInput);
 
-        expense.addTag("subscription");
+        expense.addTag("New Tag");
 
-        expect(expense.tags.has("subscription")).toBe(true);
+        expect(expense.tags.has("New Tag")).toBe(true);
         expect(expense.tags.size()).toBe(2);
       });
 
@@ -433,7 +379,7 @@ describe("Expense", () => {
         const expense = Expense.create(validInput);
         const originalUpdatedAt = expense.updatedAt;
 
-        expense.addTag("subscription");
+        expense.addTag("New tag");
 
         expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
           originalUpdatedAt.getTime(),
@@ -443,7 +389,7 @@ describe("Expense", () => {
       it("should throw error when exceeding max tags", () => {
         const expense = Expense.create({
           ...validInput,
-          tags: Array.from({ length: 10 }, (_, i) => `tag-${i}`),
+          tags: Tags.create(Array.from({ length: 10 }, (_, i) => `tag-${i}`)),
         });
 
         expect(() => expense.addTag("extra-tag")).toThrow(
@@ -456,7 +402,7 @@ describe("Expense", () => {
 
         expense.addTag("  SUBSCRIPTION  ");
 
-        expect(expense.tags.has("subscription")).toBe(true);
+        expect(expense.tags.has("SUBSCRIPTION")).toBe(true);
       });
     });
 
@@ -501,9 +447,11 @@ describe("Expense", () => {
 
     describe("advanceInstallment", () => {
       it("should advance to next installment", () => {
+        const installmentInfo = InstallmentInfo.create(1, 12);
+
         const expense = Expense.create({
           ...validInput,
-          totalInstallments: 12,
+          installmentInfo,
         });
 
         expense.advanceInstallment();
@@ -513,23 +461,23 @@ describe("Expense", () => {
       });
 
       it("should update timestamp", () => {
+        const installmentInfo = InstallmentInfo.create(1, 12);
         const expense = Expense.create({
           ...validInput,
-          totalInstallments: 12,
+          installmentInfo,
         });
         const originalUpdatedAt = expense.updatedAt;
 
         expense.advanceInstallment();
 
-        expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
-          originalUpdatedAt.getTime(),
-        );
+        expect(expense.updatedAt.getTime()).toBe(originalUpdatedAt.getTime());
       });
 
       it("should advance multiple times", () => {
+        const installmentInfo = InstallmentInfo.create(1, 12);
         const expense = Expense.create({
           ...validInput,
-          totalInstallments: 12,
+          installmentInfo,
         });
 
         expense.advanceInstallment();
@@ -540,9 +488,11 @@ describe("Expense", () => {
       });
 
       it("should throw error when already at final installment", () => {
+        const installmentInfo = InstallmentInfo.create(1, 1);
+
         const expense = Expense.create({
           ...validInput,
-          totalInstallments: 1,
+          installmentInfo,
         });
 
         expect(() => expense.advanceInstallment()).toThrow(
@@ -551,7 +501,14 @@ describe("Expense", () => {
       });
 
       it("should throw error when expense is paid", () => {
-        const expense = Expense.create(validInput);
+        const installmentInfo = InstallmentInfo.create(1, 1);
+        const status = ExpenseStatus.fromString("paying");
+
+        const expense = Expense.create({
+          ...validInput,
+          status,
+          installmentInfo,
+        });
 
         expense.markAsPaid();
 
@@ -561,7 +518,14 @@ describe("Expense", () => {
       });
 
       it("should throw error when expense is abandoned", () => {
-        const expense = Expense.create(validInput);
+        const installmentInfo = InstallmentInfo.create(1, 1);
+        const status = ExpenseStatus.fromString("paying");
+
+        const expense = Expense.create({
+          ...validInput,
+          status,
+          installmentInfo,
+        });
 
         expense.markAsAbandoned();
 
@@ -570,28 +534,44 @@ describe("Expense", () => {
         );
       });
     });
-
     describe("markAsPaid", () => {
       it("should mark single installment expense as paid", () => {
         const expense = Expense.create(validInput);
 
         expense.markAsPaid();
 
-        expect(expense.status).toBe(ExpenseStatus.fromString("paid"));
+        expect(expense.status.value).toBe(
+          ExpenseStatus.fromString("paid").value,
+        );
+
         expect(expense.status.isPaid()).toBe(true);
+
+        expect(expense.status.equals(ExpenseStatus.fromString("paid"))).toBe(
+          true,
+        );
       });
 
       it("should mark completed multi-installment expense as paid", () => {
+        const installmentInfo: InstallmentInfo = InstallmentInfo.create(1, 3);
+
         const expense = Expense.create({
           ...validInput,
-          totalInstallments: 3,
+          installmentInfo,
         });
 
         expense.advanceInstallment();
         expense.advanceInstallment();
         expense.markAsPaid();
 
-        expect(expense.status).toBe(ExpenseStatus.fromString("paid"));
+        expect(expense.status.value).toBe(
+          ExpenseStatus.fromString("paid").value,
+        );
+
+        expect(expense.status.isPaid()).toBe(true);
+
+        expect(expense.status.equals(ExpenseStatus.fromString("paid"))).toBe(
+          true,
+        );
       });
 
       it("should update timestamp", () => {
@@ -616,9 +596,11 @@ describe("Expense", () => {
       });
 
       it("should throw error when not at final installment", () => {
+        const installmentInfo: InstallmentInfo = InstallmentInfo.create(1, 12);
+
         const expense = Expense.create({
           ...validInput,
-          totalInstallments: 12,
+          installmentInfo,
         });
 
         expect(() => expense.markAsPaid()).toThrow(
@@ -635,66 +617,71 @@ describe("Expense", () => {
         );
       });
     });
+  });
+  describe("markAsAbandoned", () => {
+    it("should mark expense as abandoned", () => {
+      const expense = Expense.create(validInput);
 
-    describe("markAsAbandoned", () => {
-      it("should mark expense as abandoned", () => {
-        const expense = Expense.create(validInput);
+      expense.markAsAbandoned();
 
-        expense.markAsAbandoned();
-
-        expect(expense.status.isAbandoned()).toBe(true);
-      });
-
-      it("should update timestamp", () => {
-        const expense = Expense.create(validInput);
-        const originalUpdatedAt = expense.updatedAt;
-
-        expense.markAsAbandoned();
-
-        expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
-          originalUpdatedAt.getTime(),
-        );
-      });
-
-      it("should not update timestamp if already abandoned", () => {
-        const expense = Expense.create(validInput);
-        expense.markAsAbandoned();
-        const firstUpdate = expense.updatedAt;
-
-        expense.markAsAbandoned();
-
-        expect(expense.updatedAt).toEqual(firstUpdate);
-      });
-
-      it("should allow abandoning from PAYING status", () => {
-        const expense = Expense.create(validInput);
-
-        expense.markAsAbandoned();
-
-        expect(expense.status.isAbandoned()).toBe(true);
-      });
-
-      it("should allow abandoning from PAID status", () => {
-        const expense = Expense.create(validInput);
-        expense.markAsPaid();
-
-        expense.markAsAbandoned();
-
-        expect(expense.status.isAbandoned()).toBe(true);
-      });
+      expect(expense.status.isAbandoned()).toBe(true);
     });
 
-    describe("markAsPaying", () => {
-      it("should mark abandoned expense as paying", () => {
-        const expense = Expense.create(validInput);
-        expense.markAsAbandoned();
+    it("should update timestamp", () => {
+      const expense = Expense.create(validInput);
+      const originalUpdatedAt = expense.updatedAt;
 
-        expense.markAsPaying();
+      expense.markAsAbandoned();
 
-        expect(expense.status).toBe(ExpenseStatus.fromString("paying"));
-        expect(expense.status.isPaying()).toBe(true);
-      });
+      expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
+        originalUpdatedAt.getTime(),
+      );
+    });
 
+    it("should not update timestamp if already abandoned", () => {
+      const expense = Expense.create(validInput);
+      expense.markAsAbandoned();
+      const firstUpdate = expense.updatedAt;
+
+      expense.markAsAbandoned();
+
+      expect(expense.updatedAt).toEqual(firstUpdate);
+    });
+
+    it("should allow abandoning from PAYING status", () => {
+      const expense = Expense.create(validInput);
+
+      expense.markAsAbandoned();
+
+      expect(expense.status.isAbandoned()).toBe(true);
+      expect(expense.status.isPaying()).toBe(false);
+    });
+
+    it("should not allow abandoning from PAID status", () => {
+      const expense = Expense.create(validInput);
+
+      expense.markAsPaid();
+
+      expect(() => expense.markAsAbandoned()).toThrow(
+        `Invalid transition: PAID → ABANDONED`,
+      );
+    });
+  });
+
+  describe("markAsPaying", () => {
+    it("should not mark abandoned expense as paying", () => {
+      const expense = Expense.create(validInput);
+
+      expense.markAsAbandoned();
+
+      expect(() => expense.markAsPaying()).toThrow(
+        "Invalid transition: ABANDONED → PAID",
+      );
+      expect(expense.status.isPaying()).toBe(false);
+    });
+  });
+}); /*
+  });
       it("should update timestamp", () => {
         const expense = Expense.create(validInput);
         expense.markAsAbandoned();

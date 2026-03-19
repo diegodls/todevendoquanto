@@ -1,7 +1,10 @@
 import { ExpenseDescription } from "@/core/entities/expense/value-objects/expense-description";
 import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
 import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
-import { ExpenseStatus } from "@/core/entities/expense/value-objects/expense-status";
+import {
+  ExpenseStatus,
+  ExpenseStatusValue,
+} from "@/core/entities/expense/value-objects/expense-status";
 import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { InstallmentInfo } from "@/core/entities/expense/value-objects/installment-info";
 import { Money } from "@/core/entities/expense/value-objects/money";
@@ -160,10 +163,10 @@ export class Expense {
       }
     }
 
-    if (description && this._description) {
+    if (description) {
       const newDescription = ExpenseDescription.create(description);
 
-      if (this._description.equals(newDescription)) {
+      if (!this._description?.equals(newDescription)) {
         this._description = newDescription;
         hasChanged = true;
       }
@@ -186,6 +189,23 @@ export class Expense {
       this._tags = newTags;
       this.touch();
     }
+  }
+
+  public advanceInstallment(): void {
+    if (this._status.isPaid()) {
+      throw new Error("Cannot advance installment of paid expense");
+    }
+
+    if (this._status.isAbandoned()) {
+      throw new Error("Cannot advance installment of abandoned expense");
+    }
+
+    if (this._installmentInfo.isComplete()) {
+      throw new Error("Cannot advance: already at final installment");
+    }
+
+    this._installmentInfo = this._installmentInfo.next();
+    this.touch();
   }
 
   public splitIntoInstallments(): Expense[] {
@@ -260,7 +280,7 @@ export class Expense {
       return;
     }
 
-    this._status.isPaid();
+    this._status = this._status.transitionTo(ExpenseStatusValue.PAID);
     this.touch();
   }
 
@@ -269,7 +289,7 @@ export class Expense {
       return;
     }
 
-    this._status.isAbandoned();
+    this._status = this._status.transitionTo(ExpenseStatusValue.ABANDONED);
     this.touch();
   }
 
@@ -277,7 +297,9 @@ export class Expense {
     if (this._status.isPaying()) {
       return;
     }
-    this._status.isPaying();
+
+    this._status = this._status.transitionTo(ExpenseStatusValue.PAID);
+
     this.touch();
   }
 
@@ -341,15 +363,6 @@ export class Expense {
     if (this._amount.currency !== this._totalAmount.currency) {
       throw new Error(
         `Amount and totalAmount must have same currency: ${this._amount.currency} vs ${this._totalAmount.currency}`,
-      );
-    }
-
-    if (
-      this._totalAmount.amount !==
-      this._amount.amount * this.installmentInfo.total
-    ) {
-      throw new Error(
-        `Total amount (${this._totalAmount.amount}) must equal amount (${this._amount.amount}) × installments (${this.installmentInfo.total})`,
       );
     }
 

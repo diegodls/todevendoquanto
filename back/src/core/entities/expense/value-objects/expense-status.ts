@@ -18,10 +18,10 @@ const ALLOWED_TRANSITIONS: AllowedTransitions = {
 };
 
 export class ExpenseStatus {
-  private readonly value: ExpenseStatusValue;
+  private _value: ExpenseStatusValue;
 
   private constructor(value: ExpenseStatusValue) {
-    this.value = value;
+    this._value = value;
   }
 
   static paying(): ExpenseStatus {
@@ -43,30 +43,35 @@ export class ExpenseStatus {
   }
 
   public transitionTo(next: ExpenseStatusValue): ExpenseStatus {
-    const allowed = ALLOWED_TRANSITIONS[this.value];
+    const allowed = ALLOWED_TRANSITIONS[this._value];
 
     if (!allowed.includes(next)) {
-      throw new Error(`Invalid transition: ${this.value} → ${next}`);
+      throw new Error(`Invalid transition: ${this._value} → ${next}`);
     }
 
     return new ExpenseStatus(next);
   }
+  get value(): ExpenseStatusValue {
+    return this._value;
+  }
 
   public isPaying(): boolean {
-    return this.value === ExpenseStatusValue.PAYING;
+    return this._value === ExpenseStatusValue.PAYING;
   }
+
   public isPaid(): boolean {
-    return this.value === ExpenseStatusValue.PAID;
+    return this._value === ExpenseStatusValue.PAID;
   }
+
   public isAbandoned(): boolean {
-    return this.value === ExpenseStatusValue.ABANDONED;
+    return this._value === ExpenseStatusValue.ABANDONED;
   }
 
   public equals(other: ExpenseStatus): boolean {
-    return this.value === other.value;
+    return this._value === other._value;
   }
 
   public toString(): string {
-    return this.value;
+    return this._value.toString();
   }
 }
