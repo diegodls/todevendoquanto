@@ -1,3 +1,11 @@
+import {
+  InstallmentAlreadyCompleteError,
+  InstallmentCurrentExceedsTotalError,
+  InstallmentNumbersMustBeIntegersError,
+  InstallmentNumbersMustBePositiveError,
+  InstallmentTotalTooHighError,
+} from "@/core/shared/errors/domain/expense-value-object-errors";
+
 export class InstallmentInfo {
   private readonly MAX_INSTALLMENTS = 120;
   private constructor(
@@ -5,21 +13,25 @@ export class InstallmentInfo {
     private readonly _total: number
   ) {
     if (!Number.isInteger(_current) || !Number.isInteger(_total)) {
-      throw new Error("Installment numbers must be integers");
+      throw new InstallmentNumbersMustBeIntegersError(
+        "Installment numbers must be integers",
+      );
     }
 
     if (_current < 1 || _total < 1) {
-      throw new Error("Installment numbers must be positive");
+      throw new InstallmentNumbersMustBePositiveError(
+        "Installment numbers must be positive",
+      );
     }
 
     if (_current > _total) {
-      throw new Error(
+      throw new InstallmentCurrentExceedsTotalError(
         `Current installment (${_current}) cannot exceed total(${_total})`
       );
     }
 
     if (_total > this.MAX_INSTALLMENTS) {
-      throw new Error(
+      throw new InstallmentTotalTooHighError(
         `Total installment cannot exceed ${this.MAX_INSTALLMENTS} months`
       );
     }
@@ -51,7 +63,9 @@ export class InstallmentInfo {
 
   public next(): InstallmentInfo {
     if (this.isComplete()) {
-      throw new Error("Cannot advance beyond final installment");
+      throw new InstallmentAlreadyCompleteError(
+        "Cannot advance beyond final installment",
+      );
     }
     return new InstallmentInfo(this._current + 1, this.total);
   }

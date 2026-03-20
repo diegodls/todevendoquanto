@@ -1,6 +1,6 @@
 // src/domain/value-objects/Description.test.ts
 import { ExpenseDescription } from "@/core/entities/expense/value-objects/expense-description";
-import { InvalidDescriptionError } from "@/core/shared/errors/domain/InvalidDescriptionError";
+import { InvalidDescriptionError } from "@/core/shared/errors/domain/Invalid-description-error";
 import { describe, expect, it } from "vitest";
 
 describe("Description Value Object", () => {

@@ -10,8 +10,19 @@ import { InstallmentInfo } from "@/core/entities/expense/value-objects/installme
 import { Money } from "@/core/entities/expense/value-objects/money";
 import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
 import { Tags } from "@/core/entities/expense/value-objects/tags";
-
 import { UserId } from "@/core/entities/user/value-objects/user-id";
+import {
+  ExpenseAdvanceAbandonedInstallmentError,
+  ExpenseAdvanceBeyondFinalInstallmentError,
+  ExpenseAdvancePaidInstallmentError,
+  ExpenseCannotPayAbandonedError,
+  ExpenseCurrencyMismatchError,
+  ExpenseInstallmentIdRequiredError,
+  ExpenseInstallmentNotCompleteError,
+  ExpenseInstallmentSplitError,
+  ExpensePaidInstallmentInvariantError,
+  ExpenseUserIdRequiredError,
+} from "@/core/shared/errors/domain/expense-domain-errors";
 
 export type CreateExpenseInput = {
   name: ExpenseName;
@@ -193,15 +204,21 @@ export class Expense {
 
   public advanceInstallment(): void {
     if (this._status.isPaid()) {
-      throw new Error("Cannot advance installment of paid expense");
+      throw new ExpenseAdvancePaidInstallmentError(
+        "Cannot advance installment of paid expense",
+      );
     }
 
     if (this._status.isAbandoned()) {
-      throw new Error("Cannot advance installment of abandoned expense");
+      throw new ExpenseAdvanceAbandonedInstallmentError(
+        "Cannot advance installment of abandoned expense",
+      );
     }
 
     if (this._installmentInfo.isComplete()) {
-      throw new Error("Cannot advance: already at final installment");
+      throw new ExpenseAdvanceBeyondFinalInstallmentError(
+        "Cannot advance: already at final installment",
+      );
     }
 
     this._installmentInfo = this._installmentInfo.next();
@@ -218,7 +235,7 @@ export class Expense {
     );
 
     if (moneySplitted.length !== this._installmentInfo.total) {
-      throw new Error("Splitting expense error");
+      throw new ExpenseInstallmentSplitError("Splitting expense error");
     }
 
     const installments: Expense[] = [];
@@ -353,21 +370,23 @@ export class Expense {
 
   private validateInvariants(): void {
     if (!this._userId) {
-      throw new Error("Expense must belong to a user");
+      throw new ExpenseUserIdRequiredError("Expense must belong to a user");
     }
 
     if (!this._installmentId) {
-      throw new Error("Expense must have an installment ID");
+      throw new ExpenseInstallmentIdRequiredError(
+        "Expense must have an installment ID",
+      );
     }
 
     if (this._amount.currency !== this._totalAmount.currency) {
-      throw new Error(
+      throw new ExpenseCurrencyMismatchError(
         `Amount and totalAmount must have same currency: ${this._amount.currency} vs ${this._totalAmount.currency}`,
       );
     }
 
     if (this._status.isPaid() && !this._installmentInfo.isComplete()) {
-      throw new Error(
+      throw new ExpensePaidInstallmentInvariantError(
         `Expense marked as PAID but installment is ${this._installmentInfo.current}/${this._installmentInfo.total}`,
       );
     }
@@ -375,11 +394,13 @@ export class Expense {
 
   private assertCanBePaid(): void {
     if (this._status.isAbandoned()) {
-      throw new Error("Cannot mark abandoned expense as paid");
+      throw new ExpenseCannotPayAbandonedError(
+        "Cannot mark abandoned expense as paid",
+      );
     }
 
     if (!this._installmentInfo.isComplete()) {
-      throw new Error(
+      throw new ExpenseInstallmentNotCompleteError(
         `Cannot mark as paid: installment ${this._installmentInfo.current}/${this._installmentInfo.total} is not complete`,
       );
     }

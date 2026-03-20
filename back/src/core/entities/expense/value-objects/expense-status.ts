@@ -1,3 +1,8 @@
+import {
+  InvalidExpenseStatusError,
+  InvalidExpenseStatusTransitionError,
+} from "@/core/shared/errors/domain/expense-value-object-errors";
+
 export enum ExpenseStatusValue {
   PAYING = "PAYING",
   PAID = "PAID",
@@ -30,11 +35,11 @@ export class ExpenseStatus {
 
   static fromString(value: string): ExpenseStatus {
     const valid = Object.values(ExpenseStatusValue).find(
-      (v) => v === value.toLocaleUpperCase(),
+      (status) => status === value.toLocaleUpperCase(),
     );
 
     if (!valid) {
-      throw new Error(
+      throw new InvalidExpenseStatusError(
         `Invalid status: "${value}". Accepted values: ${Object.values(ExpenseStatusValue).join(", ")}`,
       );
     }
@@ -46,11 +51,14 @@ export class ExpenseStatus {
     const allowed = ALLOWED_TRANSITIONS[this._value];
 
     if (!allowed.includes(next)) {
-      throw new Error(`Invalid transition: ${this._value} → ${next}`);
+      throw new InvalidExpenseStatusTransitionError(
+        `Invalid transition: ${this._value} -> ${next}`,
+      );
     }
 
     return new ExpenseStatus(next);
   }
+
   get value(): ExpenseStatusValue {
     return this._value;
   }

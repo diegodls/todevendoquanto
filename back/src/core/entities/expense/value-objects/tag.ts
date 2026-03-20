@@ -1,3 +1,10 @@
+import {
+  TagEmptyError,
+  TagInvalidFormatError,
+  TagTooLongError,
+  TagTooShortError,
+} from "@/core/shared/errors/domain/expense-value-object-errors";
+
 const ONLY_LETTERS_NUMBERS_HYPHENS = /^[a-z0-9-]+$/;
 const LOWERCASE_NOSPACE_HYPHENS = /\s+/g;
 export class Tag {
@@ -6,15 +13,19 @@ export class Tag {
 
   private constructor(private readonly _value: string) {
     if (_value.length < Tag.MIN_LENGTH) {
-      throw new Error(`Tag must have at least ${Tag.MIN_LENGTH} characters`);
+      throw new TagTooShortError(
+        `Tag must have at least ${Tag.MIN_LENGTH} characters`,
+      );
     }
 
     if (_value.length > Tag.MAX_LENGTH) {
-      throw new Error(`Tag cannot exceed ${Tag.MAX_LENGTH} characters`);
+      throw new TagTooLongError(
+        `Tag cannot exceed ${Tag.MAX_LENGTH} characters`,
+      );
     }
 
     if (!ONLY_LETTERS_NUMBERS_HYPHENS.test(_value)) {
-      throw new Error(
+      throw new TagInvalidFormatError(
         "Tag can only contain lowercase letters, numbers, and hyphens",
       );
     }
@@ -24,7 +35,7 @@ export class Tag {
     const trimmed = tag.trim();
 
     if (trimmed.length === 0) {
-      throw new Error("Tag cannot be empty or whitespace");
+      throw new TagEmptyError("Tag cannot be empty or whitespace");
     }
 
     const normalized = trimmed

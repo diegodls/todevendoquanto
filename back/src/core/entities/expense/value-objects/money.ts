@@ -1,3 +1,23 @@
+import {
+  InvalidMoneyAmountError,
+  InvalidMoneyCurrencyError,
+  MoneyAmountNegativeError,
+  MoneyCentsMustBeIntegerError,
+  MoneyCentsNegativeError,
+  MoneyCurrencyEmptyError,
+  MoneyCurrencyMismatchError,
+  MoneyDivisionByZeroError,
+  MoneyEmptyRatiosError,
+  MoneyInvalidDivisionFactorError,
+  MoneyInvalidMultiplicationFactorError,
+  MoneyInvalidSplitQuantityError,
+  MoneyNegativeDivisorError,
+  MoneyNegativeMultiplicationFactorError,
+  MoneyNegativeRatioError,
+  MoneyNegativeResultError,
+  MoneyZeroTotalRatioError,
+} from "@/core/shared/errors/domain/expense-value-object-errors";
+
 export class Money {
   private static readonly VALID_CURRENCIES = ["BRL", "USD"];
   private static readonly DEFAULT_CURRENCY = "BRL";
@@ -7,19 +27,19 @@ export class Money {
     private readonly _currency: string = Money.DEFAULT_CURRENCY,
   ) {
     if (_amount < 0) {
-      throw new Error("Money amount cannot be negative");
+      throw new MoneyAmountNegativeError("Money amount cannot be negative");
     }
 
     if (!Number.isFinite(_amount)) {
-      throw new Error("Money amount must be a valid number");
+      throw new InvalidMoneyAmountError("Money amount must be a valid number");
     }
 
     if (!_currency || _currency.trim().length === 0) {
-      throw new Error("Currency cannot be empty");
+      throw new MoneyCurrencyEmptyError("Currency cannot be empty");
     }
 
     if (!Money.VALID_CURRENCIES.includes(_currency)) {
-      throw new Error(`Invalid currency: ${_currency}`);
+      throw new InvalidMoneyCurrencyError(`Invalid currency: ${_currency}`);
     }
   }
 
@@ -29,11 +49,11 @@ export class Money {
 
   public static fromCents(cents: number, currency?: string): Money {
     if (!Number.isInteger(cents)) {
-      throw new Error("Cents must be a integer");
+      throw new MoneyCentsMustBeIntegerError("Cents must be a integer");
     }
 
     if (cents < 0) {
-      throw new Error("Cents cannot be negative");
+      throw new MoneyCentsNegativeError("Cents cannot be negative");
     }
 
     const amount = cents / 100;
@@ -103,7 +123,7 @@ export class Money {
     const result = this._amount - other._amount;
 
     if (result < 0) {
-      throw new Error(
+      throw new MoneyNegativeResultError(
         `Subtraction would result in negative amount: ${this.amount} - ${other._amount} = ${this.amount - other._amount}`,
       );
     }
@@ -112,11 +132,15 @@ export class Money {
 
   public multiply(factor: number): Money {
     if (!Number.isFinite(factor)) {
-      throw new Error("Multiplication factor must be a finite number");
+      throw new MoneyInvalidMultiplicationFactorError(
+        "Multiplication factor must be a finite number",
+      );
     }
 
     if (factor < 0) {
-      throw new Error("Multiplication factor cannot be negative");
+      throw new MoneyNegativeMultiplicationFactorError(
+        "Multiplication factor cannot be negative",
+      );
     }
 
     return new Money(this._amount * factor, this._currency);
@@ -124,15 +148,17 @@ export class Money {
 
   public divide(divisor: number): Money {
     if (!Number.isFinite(divisor)) {
-      throw new Error("Divisor factor must be a finite number");
+      throw new MoneyInvalidDivisionFactorError(
+        "Divisor factor must be a finite number",
+      );
     }
 
     if (divisor === 0) {
-      throw new Error("Cannot divide by zero");
+      throw new MoneyDivisionByZeroError("Cannot divide by zero");
     }
 
     if (divisor < 0) {
-      throw new Error("Divisor cannot be negative");
+      throw new MoneyNegativeDivisorError("Divisor cannot be negative");
     }
 
     return new Money(this._amount / divisor, this.currency);
@@ -140,7 +166,9 @@ export class Money {
 
   public split(parts: number): Money[] {
     if (!Number.isInteger(parts) || parts <= 0) {
-      throw new Error("The split quantity must be a integer positive");
+      throw new MoneyInvalidSplitQuantityError(
+        "The split quantity must be a integer positive",
+      );
     }
 
     const base = Math.floor(this._amount / parts);
@@ -155,13 +183,13 @@ export class Money {
 
   public allocate(ratios: number[]): Money[] {
     if (ratios.length === 0) {
-      throw new Error("Ratios array cannot be empty");
+      throw new MoneyEmptyRatiosError("Ratios array cannot be empty");
     }
 
     const totalRatio = ratios.reduce((sum, ratio) => sum + ratio, 0);
 
     if (totalRatio === 0) {
-      throw new Error("Total of ratios cannot be zero");
+      throw new MoneyZeroTotalRatioError("Total of ratios cannot be zero");
     }
 
     const totalCents = this.cents;
@@ -172,7 +200,7 @@ export class Money {
 
     ratios.forEach((ratio, index) => {
       if (ratio < 0) {
-        throw new Error("Ratios cannot be negative");
+        throw new MoneyNegativeRatioError("Ratios cannot be negative");
       }
 
       let share: number = 0;
@@ -203,7 +231,7 @@ export class Money {
 
   private assertSameCurrency(other: Money): void {
     if (this._currency !== other._currency) {
-      throw new Error(
+      throw new MoneyCurrencyMismatchError(
         `Cannot operate on different currencies: ${this._currency} vs ${other._currency}`,
       );
     }

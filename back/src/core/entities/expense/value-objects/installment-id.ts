@@ -1,3 +1,8 @@
+import {
+  InstallmentIdEmptyError,
+  InvalidInstallmentIdError,
+} from "@/core/shared/errors/domain/expense-value-object-errors";
+
 export class InstallmentId {
   private readonly _value: string;
 
@@ -11,14 +16,16 @@ export class InstallmentId {
 
   public static from(id: string): InstallmentId {
     if (!id || id.trim().length === 0) {
-      throw new Error("Installment id cannot be empty");
+      throw new InstallmentIdEmptyError("Installment id cannot be empty");
     }
 
     const uuidV4Regex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     if (!uuidV4Regex.test(id)) {
-      throw new Error("Installment id must be a valid UUID v4");
+      throw new InvalidInstallmentIdError(
+        "Installment id must be a valid UUID v4",
+      );
     }
 
     return new InstallmentId(id);

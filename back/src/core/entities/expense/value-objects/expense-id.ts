@@ -1,3 +1,8 @@
+import {
+  ExpenseIdEmptyError,
+  InvalidExpenseIdError,
+} from "@/core/shared/errors/domain/expense-value-object-errors";
+
 export class ExpenseId {
   private readonly _value: string;
 
@@ -11,14 +16,14 @@ export class ExpenseId {
 
   public static from(id: string): ExpenseId {
     if (!id || id.trim().length === 0) {
-      throw new Error("Expense id cannot be empty");
+      throw new ExpenseIdEmptyError("Expense id cannot be empty");
     }
 
     const uuidV4Regex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     if (!uuidV4Regex.test(id)) {
-      throw new Error("Expense id must be a valid UUID v4");
+      throw new InvalidExpenseIdError("Expense id must be a valid UUID v4");
     }
 
     return new ExpenseId(id);

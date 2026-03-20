@@ -663,7 +663,7 @@ describe("Expense", () => {
       expense.markAsPaid();
 
       expect(() => expense.markAsAbandoned()).toThrow(
-        `Invalid transition: PAID → ABANDONED`,
+        `Invalid transition: PAID -> ABANDONED`,
       );
     });
   });
@@ -675,7 +675,7 @@ describe("Expense", () => {
       expense.markAsAbandoned();
 
       expect(() => expense.markAsPaying()).toThrow(
-        "Invalid transition: ABANDONED → PAID",
+        "Invalid transition: ABANDONED -> PAID",
       );
       expect(expense.status.isPaying()).toBe(false);
     });

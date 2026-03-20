@@ -1,3 +1,11 @@
+import {
+  PaymentScheduleDateTooEarlyError,
+  PaymentScheduleDateTooFarInFutureError,
+  PaymentScheduleExpirationOutsidePeriodError,
+  PaymentScheduleInvalidDateError,
+  PaymentScheduleInvalidPeriodError,
+} from "@/core/shared/errors/domain/expense-value-object-errors";
+
 export class PaymentSchedule {
   private readonly MIN_DATE_LIMIT: Date = new Date("1970-01-01");
   private readonly MAX_YEAR_LIMIT: number = 30;
@@ -118,20 +126,22 @@ export class PaymentSchedule {
 
     dates.forEach(({ date, name }) => {
       if (!(date instanceof Date) || isNaN(date.getTime())) {
-        throw new Error(`${name} must be a valid date`);
+        throw new PaymentScheduleInvalidDateError(
+          `${name} must be a valid date`,
+        );
       }
     });
   }
 
   private validateLogicalOrder(): void {
     if (this._startAt > this._endAt) {
-      throw new Error(
+      throw new PaymentScheduleInvalidPeriodError(
         `Payment period start (${this.formatDate(this._startAt)}) must be before end (${this.formatDate(this._endAt)})`,
       );
     }
 
     if (this._expirationDay > this._endAt) {
-      throw new Error(
+      throw new PaymentScheduleExpirationOutsidePeriodError(
         `Expiration day (${this.formatDate(this._expirationDay)}) must be within payment period (${this.formatDate(this._startAt)} to ${this.formatDate(this._endAt)})`,
       );
     }
@@ -151,12 +161,12 @@ export class PaymentSchedule {
 
     dates.forEach((date) => {
       if (date < this.MIN_DATE_LIMIT) {
-        throw new Error(
+        throw new PaymentScheduleDateTooEarlyError(
           `Date cannot be before year ${this.MIN_DATE_LIMIT.getFullYear()}: ${this.formatDate(date)}`,
         );
       }
       if (date > maxDate) {
-        throw new Error(
+        throw new PaymentScheduleDateTooFarInFutureError(
           `Date cannot be more than ${this.MAX_YEAR_LIMIT} years in the future: ${this.formatDate(date)}`,
         );
       }

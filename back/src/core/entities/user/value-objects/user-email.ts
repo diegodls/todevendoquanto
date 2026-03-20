@@ -1,3 +1,9 @@
+import {
+  EmailEmptyError,
+  EmailTooLongError,
+  InvalidEmailFormatError,
+} from "@/core/shared/errors/domain/user-value-object-errors";
+
 // core/entities/user/value-objects/email.ts
 
 export class Email {
@@ -9,7 +15,7 @@ export class Email {
 
   public static create(email: string): Email {
     if (!email || email.trim().length === 0) {
-      throw new Error("Email cannot be empty");
+      throw new EmailEmptyError("Email cannot be empty");
     }
 
     let normalized = email.trim().toLowerCase();
@@ -17,11 +23,11 @@ export class Email {
     normalized = this.normalizeAccents(normalized);
 
     if (!this.isValid(normalized)) {
-      throw new Error("Email format is invalid");
+      throw new InvalidEmailFormatError("Email format is invalid");
     }
 
     if (normalized.length > 254) {
-      throw new Error("Email exceeds maximum length of 254 characters");
+      throw new EmailTooLongError("Email exceeds maximum length of 254 characters");
     }
 
     return new Email(normalized);

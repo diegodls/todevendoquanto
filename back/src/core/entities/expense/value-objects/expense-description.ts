@@ -1,4 +1,4 @@
-import { InvalidDescriptionError } from "@/core/shared/errors/domain/InvalidDescriptionError";
+import { InvalidDescriptionError } from "@/core/shared/errors/domain/Invalid-description-error";
 import { HTML_TAG_REGEX } from "./../../../shared/regex/html-tag";
 
 interface DescriptionProps {
