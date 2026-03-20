@@ -1,7 +1,7 @@
 import { Money } from "@/core/entities/expense/value-objects/money";
 import { describe, expect, it } from "vitest";
 
-describe("Money", () => {
+describe("money", () => {
   describe("create", () => {
     it("should create valid money with default currency", () => {
       const money = Money.create(100);
@@ -42,7 +42,7 @@ describe("Money", () => {
     });
   });
 
-  describe("fromCents", () => {
+  describe("fromcents", () => {
     it("should create money from  cents", () => {
       const money = Money.fromCents(4990);
 
@@ -154,7 +154,7 @@ describe("Money", () => {
     });
   });
 
-  describe("isZero", () => {
+  describe("iszero", () => {
     it("should return true for zero amount", () => {
       const money = Money.create(0);
       expect(money.isZero()).toBe(true);
@@ -174,141 +174,141 @@ describe("Money", () => {
   });
 
   describe("comparisons", () => {
-    describe("isGreaterThan", () => {
+    describe("isgreaterthan", () => {
       it("should return true when amount is greater", () => {
         const money1 = Money.create(100);
         const money2 = Money.create(20);
 
         expect(money1.isGreaterThan(money2)).toBe(true);
       });
+
+      it("should return false when amount is less", () => {
+        const money1 = Money.create(50);
+        const money2 = Money.create(100);
+
+        expect(money1.isGreaterThan(money2)).toBe(false);
+      });
+
+      it("should return false when amount are equal", () => {
+        const money1 = Money.create(75);
+        const money2 = Money.create(75);
+
+        expect(money1.isGreaterThan(money2)).toBe(false);
+      });
+
+      it("should throw error on different currencies", () => {
+        const brl = Money.create(99, "BRL");
+        const usd = Money.create(99, "USD");
+
+        expect(() => brl.isGreaterThan(usd)).toThrow(
+          "Cannot operate on different currencies",
+        );
+      });
     });
 
-    it("should return false when amount is less", () => {
-      const money1 = Money.create(50);
-      const money2 = Money.create(100);
+    describe("isgreaterthanorequal", () => {
+      it("should return true when amount is greater", () => {
+        const money1 = Money.create(100);
+        const money2 = Money.create(50);
+        expect(money1.isGreaterThanOrEqual(money2)).toBe(true);
+      });
 
-      expect(money1.isGreaterThan(money2)).toBe(false);
+      it("should return true when amounts are equals", () => {
+        const money1 = Money.create(100);
+        const money2 = Money.create(100);
+        expect(money1.isGreaterThanOrEqual(money2)).toBe(true);
+      });
+
+      it("should return false when amount is less", () => {
+        const money1 = Money.create(50);
+        const money2 = Money.create(100);
+        expect(money1.isGreaterThanOrEqual(money2)).toBe(false);
+      });
     });
 
-    it("should return false when amount are equal", () => {
-      const money1 = Money.create(75);
-      const money2 = Money.create(75);
+    describe("islessthan", () => {
+      it("should return true when amount is less", () => {
+        const money1 = Money.create(50);
+        const money2 = Money.create(100);
+        expect(money1.isLessThan(money2)).toBe(true);
+      });
 
-      expect(money1.isGreaterThan(money2)).toBe(false);
+      it("should return false when amount is greater", () => {
+        const money1 = Money.create(100);
+        const money2 = Money.create(50);
+        expect(money1.isLessThan(money2)).toBe(false);
+      });
+
+      it("should return false when amount are equal", () => {
+        const money1 = Money.create(100);
+        const money2 = Money.create(100);
+        expect(money1.isLessThan(money2)).toBe(false);
+      });
     });
 
-    it("should throw error on different currencies", () => {
-      const brl = Money.create(99, "BRL");
-      const usd = Money.create(99, "USD");
+    describe("islessthanoreq1ual", () => {
+      it("should return true when amount is less", () => {
+        const money1 = Money.create(50);
+        const money2 = Money.create(100);
 
-      expect(() => brl.isGreaterThan(usd)).toThrow(
-        "Cannot operate on different currencies",
-      );
-    });
-  });
+        expect(money1.isLessThanOrEqual(money2)).toBe(true);
+      });
 
-  describe("isGreaterThanOrEqual", () => {
-    it("should return true when amount is greater", () => {
-      const money1 = Money.create(100);
-      const money2 = Money.create(50);
-      expect(money1.isGreaterThanOrEqual(money2)).toBe(true);
-    });
+      it("should return true when amounts are equal", () => {
+        const money1 = Money.create(50);
+        const money2 = Money.create(50);
 
-    it("should return true when amounts are equals", () => {
-      const money1 = Money.create(100);
-      const money2 = Money.create(100);
-      expect(money1.isGreaterThanOrEqual(money2)).toBe(true);
-    });
+        expect(money1.isLessThanOrEqual(money2)).toBe(true);
+      });
 
-    it("should return false when amount is less", () => {
-      const money1 = Money.create(50);
-      const money2 = Money.create(100);
-      expect(money1.isGreaterThanOrEqual(money2)).toBe(false);
-    });
-  });
+      it("should return true when amounts is greater", () => {
+        const money1 = Money.create(100);
+        const money2 = Money.create(50);
 
-  describe("isLessThan", () => {
-    it("should return true when amount is less", () => {
-      const money1 = Money.create(50);
-      const money2 = Money.create(100);
-      expect(money1.isLessThan(money2)).toBe(true);
+        expect(money1.isLessThanOrEqual(money2)).toBe(false);
+      });
     });
 
-    it("should return false when amount is greater", () => {
-      const money1 = Money.create(100);
-      const money2 = Money.create(50);
-      expect(money1.isLessThan(money2)).toBe(false);
-    });
+    describe("equals", () => {
+      it("should return true for same amount and currency", () => {
+        const money1 = Money.create(100);
+        const money2 = Money.create(100);
 
-    it("should return false when amount are equal", () => {
-      const money1 = Money.create(100);
-      const money2 = Money.create(100);
-      expect(money1.isLessThan(money2)).toBe(false);
-    });
-  });
+        expect(money1.equals(money2)).toBe(true);
+      });
 
-  describe("isLessThanOrEq1ual", () => {
-    it("should return true when amount is less", () => {
-      const money1 = Money.create(50);
-      const money2 = Money.create(100);
+      it("should return false for different amounts", () => {
+        const money1 = Money.create(100);
+        const money2 = Money.create(50);
 
-      expect(money1.isLessThanOrEqual(money2)).toBe(true);
-    });
+        expect(money1.equals(money2)).toBe(false);
+      });
 
-    it("should return true when amounts are equal", () => {
-      const money1 = Money.create(50);
-      const money2 = Money.create(50);
+      it("should return false for different currencies", () => {
+        const usd = Money.create(100, "USD");
+        const brl = Money.create(100, "BRL");
 
-      expect(money1.isLessThanOrEqual(money2)).toBe(true);
-    });
+        expect(usd.equals(brl)).toBe(false);
+      });
 
-    it("should return true when amounts is greater", () => {
-      const money1 = Money.create(100);
-      const money2 = Money.create(50);
+      it("should return false when comparing with null", () => {
+        const money = Money.create(100);
 
-      expect(money1.isLessThanOrEqual(money2)).toBe(false);
-    });
-  });
+        expect(money.equals(null as any)).toBe(false);
+      });
 
-  describe("equals", () => {
-    it("should return true for same amount and currency", () => {
-      const money1 = Money.create(100);
-      const money2 = Money.create(100);
+      it("should return false when comparing with undefined", () => {
+        const money = Money.create(100);
 
-      expect(money1.equals(money2)).toBe(true);
-    });
+        expect(money.equals(undefined as any)).toBe(false);
+      });
 
-    it("should return false for different amounts", () => {
-      const money1 = Money.create(100);
-      const money2 = Money.create(50);
+      it("should return false when comparing with plain object", () => {
+        const money = Money.create(100);
+        const plain = { _amount: 100, _currency: "BRL" };
 
-      expect(money1.equals(money2)).toBe(false);
-    });
-
-    it("should return false for different currencies", () => {
-      const usd = Money.create(100, "USD");
-      const brl = Money.create(100, "BRL");
-
-      expect(usd.equals(brl)).toBe(false);
-    });
-
-    it("should return false when comparing with null", () => {
-      const money = Money.create(100);
-
-      expect(money.equals(null as any)).toBe(false);
-    });
-
-    it("should return false when comparing with undefined", () => {
-      const money = Money.create(100);
-
-      expect(money.equals(undefined as any)).toBe(false);
-    });
-
-    it("should return false when comparing with plain object", () => {
-      const money = Money.create(100);
-      const plain = { _amount: 100, _currency: "BRL" };
-
-      expect(money.equals(plain as any)).toBe(false);
+        expect(money.equals(plain as any)).toBe(false);
+      });
     });
   });
 
@@ -355,15 +355,15 @@ describe("Money", () => {
         "Cannot operate on different currencies",
       );
     });
+  });
 
-    describe("subtract", () => {
-      it("should subtract two money amounts", () => {
-        const money1 = Money.create(100);
-        const money2 = Money.create(30);
-        const result = money1.subtract(money2);
+  describe("subtract", () => {
+    it("should subtract two money amounts", () => {
+      const money1 = Money.create(100);
+      const money2 = Money.create(30);
+      const result = money1.subtract(money2);
 
-        expect(result.amount).toBe(70);
-      });
+      expect(result.amount).toBe(70);
     });
 
     it("should subtract to zero", () => {
@@ -581,7 +581,7 @@ describe("Money", () => {
     });
   });
 
-  describe("toString", () => {
+  describe("tostring", () => {
     it("should format money as string", () => {
       const money = Money.create(100);
       expect(money.toString()).toBe("BRL 100.00");
@@ -603,7 +603,7 @@ describe("Money", () => {
     });
   });
 
-  describe("toJSON", () => {
+  describe("tojson", () => {
     it("should serialize to JSON", () => {
       const money = Money.create(100, "USD");
       const json = money.toJSON();
@@ -655,6 +655,163 @@ describe("Money", () => {
       expect(money2.amount).toBe(200);
 
       expect(money1).not.toBe(money2);
+    });
+  });
+
+  describe("split", () => {
+    const currency = "BRL";
+
+    describe("input validation", () => {
+      it("should throw error if parts is 0", () => {
+        const money = Money.create(100, currency);
+        expect(() => money.split(0)).toThrowError(
+          "The split quantity must be a integer positive",
+        );
+      });
+
+      it("should throw error if parts is negative", () => {
+        const money = Money.create(100, currency);
+        expect(() => money.split(-5)).toThrowError(
+          "The split quantity must be a integer positive",
+        );
+      });
+
+      it("should throw error if parts is a float", () => {
+        const money = Money.create(100, currency);
+        expect(() => money.split(2.5)).toThrowError(
+          "The split quantity must be a integer positive",
+        );
+      });
+
+      it("should throw error if parts is NaN", () => {
+        const money = Money.create(100, currency);
+        expect(() => money.split(NaN)).toThrowError(
+          "The split quantity must be a integer positive",
+        );
+      });
+
+      it("should throw error if parts is Infinity", () => {
+        const money = Money.create(100, currency);
+        expect(() => money.split(Infinity)).toThrowError(
+          "The split quantity must be a integer positive",
+        );
+      });
+    });
+
+    describe("exact division", () => {
+      it("should split evenly when amount is divisible by parts", () => {
+        const money = Money.create(100, currency);
+        const parts = money.split(4);
+
+        expect(parts.length).toBe(4);
+
+        parts.forEach((p) => expect(p.amount).toBe(25));
+        expect(Money.sum(parts)).toBe(100);
+      });
+
+      it("should return single item equal to original when parts is 1", () => {
+        const money = Money.create(50, currency);
+        const parts = money.split(1);
+
+        expect(parts.length).toBe(1);
+        expect(parts[0].amount).toBe(50);
+        expect(parts[0].currency).toBe(currency);
+      });
+    });
+
+    describe("remainder distribution", () => {
+      it("should distribute remainder to the FIRST parts (as per code logic)", () => {
+        const money = Money.create(10, currency);
+        const parts = money.split(3);
+
+        expect(parts.length).toBe(3);
+        expect(parts[0].amount).toBe(4);
+        expect(parts[1].amount).toBe(3);
+        expect(parts[2].amount).toBe(3);
+        expect(Money.sum(parts)).toBe(10);
+      });
+
+      it("should handle remainder larger than 1", () => {
+        const money = Money.create(10, currency);
+        const parts = money.split(4);
+
+        expect(parts.length).toBe(4);
+        expect(parts[0].amount).toBe(3);
+        expect(parts[1].amount).toBe(3);
+        expect(parts[2].amount).toBe(2);
+        expect(parts[3].amount).toBe(2);
+        expect(Money.sum(parts)).toBe(10);
+      });
+    });
+
+    describe("edge cases", () => {
+      it("should handle amount 0", () => {
+        const money = Money.create(0, currency);
+        const parts = money.split(5);
+
+        expect(parts.length).toBe(5);
+        parts.forEach((p) => expect(p.amount).toBe(0));
+      });
+
+      it("should handle amount smaller than parts (some get 0)", () => {
+        const money = Money.create(5, currency);
+        const parts = money.split(10);
+
+        expect(parts.length).toBe(10);
+
+        for (let i = 0; i < 5; i++) {
+          expect(parts[i].amount).toBe(1);
+        }
+
+        for (let i = 5; i < 10; i++) {
+          expect(parts[i].amount).toBe(0);
+        }
+
+        expect(Money.sum(parts)).toBe(5);
+      });
+
+      it("should handle smallest unit (1) split into 1", () => {
+        const money = Money.create(1, currency);
+        const parts = money.split(1);
+
+        expect(parts[0].amount).toBe(1);
+      });
+
+      it("should handle smallest unit (1) split into 2", () => {
+        const money = Money.create(1, currency);
+        const parts = money.split(2);
+
+        expect(parts[0].amount).toBe(1);
+        expect(parts[1].amount).toBe(0);
+        expect(Money.sum(parts)).toBe(1);
+      });
+    });
+
+    describe("integrity", () => {
+      it("should preserve currency in all split parts", () => {
+        const money = Money.create(100, "USD");
+        const parts = money.split(3);
+
+        parts.forEach((p) => expect(p.currency).toBe("USD"));
+      });
+
+      it("should ensure sum of parts always equals original amount (Property Based)", () => {
+        const testCases = [
+          { amount: 100, parts: 3 },
+          { amount: 100, parts: 7 },
+          { amount: 1000, parts: 9 },
+          { amount: 5, parts: 100 },
+        ];
+
+        testCases.forEach(({ amount, parts }) => {
+          const money = Money.create(amount, currency);
+          const split = money.split(parts);
+          const total = Money.sum(split);
+
+          expect(total).toBe(amount);
+          expect(split.length).toBe(parts);
+        });
+      });
     });
   });
 });

@@ -213,7 +213,7 @@ export class Expense {
       return [this];
     }
 
-    const moneySplitted: Money[] = this._totalAmount.split(
+    const moneySplitted: Money[] = this._amount.split(
       this._installmentInfo.total,
     );
 
@@ -221,7 +221,7 @@ export class Expense {
       throw new Error("Splitting expense error");
     }
 
-    const installments: Expense[] = [];
+    let installments: Expense[] = [];
 
     for (let i = 0; i < this._installmentInfo.total; i++) {
       const paymentDay: Date = this._status.isPaying()
@@ -264,8 +264,6 @@ export class Expense {
         paymentSchedule: paymentSchedule,
         updatedAt: this._updatedAt,
       });
-
-      console.log(newExpense);
 
       installments.push(newExpense);
     }

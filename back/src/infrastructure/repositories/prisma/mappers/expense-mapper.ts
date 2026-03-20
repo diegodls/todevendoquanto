@@ -1,6 +1,8 @@
 import { Expense as EntityExpense } from "@/core/entities/expense/expense";
+import { ExpenseDescription } from "@/core/entities/expense/value-objects/expense-description";
 import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
 import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
+import { ExpenseStatus } from "@/core/entities/expense/value-objects/expense-status";
 import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { InstallmentInfo } from "@/core/entities/expense/value-objects/installment-info";
 import { Money } from "@/core/entities/expense/value-objects/money";
@@ -14,8 +16,10 @@ export class ExpenseMapper {
   static toDomain(raw: PrismaExpense): EntityExpense {
     const expenseId = ExpenseId.from(raw.id);
     const name = ExpenseName.create(raw.name);
-    const amount = Money.fromDecimal(raw.amount, raw.currency);
-    const totalAmount = Money.fromDecimal(raw.totalAmount, raw.currency);
+    const description = ExpenseDescription.create(raw.description);
+    const status = ExpenseStatus.fromString(raw.status);
+    const amount = Money.fromCents(raw.amount, raw.currency);
+    const totalAmount = Money.fromCents(raw.totalAmount, raw.currency);
     const installmentInfo = InstallmentInfo.create(
       raw.currentInstallment,
       raw.totalInstallment,
@@ -32,10 +36,10 @@ export class ExpenseMapper {
 
     return EntityExpense.restore(expenseId, {
       name,
-      description: raw.description,
+      description,
       amount,
       totalAmount,
-      status: raw.status,
+      status,
       tags,
       installmentInfo,
       paymentSchedule,
@@ -50,11 +54,11 @@ export class ExpenseMapper {
     return {
       id: entity.id.toString(),
       name: entity.name.value,
-      description: entity.description,
+      description: entity.description?.value || "",
       amount: entity.amount.cents,
       totalAmount: entity.totalAmount.cents,
       currency: entity.amount.currency,
-      status: entity.status,
+      status: entity.status.value,
       tags: entity.tags.value,
       currentInstallment: entity.installmentInfo.current,
       totalInstallment: entity.installmentInfo.total,
@@ -74,11 +78,11 @@ export class ExpenseMapper {
   ): CreateExpenseOutputDTO {
     return {
       name: expense.name.value,
-      description: expense.description,
+      description: expense.description?.value || "",
       amount: expense.amount.amount,
       totalAmount: expense.totalAmount.amount,
       currency: expense.amount.currency,
-      status: expense.status,
+      status: expense.status.value,
       tags: expense.tags.value,
       currentInstallment: expense.installmentInfo.current,
       totalInstallment: expense.installmentInfo.total,

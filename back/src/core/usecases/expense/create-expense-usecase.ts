@@ -81,23 +81,25 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
 
     const expensesToCreate: Expense[] = newExpense.splitIntoInstallments();
 
-    return [
-      {
-        name: "string;",
-        description: "string;",
-        amount: 2,
-        currency: "string;",
-        totalAmount: 2,
-        status: "string;",
-        tags: [],
-        currentInstallment: 1,
-        totalInstallment: 1,
-        paymentDay: "string;",
-        expirationDay: "string;",
-        paymentStartAt: "string;",
-        paymentEndAt: "string;",
-      },
-    ];
+    const output01: CreateExpenseOutputDTO[] = expensesToCreate.map(
+      (expense) => ({
+        name: expense.name.value,
+        description: expense.description?.value || "",
+        amount: expense.amount.amount,
+        currency: expense.amount.currency,
+        totalAmount: expense.totalAmount.amount,
+        status: expense.status.value,
+        tags: expense.tags.toArray(),
+        currentInstallment: expense.installmentInfo.current,
+        totalInstallment: expense.installmentInfo.total,
+        paymentDay: expense.paymentSchedule.paymentDay.toISOString(),
+        expirationDay: expense.paymentSchedule.expirationDay.toISOString(),
+        paymentStartAt: expense.paymentSchedule.startAt.toISOString(),
+        paymentEndAt: expense.paymentSchedule.endAt.toISOString(),
+      }),
+    );
+
+    return output01;
 
     const output = await this.repository.create(expensesToCreate);
 

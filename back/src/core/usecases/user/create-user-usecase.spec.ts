@@ -353,8 +353,6 @@ describe("name validation", () => {
 
       const result = await createUserUseCase.execute(input);
 
-      console.log(input);
-
       expect(result.name).toBe(name);
     }
   });

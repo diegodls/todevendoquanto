@@ -143,7 +143,7 @@ export class Money {
       throw new Error("The split quantity must be a integer positive");
     }
 
-    const base = Math.floor(this._amount / parts);
+    const base = Math.floor(this.cents / parts);
 
     const remainder = this._amount % parts;
 
@@ -151,6 +151,10 @@ export class Money {
       { length: parts },
       (_, i) => new Money(i < remainder ? base + 1 : base, this._currency),
     );
+  }
+
+  public static sum(moneys: Money[]): number {
+    return moneys.reduce((acc, m) => acc + m.amount, 0);
   }
 
   public allocate(ratios: number[]): Money[] {

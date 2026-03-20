@@ -22,10 +22,7 @@ const userRepository = new UserRepositoryPrisma(prisma);
 
 const expenseRepository = new ExpenseRepositoryPrisma(prisma);
 
-const createExpenseUseCase = new CreateExpenseUseCase(
-  expenseRepository,
-  dateProvider,
-);
+const createExpenseUseCase = new CreateExpenseUseCase(expenseRepository);
 
 const createExpenseController = new CreateExpenseController(
   createExpenseUseCase,
