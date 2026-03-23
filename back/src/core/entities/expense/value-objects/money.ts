@@ -145,16 +145,24 @@ export class Money {
 
     const base = Math.floor(this.cents / parts);
 
-    const remainder = this._amount % parts;
+    const remainder = this.cents % parts;
 
-    return Array.from(
-      { length: parts },
-      (_, i) => new Money(i < remainder ? base + 1 : base, this._currency),
+    console.log("");
+    console.log("✅🔴🔴🔴🔴🔴");
+    console.log(`this.amount: ${this.amount}`);
+    console.log(`this.cents: ${this.cents}`);
+    console.log(`parts: ${parts}`);
+    console.log(`base: ${base}`);
+    console.log(`remainder: ${remainder}`);
+    console.log(`this.cents/parts: ${this.cents / parts}`);
+
+    return Array.from({ length: parts }, (_, i) =>
+      Money.fromCents(i < remainder ? base + 1 : base, this._currency),
     );
   }
 
   public static sum(moneys: Money[]): number {
-    return moneys.reduce((acc, m) => acc + m.amount, 0);
+    return moneys.reduce((acc, m) => acc + m.cents, 0);
   }
 
   public allocate(ratios: number[]): Money[] {
