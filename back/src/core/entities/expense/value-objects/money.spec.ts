@@ -686,132 +686,132 @@ describe("money", () => {
           "The split quantity must be a integer positive",
         );
       });
+    });
 
-      describe("exact division", () => {
-        it("should split evenly when amount is divisible by parts", () => {
-          const money = Money.create(100, currency);
+    describe("exact division", () => {
+      it("should split evenly when amount is divisible by parts", () => {
+        const money = Money.create(100, currency);
 
-          const parts = money.split(4);
+        const parts = money.split(4);
 
-          expect(parts.length).toBe(4);
+        expect(parts.length).toBe(4);
 
-          parts.forEach((p) => expect(p.cents).toBe(25));
+        parts.forEach((p) => expect(p.cents).toBe(25));
 
-          expect(Money.sum(parts)).toBe(100);
-        });
-
-        it("should split evenly when cents is divisible by parts", () => {
-          const money = Money.create(1000, currency);
-
-          const parts = money.split(4);
-
-          expect(parts.length).toBe(4);
-
-          parts.forEach((p) => expect(p.cents).toBe(250));
-
-          expect(Money.sum(parts)).toBe(1000);
-        });
-
-        it("should return single item equal to original when parts is 1", () => {
-          const money = Money.create(50, currency);
-          const parts = money.split(1);
-
-          expect(parts.length).toBe(1);
-          expect(parts[0].cents).toBe(50);
-          expect(parts[0].currency).toBe(currency);
-        });
+        expect(Money.sum(parts)).toBe(100);
       });
 
-      describe("remainder distribution", () => {
-        it("should distribute remainder to the FIRST parts", () => {
-          const money = Money.create(10, currency);
+      it("should split evenly when cents is divisible by parts", () => {
+        const money = Money.create(1000, currency);
 
-          const parts = money.split(3);
+        const parts = money.split(4);
 
-          expect(parts.length).toBe(3);
+        expect(parts.length).toBe(4);
 
-          expect(parts[0].cents).toBe(4);
-          expect(parts[1].cents).toBe(3);
-          expect(parts[2].cents).toBe(3);
+        parts.forEach((p) => expect(p.cents).toBe(250));
 
-          expect(Money.sum(parts)).toBe(10);
-
-          expect(money.decimal).toBe(0.1);
-        });
-
-        it("should handle remainder larger than 1", () => {
-          const money = Money.create(10, currency);
-
-          const parts = money.split(4);
-
-          expect(parts.length).toBe(4);
-
-          expect(parts[0].cents).toBe(3);
-          expect(parts[1].cents).toBe(3);
-          expect(parts[2].cents).toBe(2);
-          expect(parts[3].cents).toBe(2);
-
-          expect(Money.sum(parts)).toBe(10);
-        });
+        expect(Money.sum(parts)).toBe(1000);
       });
 
-      describe("edge cases", () => {
-        it("should throw when amount is 0", () => {
-          const money = Money.create(0, currency);
+      it("should return single item equal to original when parts is 1", () => {
+        const money = Money.create(50, currency);
+        const parts = money.split(1);
 
-          expect(() => money.split(5)).toThrow(
-            "Is not possible to split 0 in 5 parts",
-          );
-        });
+        expect(parts.length).toBe(1);
+        expect(parts[0].cents).toBe(50);
+        expect(parts[0].currency).toBe(currency);
+      });
+    });
 
-        it("should throw when base is 0", () => {
-          const money = Money.create(5, currency);
+    describe("remainder distribution", () => {
+      it("should distribute remainder to the FIRST parts", () => {
+        const money = Money.create(10, currency);
 
-          expect(() => money.split(10)).toThrow(
-            "Is not possible to split 0.05 in 10 parts",
-          );
-        });
+        const parts = money.split(3);
 
-        it("should handle smallest unit (1) split into 1", () => {
-          const money = Money.create(1, currency);
-          const parts = money.split(1);
+        expect(parts.length).toBe(3);
 
-          expect(parts[0].cents).toBe(1);
-        });
+        expect(parts[0].cents).toBe(4);
+        expect(parts[1].cents).toBe(3);
+        expect(parts[2].cents).toBe(3);
 
-        it("should throw when smallest unit (1) split into 2", () => {
-          const money = Money.create(1, currency);
+        expect(Money.sum(parts)).toBe(10);
 
-          expect(() => money.split(2)).toThrow(
-            "Is not possible to split 0.01 in 2 parts",
-          );
-        });
+        expect(money.decimal).toBe(0.1);
       });
 
-      describe("integrity", () => {
-        it("should preserve currency in all split parts", () => {
-          const money = Money.create(100, "USD");
-          const parts = money.split(3);
+      it("should handle remainder larger than 1", () => {
+        const money = Money.create(10, currency);
 
-          parts.forEach((p) => expect(p.currency).toBe("USD"));
-        });
+        const parts = money.split(4);
 
-        it("should ensure sum of parts always equals original amount (Property Based)", () => {
-          const testCases = [
-            { amount: 100, parts: 3 },
-            { amount: 100, parts: 7 },
-            { amount: 1000, parts: 9 },
-            { amount: 500, parts: 100 },
-          ];
+        expect(parts.length).toBe(4);
 
-          testCases.forEach(({ amount, parts }) => {
-            const money = Money.create(amount, currency);
-            const split = money.split(parts);
-            const total = Money.sum(split);
+        expect(parts[0].cents).toBe(3);
+        expect(parts[1].cents).toBe(3);
+        expect(parts[2].cents).toBe(2);
+        expect(parts[3].cents).toBe(2);
 
-            expect(total).toBe(amount);
-            expect(split.length).toBe(parts);
-          });
+        expect(Money.sum(parts)).toBe(10);
+      });
+    });
+
+    describe("edge cases", () => {
+      it("should throw when amount is 0", () => {
+        const money = Money.create(0, currency);
+
+        expect(() => money.split(5)).toThrow(
+          "Is not possible to split 0 in 5 parts",
+        );
+      });
+
+      it("should throw when base is 0", () => {
+        const money = Money.create(5, currency);
+
+        expect(() => money.split(10)).toThrow(
+          "Is not possible to split 0.05 in 10 parts",
+        );
+      });
+
+      it("should handle smallest unit (1) split into 1", () => {
+        const money = Money.create(1, currency);
+        const parts = money.split(1);
+
+        expect(parts[0].cents).toBe(1);
+      });
+
+      it("should throw when smallest unit (1) split into 2", () => {
+        const money = Money.create(1, currency);
+
+        expect(() => money.split(2)).toThrow(
+          "Is not possible to split 0.01 in 2 parts",
+        );
+      });
+    });
+
+    describe("integrity", () => {
+      it("should preserve currency in all split parts", () => {
+        const money = Money.create(100, "USD");
+        const parts = money.split(3);
+
+        parts.forEach((p) => expect(p.currency).toBe("USD"));
+      });
+
+      it("should ensure sum of parts always equals original amount (Property Based)", () => {
+        const testCases = [
+          { amount: 100, parts: 3 },
+          { amount: 100, parts: 7 },
+          { amount: 1000, parts: 9 },
+          { amount: 500, parts: 100 },
+        ];
+
+        testCases.forEach(({ amount, parts }) => {
+          const money = Money.create(amount, currency);
+          const split = money.split(parts);
+          const total = Money.sum(split);
+
+          expect(total).toBe(amount);
+          expect(split.length).toBe(parts);
         });
       });
     });
