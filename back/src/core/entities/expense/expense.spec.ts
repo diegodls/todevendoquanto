@@ -15,8 +15,8 @@ describe("Expense", () => {
   const validInput: CreateExpenseInput = {
     name: ExpenseName.create("Shoe"),
     description: ExpenseDescription.create("My new shoe"),
-    amount: Money.fromCents(4990),
-    totalAmount: Money.fromCents(4990),
+    amount: Money.create(4990),
+    totalAmount: Money.create(4990),
     installmentInfo: InstallmentInfo.create(1, 1),
     status: ExpenseStatus.fromString("paying"),
     paymentSchedule: PaymentSchedule.create(
@@ -36,8 +36,8 @@ describe("Expense", () => {
 
       expect(expense.name.value).toBe("Shoe");
       expect(expense.description?.value).toBe("My new shoe");
-      expect(expense.amount.cents).toBe(4990);
-      expect(expense.totalAmount.cents).toBe(4990);
+      expect(expense.amount.decimal).toBe(49.9);
+      expect(expense.totalAmount.decimal).toBe(49.9);
       expect(expense.status.isPaying()).toBe(true);
       expect(expense.installmentInfo.current).toBe(1);
       expect(expense.installmentInfo.total).toBe(1);
@@ -52,8 +52,8 @@ describe("Expense", () => {
         installmentInfo,
       });
 
-      expect(expense.amount.cents).toBe(4990);
-      expect(expense.totalAmount.cents).toBe(4990);
+      expect(expense.amount.decimal).toBe(49.9);
+      expect(expense.totalAmount.decimal).toBe(49.9);
       expect(expense.installmentInfo.total).toBe(12);
     });
 
@@ -68,8 +68,8 @@ describe("Expense", () => {
     });
 
     it("should create with custom currency", () => {
-      const amount: Money = Money.fromCents(4990, "USD");
-      const totalAmount: Money = Money.fromCents(4990, "USD");
+      const amount: Money = Money.create(4990, "USD");
+      const totalAmount: Money = Money.create(4990, "USD");
 
       const expense = Expense.create({
         ...validInput,
@@ -128,8 +128,8 @@ describe("Expense", () => {
       const props = {
         name: ExpenseName.create("Shoes"),
         description: ExpenseDescription.create("Vests"),
-        amount: Money.fromCents(4990),
-        totalAmount: Money.fromCents(4990),
+        amount: Money.create(4990),
+        totalAmount: Money.create(4990),
         status: ExpenseStatus.fromString("paid"),
         tags: Tags.create(["vests"]),
         installmentInfo: InstallmentInfo.create(1, 1),
@@ -169,9 +169,9 @@ describe("Expense", () => {
       expect(() =>
         Expense.create({
           ...validInput,
-          amount: Money.fromCents(-150),
+          amount: Money.create(-150),
         }),
-      ).toThrow("Cents cannot be negative");
+      ).toThrow("Money amount cannot be negative");
     });
 
     it("should throw error on invalid installments", () => {
@@ -204,8 +204,8 @@ describe("Expense", () => {
       const props = {
         name: ExpenseName.create("Shoes"),
         description: ExpenseDescription.create("Vests"),
-        amount: Money.fromCents(4990, "USD"),
-        totalAmount: Money.fromCents(4990, "BRL"),
+        amount: Money.create(4990, "USD"),
+        totalAmount: Money.create(4990, "BRL"),
         status: ExpenseStatus.fromString("paying"),
         tags: Tags.empty(),
         installmentInfo: InstallmentInfo.create(1, 1),
@@ -234,8 +234,8 @@ describe("Expense", () => {
       const props = {
         name: ExpenseName.create("Shoes"),
         description: ExpenseDescription.create("Vests"),
-        amount: Money.fromCents(4990),
-        totalAmount: Money.fromCents(4990 * 12),
+        amount: Money.create(4990),
+        totalAmount: Money.create(4990 * 12),
         status: ExpenseStatus.fromString("paid"),
         tags: Tags.empty(),
         installmentInfo: InstallmentInfo.create(3, 12),

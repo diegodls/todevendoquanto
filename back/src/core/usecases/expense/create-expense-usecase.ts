@@ -35,11 +35,11 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
       : null;
 
     const amount: Money = input.amount
-      ? Money.fromCents(input.amount, input.currency)
+      ? Money.create(input.amount, input.currency)
       : Money.zero();
 
     const totalAmount: Money = input.totalAmount
-      ? Money.fromCents(input.totalAmount, input.currency)
+      ? Money.create(input.totalAmount, input.currency)
       : Money.zero();
 
     const tags: Tags = Tags.create(input.tags);
@@ -85,9 +85,9 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
       (expense) => ({
         name: expense.name.value,
         description: expense.description?.value || "",
-        amount: expense.amount.amount,
+        amount: expense.amount.cents,
         currency: expense.amount.currency,
-        totalAmount: expense.totalAmount.amount,
+        totalAmount: expense.totalAmount.cents,
         status: expense.status.value,
         tags: expense.tags.toArray(),
         currentInstallment: expense.installmentInfo.current,

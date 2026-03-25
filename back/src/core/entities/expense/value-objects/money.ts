@@ -3,14 +3,14 @@ export class Money {
   private static readonly DEFAULT_CURRENCY = "BRL";
 
   private constructor(
-    private readonly _amount: number,
+    private readonly _cents: number,
     private readonly _currency: string = Money.DEFAULT_CURRENCY,
   ) {
-    if (_amount < 0) {
+    if (_cents < 0) {
       throw new Error("Money amount cannot be negative");
     }
 
-    if (!Number.isFinite(_amount)) {
+    if (!Number.isFinite(_cents)) {
       throw new Error("Money amount must be a valid number");
     }
 
@@ -23,34 +23,27 @@ export class Money {
     }
   }
 
-  public static create(amount: number, currency?: string): Money {
-    return new Money(amount, currency?.toUpperCase() || Money.DEFAULT_CURRENCY);
-  }
-
-  public static fromCents(cents: number, currency?: string): Money {
+  public static create(cents: number, currency?: string): Money {
     if (!Number.isInteger(cents)) {
-      throw new Error("Cents must be a integer");
+      return new Money(
+        cents * 100,
+        currency?.toUpperCase() || Money.DEFAULT_CURRENCY,
+      );
     }
 
-    if (cents < 0) {
-      throw new Error("Cents cannot be negative");
-    }
-
-    const amount = cents / 100;
-
-    return new Money(amount, currency?.toUpperCase() || Money.DEFAULT_CURRENCY);
+    return new Money(cents, currency?.toUpperCase() || Money.DEFAULT_CURRENCY);
   }
 
   public static zero(currency?: string): Money {
     return new Money(0, currency?.toUpperCase() || Money.DEFAULT_CURRENCY);
   }
 
-  get cents(): number {
-    return Math.round(this._amount * 100);
+  get decimal(): number {
+    return this._cents / 100;
   }
 
-  get amount(): number {
-    return this._amount;
+  get cents(): number {
+    return this._cents;
   }
 
   get currency(): string {
@@ -58,53 +51,53 @@ export class Money {
   }
 
   public isZero(): boolean {
-    return this._amount === 0;
+    return this._cents === 0;
   }
 
   public isPositive(): boolean {
-    return this._amount > 0;
+    return this._cents > 0;
   }
 
   public isGreaterThan(other: Money): boolean {
     this.assertSameCurrency(other);
-    return this._amount > other._amount;
+    return this._cents > other._cents;
   }
 
   public isGreaterThanOrEqual(other: Money): boolean {
     this.assertSameCurrency(other);
-    return this._amount >= other._amount;
+    return this._cents >= other._cents;
   }
 
   public isLessThan(other: Money): boolean {
     this.assertSameCurrency(other);
-    return this._amount < other._amount;
+    return this._cents < other._cents;
   }
 
   public isLessThanOrEqual(other: Money): boolean {
     this.assertSameCurrency(other);
-    return this._amount <= other._amount;
+    return this._cents <= other._cents;
   }
 
   public equals(other: Money): boolean {
     if (!(other instanceof Money)) {
       return false;
     }
-    return this._amount === other._amount && this._currency === other._currency;
+    return this._cents === other._cents && this._currency === other._currency;
   }
 
   public add(other: Money): Money {
     this.assertSameCurrency(other);
-    return new Money(this._amount + other._amount, this._currency);
+    return new Money(this._cents + other._cents, this._currency);
   }
 
   public subtract(other: Money): Money {
     this.assertSameCurrency(other);
 
-    const result = this._amount - other._amount;
+    const result = this._cents - other._cents;
 
     if (result < 0) {
       throw new Error(
-        `Subtraction would result in negative amount: ${this.amount} - ${other._amount} = ${this.amount - other._amount}`,
+        `Subtraction would result in negative amount: ${this.cents} - ${other._cents} = ${this.cents - other._cents}`,
       );
     }
     return new Money(result, this._currency);
@@ -119,7 +112,7 @@ export class Money {
       throw new Error("Multiplication factor cannot be negative");
     }
 
-    return new Money(this._amount * factor, this._currency);
+    return new Money(this._cents * factor, this._currency);
   }
 
   public divide(divisor: number): Money {
@@ -135,7 +128,7 @@ export class Money {
       throw new Error("Divisor cannot be negative");
     }
 
-    return new Money(this._amount / divisor, this.currency);
+    return new Money(this._cents / divisor, this.currency);
   }
 
   public split(parts: number): Money[] {
@@ -145,19 +138,16 @@ export class Money {
 
     const base = Math.floor(this.cents / parts);
 
+    if (base <= 0) {
+      throw new Error(
+        `Is not possible to split ${this.decimal} in ${parts} parts`,
+      );
+    }
+
     const remainder = this.cents % parts;
 
-    console.log("");
-    console.log("✅🔴🔴🔴🔴🔴");
-    console.log(`this.amount: ${this.amount}`);
-    console.log(`this.cents: ${this.cents}`);
-    console.log(`parts: ${parts}`);
-    console.log(`base: ${base}`);
-    console.log(`remainder: ${remainder}`);
-    console.log(`this.cents/parts: ${this.cents / parts}`);
-
     return Array.from({ length: parts }, (_, i) =>
-      Money.fromCents(i < remainder ? base + 1 : base, this._currency),
+      Money.create(i < remainder ? base + 1 : base, this._currency),
     );
   }
 
@@ -196,19 +186,19 @@ export class Money {
         allocated += share;
       }
 
-      results.push(Money.fromCents(share, this._currency));
+      results.push(Money.create(share, this._currency));
     });
 
     return results;
   }
 
   public toString(): string {
-    return `${this._currency} ${this._amount.toFixed(2)}`;
+    return `${this._currency} ${this._cents.toFixed(2)}`;
   }
 
   public toJSON(): { amount: number; currency: string } {
     return {
-      amount: this._amount,
+      amount: this._cents,
       currency: this._currency,
     };
   }
