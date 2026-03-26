@@ -30,17 +30,20 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
 
     const name: ExpenseName = ExpenseName.create(input.name);
 
-    const description: ExpenseDescription | null = input.description
-      ? ExpenseDescription.create(input.description)
-      : null;
+    const description: ExpenseDescription | null =
+      input.description != null
+        ? ExpenseDescription.create(input.description)
+        : null;
 
-    const amount: Money = input.amount
-      ? Money.create(input.amount, input.currency)
-      : Money.zero();
+    const amount: Money =
+      input.amount != null
+        ? Money.create(input.amount, input.currency)
+        : Money.zero();
 
-    const totalAmount: Money = input.totalAmount
-      ? Money.create(input.totalAmount, input.currency)
-      : Money.zero();
+    const totalAmount: Money =
+      input.totalAmount != null
+        ? Money.create(input.totalAmount, input.currency)
+        : Money.zero();
 
     const tags: Tags = Tags.create(input.tags);
 
@@ -54,10 +57,10 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
     );
 
     const paymentSchedule: PaymentSchedule = PaymentSchedule.create(
-      input.paymentDay || new Date(),
-      input.expirationDay || new Date(),
-      input.paymentStartAt || new Date(),
-      input.paymentEndAt || new Date(),
+      input.paymentDay ?? new Date(),
+      input.expirationDay ?? new Date(),
+      input.paymentStartAt ?? new Date(),
+      input.paymentEndAt ?? new Date(),
     );
 
     const expenseInput: CreateExpenseInput = {
