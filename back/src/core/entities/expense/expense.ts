@@ -208,38 +208,48 @@ export class Expense {
     this.touch();
   }
 
-  public splitIntoInstallments(): Expense[] {
-    if (this._installmentInfo.isSingle()) {
-      return [this];
+  public static splitIntoInstallments(
+    input: CreateExpenseInput,
+    id?: ExpenseId,
+  ): Expense[] {
+    const expense = Expense.create(input, id);
+
+    if (expense._installmentInfo.isSingle()) {
+      return [expense];
     }
 
-    const moneySplitted: Money[] = this._amount.split(
-      this._installmentInfo.total,
+    const moneySplitted: Money[] = expense._amount.split(
+      expense._installmentInfo.total,
     );
 
-    if (moneySplitted.length !== this._installmentInfo.total) {
+    if (moneySplitted.length !== expense._installmentInfo.total) {
       throw new Error("Splitting expense error");
     }
 
     let installments: Expense[] = [];
 
-    for (let i = 0; i < this._installmentInfo.total; i++) {
-      const paymentDay: Date = this._status.isPaying()
-        ? this.computeDate(this.paymentSchedule.paymentDay, i)
-        : this.paymentSchedule.paymentDay;
+    for (let i = 0; i < expense._installmentInfo.total; i++) {
+      const installmentInfo = InstallmentInfo.create(
+        i + 1,
+        expense.installmentInfo.total,
+      );
 
-      const expirationDay: Date = this.computeDate(
-        this.paymentSchedule.expirationDay,
+      const paymentDay: Date = expense._status.isPaying()
+        ? expense.computeDate(expense.paymentSchedule.paymentDay, i)
+        : expense.paymentSchedule.paymentDay;
+
+      const expirationDay: Date = expense.computeDate(
+        expense.paymentSchedule.expirationDay,
         i,
       );
 
-      const paymentStartAt: Date = this.computeDate(
-        this.paymentSchedule.startAt,
+      const paymentStartAt: Date = expense.computeDate(
+        expense.paymentSchedule.startAt,
         i,
       );
 
-      const paymentEndAt: Date = this.computeDate(
-        this.paymentSchedule.endAt,
+      const paymentEndAt: Date = expense.computeDate(
+        expense.paymentSchedule.endAt,
         i,
       );
 
@@ -251,18 +261,18 @@ export class Expense {
       );
 
       const newExpense: Expense = new Expense({
-        userId: this._userId,
-        createdAt: this._createdAt,
-        name: this._name,
-        description: this._description,
-        totalAmount: this._totalAmount,
-        status: this._status,
-        tags: this._tags,
-        installmentInfo: this._installmentInfo,
-        installmentId: this._installmentId,
+        userId: expense._userId,
+        createdAt: expense._createdAt,
+        name: expense._name,
+        description: expense._description,
+        totalAmount: expense._amount,
+        status: expense._status,
+        tags: expense._tags,
+        installmentInfo,
+        installmentId: expense._installmentId,
         amount: moneySplitted[i],
-        paymentSchedule: paymentSchedule,
-        updatedAt: this._updatedAt,
+        paymentSchedule,
+        updatedAt: expense._updatedAt,
       });
 
       installments.push(newExpense);

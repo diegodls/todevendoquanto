@@ -18,8 +18,8 @@ export class ExpenseMapper {
     const name = ExpenseName.create(raw.name);
     const description = ExpenseDescription.create(raw.description);
     const status = ExpenseStatus.fromString(raw.status);
-    const amount = Money.fromCents(raw.amount, raw.currency);
-    const totalAmount = Money.fromCents(raw.totalAmount, raw.currency);
+    const amount = Money.create(raw.amount, raw.currency);
+    const totalAmount = Money.create(raw.totalAmount, raw.currency);
     const installmentInfo = InstallmentInfo.create(
       raw.currentInstallment,
       raw.totalInstallment,
@@ -55,8 +55,8 @@ export class ExpenseMapper {
       id: entity.id.toString(),
       name: entity.name.value,
       description: entity.description?.value || "",
-      amount: entity.amount.decimal,
-      totalAmount: entity.totalAmount.decimal,
+      amount: entity.amount.cents,
+      totalAmount: entity.totalAmount.cents,
       currency: entity.amount.currency,
       status: entity.status.value,
       tags: entity.tags.value,

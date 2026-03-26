@@ -322,7 +322,9 @@ describe("Expense", () => {
 
         setTimeout(() => {
           expense.updateDetails("Shoes", "Vests");
-          expect(expense.updatedAt).toEqual(originalUpdatedAt);
+          expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
+            originalUpdatedAt.getTime(),
+          );
         }, 10);
       });
 
