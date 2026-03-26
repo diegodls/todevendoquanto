@@ -208,11 +208,8 @@ export class Expense {
     this.touch();
   }
 
-  public static splitIntoInstallments(
-    input: CreateExpenseInput,
-    id?: ExpenseId,
-  ): Expense[] {
-    const expense = Expense.create(input, id);
+  public static splitIntoInstallments(input: CreateExpenseInput): Expense[] {
+    const expense = Expense.create(input);
 
     if (expense._installmentInfo.isSingle()) {
       return [expense];

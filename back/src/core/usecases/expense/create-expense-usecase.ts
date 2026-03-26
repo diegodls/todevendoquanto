@@ -36,8 +36,8 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
         : null;
 
     const amount: Money =
-      input.amount != null
-        ? Money.create(input.amount, input.currency)
+      input.totalAmount != null
+        ? Money.create(input.totalAmount, input.currency)
         : Money.zero();
 
     const totalAmount: Money =
@@ -52,7 +52,7 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
       : ExpenseStatus.paying();
 
     const installmentInfo: InstallmentInfo = InstallmentInfo.create(
-      input.currentInstallment ?? 1,
+      1,
       input.totalInstallment ?? 1,
     );
 

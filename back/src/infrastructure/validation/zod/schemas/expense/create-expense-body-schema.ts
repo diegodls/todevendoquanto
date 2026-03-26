@@ -17,8 +17,6 @@ export const CreateExpenseBodySchema = z
 
     description: z.string().optional(),
 
-    amount: z.number().optional(),
-
     totalAmount: z.number().optional(),
 
     currency: z.string().optional(),
@@ -31,12 +29,6 @@ export const CreateExpenseBodySchema = z
           error: zodDefaultErrorHandler,
         }),
       )
-      .optional(),
-
-    currentInstallment: z
-      .number({
-        error: zodDefaultErrorHandler,
-      })
       .optional(),
 
     totalInstallment: z

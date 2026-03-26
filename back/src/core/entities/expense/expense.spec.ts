@@ -681,21 +681,23 @@ describe("Expense", () => {
       );
       expect(expense.status.isPaying()).toBe(false);
     });
+
+    it("should update timestamp", () => {
+      const expense = Expense.create(validInput);
+      expense.markAsAbandoned();
+      const abandonedAt = expense.updatedAt;
+
+      expense.markAsPaying();
+
+      expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
+        abandonedAt.getTime(),
+      );
+    });
   });
-}); /*
+});
+
+/*
   });
-      it("should update timestamp", () => {
-        const expense = Expense.create(validInput);
-        expense.markAsAbandoned();
-        const abandonedAt = expense.updatedAt;
-
-        expense.markAsPaying();
-
-        expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
-          abandonedAt.getTime(),
-        );
-      });
-
       it("should not update timestamp if already paying", () => {
         const expense = Expense.create(validInput);
         const originalUpdatedAt = expense.updatedAt;
