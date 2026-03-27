@@ -96,22 +96,7 @@ describe("ExpenseStatus", () => {
       );
     });
 
-    it("ABANDONED → PAYING should throw", () => {
-      const abandoned = ExpenseStatus.fromString("ABANDONED");
-      expect(() => abandoned.transitionTo(ExpenseStatusValue.PAYING)).toThrow(
-        "Invalid transition: ABANDONED → PAYING",
-      );
-    });
-
-    it("ABANDONED → PAID should throw", () => {
-      const abandoned = ExpenseStatus.fromString("ABANDONED");
-      expect(() => abandoned.transitionTo(ExpenseStatusValue.PAID)).toThrow(
-        "Invalid transition: ABANDONED → PAID",
-      );
-    });
-
     it("PAYING → PAYING should throw — self-transition is invalid", () => {
-      // Re-paying something already being paid makes no sense
       expect(() =>
         ExpenseStatus.paying().transitionTo(ExpenseStatusValue.PAYING),
       ).toThrow("Invalid transition: PAYING → PAYING");
@@ -165,19 +150,6 @@ describe("ExpenseStatus", () => {
       const allStatuses = Object.values(ExpenseStatusValue);
       allStatuses.forEach((next) => {
         expect(() => paid.transitionTo(next)).toThrow("Invalid transition");
-      });
-    });
-
-    it("after ABANDONED no transition should be possible", () => {
-      const abandoned = ExpenseStatus.paying().transitionTo(
-        ExpenseStatusValue.ABANDONED,
-      );
-
-      const allStatuses = Object.values(ExpenseStatusValue);
-      allStatuses.forEach((next) => {
-        expect(() => abandoned.transitionTo(next)).toThrow(
-          "Invalid transition",
-        );
       });
     });
   });

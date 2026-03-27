@@ -9,12 +9,17 @@ type AllowedTransitions = {
 };
 
 const ALLOWED_TRANSITIONS: AllowedTransitions = {
+  [ExpenseStatusValue.PAID]: [],
+
   [ExpenseStatusValue.PAYING]: [
     ExpenseStatusValue.PAID,
     ExpenseStatusValue.ABANDONED,
   ],
-  [ExpenseStatusValue.PAID]: [],
-  [ExpenseStatusValue.ABANDONED]: [],
+
+  [ExpenseStatusValue.ABANDONED]: [
+    ExpenseStatusValue.PAID,
+    ExpenseStatusValue.PAYING,
+  ],
 };
 
 export class ExpenseStatus {

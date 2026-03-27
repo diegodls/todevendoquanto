@@ -286,6 +286,7 @@ export class Expense {
     }
 
     this._status = this._status.transitionTo(ExpenseStatusValue.PAID);
+
     this.touch();
   }
 
@@ -295,6 +296,7 @@ export class Expense {
     }
 
     this._status = this._status.transitionTo(ExpenseStatusValue.ABANDONED);
+
     this.touch();
   }
 

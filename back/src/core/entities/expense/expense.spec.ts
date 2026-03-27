@@ -676,15 +676,16 @@ describe("Expense", () => {
 
       expense.markAsAbandoned();
 
-      expect(() => expense.markAsPaying()).toThrow(
-        "Invalid transition: ABANDONED → PAID",
-      );
-      expect(expense.status.isPaying()).toBe(false);
+      expense.markAsPaying();
+
+      expect(expense.status.isPaying()).toBe(true);
     });
 
     it("should update timestamp", () => {
       const expense = Expense.create(validInput);
-      expense.markAsAbandoned();
+
+      expense.markAsPaid();
+
       const abandonedAt = expense.updatedAt;
 
       expense.markAsPaying();
@@ -697,7 +698,7 @@ describe("Expense", () => {
 });
 
 /*
-  });
+
       it("should not update timestamp if already paying", () => {
         const expense = Expense.create(validInput);
         const originalUpdatedAt = expense.updatedAt;
