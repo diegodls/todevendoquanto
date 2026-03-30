@@ -151,63 +151,6 @@ export class Expense {
     return new Expense(props, id);
   }
 
-  public updateDetails(name?: string, description?: string): void {
-    let hasChanged = false;
-
-    if (name) {
-      const newName = ExpenseName.create(name);
-
-      if (!this._name.equals(newName)) {
-        this._name = newName;
-        hasChanged = true;
-      }
-    }
-
-    if (description) {
-      const newDescription = ExpenseDescription.create(description);
-
-      if (!this._description?.equals(newDescription)) {
-        this._description = newDescription;
-        hasChanged = true;
-      }
-    }
-
-    if (hasChanged) {
-      this.touch();
-    }
-  }
-
-  public addTag(tag: string): void {
-    this._tags = this._tags.add(tag);
-    this.touch();
-  }
-
-  public removeTag(tag: string): void {
-    const newTags = this._tags.remove(tag);
-
-    if (!newTags.equals(this._tags)) {
-      this._tags = newTags;
-      this.touch();
-    }
-  }
-
-  public advanceInstallment(): void {
-    if (this._status.isPaid()) {
-      throw new Error("Cannot advance installment of paid expense");
-    }
-
-    if (this._status.isAbandoned()) {
-      throw new Error("Cannot advance installment of abandoned expense");
-    }
-
-    if (this._installmentInfo.isComplete()) {
-      throw new Error("Cannot advance: already at final installment");
-    }
-
-    this._installmentInfo = this._installmentInfo.next();
-    this.touch();
-  }
-
   public static splitIntoInstallments(input: CreateExpenseInput): Expense[] {
     const expense = Expense.create(input);
 
@@ -276,6 +219,63 @@ export class Expense {
     }
 
     return installments;
+  }
+
+  public updateDetails(name?: string, description?: string): void {
+    let hasChanged = false;
+
+    if (name) {
+      const newName = ExpenseName.create(name);
+
+      if (!this._name.equals(newName)) {
+        this._name = newName;
+        hasChanged = true;
+      }
+    }
+
+    if (description) {
+      const newDescription = ExpenseDescription.create(description);
+
+      if (!this._description?.equals(newDescription)) {
+        this._description = newDescription;
+        hasChanged = true;
+      }
+    }
+
+    if (hasChanged) {
+      this.touch();
+    }
+  }
+
+  public addTag(tag: string): void {
+    this._tags = this._tags.add(tag);
+    this.touch();
+  }
+
+  public removeTag(tag: string): void {
+    const newTags = this._tags.remove(tag);
+
+    if (!newTags.equals(this._tags)) {
+      this._tags = newTags;
+      this.touch();
+    }
+  }
+
+  public advanceInstallment(): void {
+    if (this._status.isPaid()) {
+      throw new Error("Cannot advance installment of paid expense");
+    }
+
+    if (this._status.isAbandoned()) {
+      throw new Error("Cannot advance installment of abandoned expense");
+    }
+
+    if (this._installmentInfo.isComplete()) {
+      throw new Error("Cannot advance: already at final installment");
+    }
+
+    this._installmentInfo = this._installmentInfo.next();
+    this.touch();
   }
 
   public markAsPaid(): void {
