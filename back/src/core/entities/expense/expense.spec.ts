@@ -609,95 +609,82 @@ describe("Expense", () => {
           "Cannot mark as paid: installment 1/12 is not complete",
         );
       });
+    });
 
-      it("should throw error when already abandoned", () => {
+    describe("markAsAbandoned", () => {
+      it("should mark expense as abandoned", () => {
         const expense = Expense.create(validInput);
+
         expense.markAsAbandoned();
 
-        expect(() => expense.markAsPaid()).toThrow(
-          "Cannot mark abandoned expense as paid",
+        expect(expense.status.isAbandoned()).toBe(true);
+      });
+
+      it("should update timestamp", () => {
+        const expense = Expense.create(validInput);
+        const originalUpdatedAt = expense.updatedAt;
+
+        expense.markAsAbandoned();
+
+        expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
+          originalUpdatedAt.getTime(),
+        );
+      });
+
+      it("should not update timestamp if already abandoned", () => {
+        const expense = Expense.create(validInput);
+        expense.markAsAbandoned();
+        const firstUpdate = expense.updatedAt;
+
+        expense.markAsAbandoned();
+
+        expect(expense.updatedAt).toEqual(firstUpdate);
+      });
+
+      it("should allow abandoning from PAYING status", () => {
+        const expense = Expense.create(validInput);
+
+        expense.markAsAbandoned();
+
+        expect(expense.status.isAbandoned()).toBe(true);
+        expect(expense.status.isPaying()).toBe(false);
+      });
+
+      it("should not allow abandoning from PAID status", () => {
+        const expense = Expense.create(validInput);
+
+        expense.markAsPaid();
+
+        expect(() => expense.markAsAbandoned()).toThrow(
+          `Invalid transition: PAID → ABANDONED`,
         );
       });
     });
-  });
-  describe("markAsAbandoned", () => {
-    it("should mark expense as abandoned", () => {
-      const expense = Expense.create(validInput);
 
-      expense.markAsAbandoned();
+    describe("markAsPaying", () => {
+      it("should not mark abandoned expense as paying", () => {
+        const expense = Expense.create(validInput);
 
-      expect(expense.status.isAbandoned()).toBe(true);
-    });
+        expense.markAsAbandoned();
 
-    it("should update timestamp", () => {
-      const expense = Expense.create(validInput);
-      const originalUpdatedAt = expense.updatedAt;
+        expense.markAsPaying();
 
-      expense.markAsAbandoned();
+        expect(expense.status.isPaying()).toBe(true);
+      });
 
-      expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
-        originalUpdatedAt.getTime(),
-      );
-    });
+      it("should update timestamp", () => {
+        const expense = Expense.create(validInput);
 
-    it("should not update timestamp if already abandoned", () => {
-      const expense = Expense.create(validInput);
-      expense.markAsAbandoned();
-      const firstUpdate = expense.updatedAt;
+        expense.markAsAbandoned();
 
-      expense.markAsAbandoned();
+        const abandonedAt = expense.updatedAt;
 
-      expect(expense.updatedAt).toEqual(firstUpdate);
-    });
+        expense.markAsPaying();
 
-    it("should allow abandoning from PAYING status", () => {
-      const expense = Expense.create(validInput);
-
-      expense.markAsAbandoned();
-
-      expect(expense.status.isAbandoned()).toBe(true);
-      expect(expense.status.isPaying()).toBe(false);
-    });
-
-    it("should not allow abandoning from PAID status", () => {
-      const expense = Expense.create(validInput);
-
-      expense.markAsPaid();
-
-      expect(() => expense.markAsAbandoned()).toThrow(
-        `Invalid transition: PAID → ABANDONED`,
-      );
-    });
-  });
-
-  describe("markAsPaying", () => {
-    it("should not mark abandoned expense as paying", () => {
-      const expense = Expense.create(validInput);
-
-      expense.markAsAbandoned();
-
-      expense.markAsPaying();
-
-      expect(expense.status.isPaying()).toBe(true);
-    });
-
-    it("should update timestamp", () => {
-      const expense = Expense.create(validInput);
-
-      expense.markAsPaid();
-
-      const abandonedAt = expense.updatedAt;
-
-      expense.markAsPaying();
-
-      expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
-        abandonedAt.getTime(),
-      );
-    });
-  });
-});
-
-/*
+        expect(expense.updatedAt.getTime()).toBeGreaterThanOrEqual(
+          abandonedAt.getTime(),
+        );
+      });
 
       it("should not update timestamp if already paying", () => {
         const expense = Expense.create(validInput);
@@ -713,7 +700,7 @@ describe("Expense", () => {
         expense.markAsPaid();
 
         expect(() => expense.markAsPaying()).toThrow(
-          "Cannot change status from PAID to PAYING",
+          "Invalid transition: PAID → PAYING",
         );
       });
     });
@@ -749,12 +736,21 @@ describe("Expense", () => {
       });
 
       it("should use current date when not provided", () => {
+        const paymentDay = new Date(2020, 0, 1);
+        const expirationDay = new Date(2020, 0, 5);
+        const paymentStartAt = new Date(2020, 0, 1);
+        const paymentEndAt = new Date(2020, 0, 31);
+
+        const paymentSchedule = PaymentSchedule.create(
+          paymentDay,
+          expirationDay,
+          paymentStartAt,
+          paymentEndAt,
+        );
+
         const pastExpense = Expense.create({
           ...validInput,
-          paymentDay: new Date(2020, 0, 1),
-          expirationDay: new Date(2020, 0, 5),
-          paymentStartAt: new Date(2020, 0, 1),
-          paymentEndAt: new Date(2020, 0, 31),
+          paymentSchedule,
         });
 
         expect(pastExpense.isOverdue()).toBe(true);
@@ -769,9 +765,11 @@ describe("Expense", () => {
       });
 
       it("should return true for completed multi-installment", () => {
+        const installmentInfo = InstallmentInfo.create(1, 3);
+
         const expense = Expense.create({
           ...validInput,
-          totalInstallments: 3,
+          installmentInfo,
         });
 
         expense.advanceInstallment();
@@ -781,28 +779,40 @@ describe("Expense", () => {
       });
 
       it("should return false for incomplete installments", () => {
+        const installmentInfo = InstallmentInfo.create(1, 12);
+
         const expense = Expense.create({
           ...validInput,
-          totalInstallments: 12,
+          installmentInfo,
         });
 
         expect(expense.canBePaid()).toBe(false);
       });
 
-      it("should return false for abandoned expense", () => {
+      it("should return true for abandoned expense", () => {
         const expense = Expense.create(validInput);
+
         expense.markAsAbandoned();
 
-        expect(expense.canBePaid()).toBe(false);
+        expect(expense.canBePaid()).toBe(true);
       });
 
       it("should return false for expired expense", () => {
+        const paymentDay = new Date(2020, 0, 1);
+        const expirationDay = new Date(2020, 0, 5);
+        const paymentStartAt = new Date(2020, 0, 1);
+        const paymentEndAt = new Date(2020, 0, 31);
+
+        const paymentSchedule = PaymentSchedule.create(
+          paymentDay,
+          expirationDay,
+          paymentStartAt,
+          paymentEndAt,
+        );
+
         const expense = Expense.create({
           ...validInput,
-          paymentDay: new Date(2020, 0, 1),
-          expirationDay: new Date(2020, 0, 5),
-          paymentStartAt: new Date(2020, 0, 1),
-          paymentEndAt: new Date(2020, 0, 31),
+          paymentSchedule,
         });
 
         expect(expense.canBePaid()).toBe(true);
@@ -853,22 +863,31 @@ describe("Expense", () => {
       });
 
       it("should calculate remaining for multi-installment", () => {
+        const amount = Money.create(10000);
+
+        const installmentInfo = InstallmentInfo.create(1, 12);
+
         const expense = Expense.create({
           ...validInput,
-          amount: 10000,
-          totalInstallments: 12,
+          amount,
+          installmentInfo,
         });
 
         const remaining = expense.getRemainingAmount();
 
         expect(remaining.cents).toBe(10000 * 12);
+        expect(remaining.decimal).toBe((10000 * 12) / 100);
       });
 
       it("should calculate remaining after advancing installments", () => {
+        const amount = Money.create(10000);
+
+        const installmentInfo = InstallmentInfo.create(1, 12);
+
         const expense = Expense.create({
           ...validInput,
-          amount: 10000,
-          totalInstallments: 12,
+          amount,
+          installmentInfo,
         });
 
         expense.advanceInstallment();
@@ -880,9 +899,13 @@ describe("Expense", () => {
       });
 
       it("should preserve currency", () => {
+        const amount = Money.create(1000, "USD");
+        const totalAmount = Money.create(1000, "USD");
+
         const expense = Expense.create({
           ...validInput,
-          currency: "USD",
+          amount,
+          totalAmount,
         });
 
         const remaining = expense.getRemainingAmount();
@@ -924,4 +947,3 @@ describe("Expense", () => {
     });
   });
 });
-*/

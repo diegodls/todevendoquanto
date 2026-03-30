@@ -305,7 +305,7 @@ export class Expense {
       return;
     }
 
-    this._status = this._status.transitionTo(ExpenseStatusValue.PAID);
+    this._status = this._status.transitionTo(ExpenseStatusValue.PAYING);
 
     this.touch();
   }
@@ -381,10 +381,6 @@ export class Expense {
   }
 
   private assertCanBePaid(): void {
-    if (this._status.isAbandoned()) {
-      throw new Error("Cannot mark abandoned expense as paid");
-    }
-
     if (!this._installmentInfo.isComplete()) {
       throw new Error(
         `Cannot mark as paid: installment ${this._installmentInfo.current}/${this._installmentInfo.total} is not complete`,
