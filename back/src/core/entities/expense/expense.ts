@@ -158,38 +158,34 @@ export class Expense {
       return [expense];
     }
 
-    const moneySplitted: Money[] = expense._amount.split(
+    const splittedAmounts: Money[] = expense._totalAmount.split(
       expense._installmentInfo.total,
     );
 
-    if (moneySplitted.length !== expense._installmentInfo.total) {
-      throw new Error("Splitting expense error");
-    }
-
-    let installments: Expense[] = [];
+    const installments: Expense[] = [];
 
     for (let i = 0; i < expense._installmentInfo.total; i++) {
       const installmentInfo = InstallmentInfo.create(
         i + 1,
-        expense.installmentInfo.total,
+        expense._installmentInfo.total,
       );
 
       const paymentDay: Date = expense._status.isPaying()
-        ? expense.computeDate(expense.paymentSchedule.paymentDay, i)
-        : expense.paymentSchedule.paymentDay;
+        ? expense.computeDate(expense._paymentSchedule.paymentDay, i)
+        : expense._paymentSchedule.paymentDay;
 
       const expirationDay: Date = expense.computeDate(
-        expense.paymentSchedule.expirationDay,
+        expense._paymentSchedule.expirationDay,
         i,
       );
 
       const paymentStartAt: Date = expense.computeDate(
-        expense.paymentSchedule.startAt,
+        expense._paymentSchedule.startAt,
         i,
       );
 
       const paymentEndAt: Date = expense.computeDate(
-        expense.paymentSchedule.endAt,
+        expense._paymentSchedule.endAt,
         i,
       );
 
@@ -205,12 +201,12 @@ export class Expense {
         createdAt: expense._createdAt,
         name: expense._name,
         description: expense._description,
-        totalAmount: expense._amount,
+        amount: splittedAmounts[i],
+        totalAmount: expense._totalAmount,
         status: expense._status,
         tags: expense._tags,
         installmentInfo,
         installmentId: expense._installmentId,
-        amount: moneySplitted[i],
         paymentSchedule,
         updatedAt: expense._updatedAt,
       });

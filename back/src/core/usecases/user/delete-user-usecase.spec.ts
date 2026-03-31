@@ -477,8 +477,5 @@ describe("DeleteUserUseCase", () => {
       expect(userRepository.findById).toHaveBeenCalledTimes(2);
       expect(userRepository.deleteById).toHaveBeenCalledTimes(1);
     });
-  }); /*
-            });
-            });
-  */
+  });
 });

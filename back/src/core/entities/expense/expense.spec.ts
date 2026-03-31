@@ -1,7 +1,10 @@
 import { ExpenseDescription } from "@/core/entities/expense/value-objects/expense-description";
 import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
 import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
-import { ExpenseStatus } from "@/core/entities/expense/value-objects/expense-status";
+import {
+  ExpenseStatus,
+  ExpenseStatusValue,
+} from "@/core/entities/expense/value-objects/expense-status";
 import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
 import { Tags } from "@/core/entities/expense/value-objects/tags";
@@ -12,6 +15,8 @@ import { InstallmentInfo } from "./value-objects/installment-info";
 import { Money } from "./value-objects/money";
 
 describe("Expense", () => {
+  const BASE_DATE = new Date("2024-01-01T00:00:00.000Z");
+
   const validInput: CreateExpenseInput = {
     name: ExpenseName.create("Shoe"),
     description: ExpenseDescription.create("My new shoe"),
@@ -536,6 +541,7 @@ describe("Expense", () => {
         );
       });
     });
+
     describe("markAsPaid", () => {
       it("should mark single installment expense as paid", () => {
         const expense = Expense.create(validInput);
@@ -943,6 +949,333 @@ describe("Expense", () => {
         expense.markAsPaid();
 
         expect(expense.status.isPaying()).toBe(false);
+      });
+    });
+
+    describe("splitIntoInstallments", () => {
+      describe("given totalInstallment === 1", () => {
+        it("should return an array with a single expense", () => {
+          const result = Expense.splitIntoInstallments({
+            ...validInput,
+            totalAmount: Money.create(4990, "BRL"),
+            installmentInfo: InstallmentInfo.create(1, 1),
+          });
+
+          expect(result).toHaveLength(1);
+        });
+
+        it("should return the expense with currentInstallment 1", () => {
+          const [expense] = Expense.splitIntoInstallments({
+            ...validInput,
+            totalAmount: Money.create(4990, "BRL"),
+            installmentInfo: InstallmentInfo.create(1, 1),
+          });
+
+          expect(expense.installmentInfo.current).toBe(1);
+          expect(expense.installmentInfo.total).toBe(1);
+        });
+
+        it("should preserve totalAmount on single installment", () => {
+          const [expense] = Expense.splitIntoInstallments({
+            ...validInput,
+            totalAmount: Money.create(4990, "BRL"),
+            installmentInfo: InstallmentInfo.create(1, 1),
+          });
+
+          expect(expense.totalAmount.cents).toBe(4990);
+        });
+      });
+
+      describe("given totalInstallment > 1", () => {
+        const input = {
+          ...validInput,
+          totalAmount: Money.create(4990, "BRL"),
+          installmentInfo: InstallmentInfo.create(1, 3),
+        };
+
+        it("should return exactly N expenses matching totalInstallment", () => {
+          const result = Expense.splitIntoInstallments(input);
+
+          expect(result).toHaveLength(3);
+        });
+
+        it("should assign sequential currentInstallment starting from 1", () => {
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense, i) => {
+            expect(expense.installmentInfo.current).toBe(i + 1);
+          });
+        });
+
+        it("should set the same totalInstallment on every expense", () => {
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense) => {
+            expect(expense.installmentInfo.total).toBe(3);
+          });
+        });
+
+        it("should share the same installmentId across all installments", () => {
+          const sharedId = InstallmentId.create();
+          const newInput = { ...input, installmentId: sharedId };
+
+          const result = Expense.splitIntoInstallments(newInput);
+
+          const ids = result.map((e) => e.installmentId.toString());
+
+          expect(new Set(ids).size).toBe(1);
+          expect(ids[0]).toBe(sharedId.toString());
+        });
+      });
+
+      describe("money splitting", () => {
+        it("should split totalAmount evenly when divisible", () => {
+          const input = {
+            ...validInput,
+            totalAmount: Money.create(9990, "BRL"),
+            installmentInfo: InstallmentInfo.create(1, 3),
+          };
+
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense) => {
+            expect(expense.amount.cents).toBe(3330);
+          });
+        });
+
+        it("should distribute remainder to first installments", () => {
+          const input = {
+            ...validInput,
+            totalAmount: Money.create(100, "BRL"),
+            installmentInfo: InstallmentInfo.create(1, 3),
+          };
+
+          const result = Expense.splitIntoInstallments(input);
+          const amounts = result.map((e) => e.amount.cents);
+
+          expect(amounts[0]).toBe(34);
+          expect(amounts[1]).toBe(33);
+          expect(amounts[2]).toBe(33);
+        });
+
+        it("sum of installment amounts must equal totalAmount", () => {
+          const totalCents = 9990;
+          const input = {
+            ...validInput,
+            totalAmount: Money.create(totalCents, "BRL"),
+            installmentInfo: InstallmentInfo.create(1, 3),
+          };
+
+          const result = Expense.splitIntoInstallments(input);
+          const sum = result.reduce((acc, e) => acc + e.amount.cents, 0);
+
+          expect(sum).toBe(totalCents);
+        });
+
+        it("sum must equal totalAmount even with large remainder distribution", () => {
+          const input = {
+            ...validInput,
+            totalAmount: Money.create(100, "BRL"),
+            installmentInfo: InstallmentInfo.create(1, 7),
+          };
+
+          const result = Expense.splitIntoInstallments(input);
+          const sum = result.reduce((acc, e) => acc + e.amount.cents, 0);
+
+          expect(sum).toBe(100);
+        });
+
+        it("should preserve totalAmount on each installment", () => {
+          const input = {
+            ...validInput,
+            totalAmount: Money.create(9990, "BRL"),
+            installmentInfo: InstallmentInfo.create(1, 3),
+          };
+
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense) => {
+            expect(expense.totalAmount.cents).toBe(9990);
+          });
+        });
+      });
+
+      describe("payment schedule per installment", () => {
+        const paymentSchedule = PaymentSchedule.create(
+          BASE_DATE,
+          BASE_DATE,
+          BASE_DATE,
+          BASE_DATE,
+        );
+
+        it("should advance paymentDay by month for each installment when status is PAYING", () => {
+          const input = {
+            ...validInput,
+            status: ExpenseStatus.paying(),
+            paymentSchedule,
+          };
+
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense, i) => {
+            const expected = new Date(BASE_DATE);
+            expected.setMonth(expected.getMonth() + i);
+            expect(expense.paymentSchedule.paymentDay).toEqual(expected);
+          });
+        });
+
+        it("should NOT advance paymentDay when status is not PAYING", () => {
+          const input = {
+            ...validInput,
+            status: ExpenseStatus.fromString(ExpenseStatusValue.PAID),
+            paymentSchedule,
+          };
+
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense) => {
+            expect(expense.paymentSchedule.paymentDay).toEqual(BASE_DATE);
+          });
+        });
+
+        it("should advance expirationDay regardless of status", () => {
+          const input = {
+            ...validInput,
+            status: ExpenseStatus.fromString(ExpenseStatusValue.PAID),
+            paymentSchedule,
+          };
+
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense, i) => {
+            const expected = new Date(BASE_DATE);
+            expected.setMonth(expected.getMonth() + i);
+            expect(expense.paymentSchedule.expirationDay).toEqual(expected);
+          });
+        });
+
+        it("should advance paymentStartAt per installment", () => {
+          const result = Expense.splitIntoInstallments({
+            ...validInput,
+            paymentSchedule,
+          });
+
+          result.forEach((expense, i) => {
+            const expected = new Date(BASE_DATE);
+            expected.setMonth(expected.getMonth() + i);
+            expect(expense.paymentSchedule.startAt).toEqual(expected);
+          });
+        });
+
+        it("should advance paymentEndAt per installment", () => {
+          const result = Expense.splitIntoInstallments({
+            ...validInput,
+            paymentSchedule,
+          });
+
+          result.forEach((expense, i) => {
+            const expected = new Date(BASE_DATE);
+            expected.setMonth(expected.getMonth() + i);
+            expect(expense.paymentSchedule.endAt).toEqual(expected);
+          });
+        });
+      });
+
+      describe("shared fields across installments", () => {
+        it("should preserve name on all installments", () => {
+          const result = Expense.splitIntoInstallments(validInput);
+
+          result.forEach((expense) => {
+            expect(expense.name.value).toBe("Shoe");
+          });
+        });
+
+        it("should preserve description on all installments", () => {
+          const description = ExpenseDescription.create("Streaming service");
+
+          const input = { ...validInput, description };
+
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense) => {
+            expect(expense.description?.value).toBe("Streaming service");
+          });
+        });
+
+        it("should preserve null description on all installments", () => {
+          const input = { ...validInput, description: null };
+
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense) => {
+            expect(expense.description).toBeNull();
+          });
+        });
+
+        it("should preserve userId on all installments", () => {
+          const userId = UserId.from("550e8400-e29b-41d4-a716-446655440000");
+
+          const input = { ...validInput, userId };
+
+          const result = Expense.splitIntoInstallments(input);
+
+          result.forEach((expense) => {
+            expect(expense.userId.toString()).toBe(userId.toString());
+          });
+        });
+
+        it("should preserve status on all installments", () => {
+          const result = Expense.splitIntoInstallments(validInput);
+
+          result.forEach((expense) => {
+            expect(expense.status.value).toBe("PAYING");
+          });
+        });
+
+        it("should share same createdAt across all installments", () => {
+          const result = Expense.splitIntoInstallments(validInput);
+
+          const timestamps = result.map((e) => e.createdAt.getTime());
+          expect(new Set(timestamps).size).toBe(1);
+        });
+      });
+
+      describe("edge cases", () => {
+        it("should handle totalAmount of zero with single installment", () => {
+          const input = {
+            ...validInput,
+            amount: Money.create(0, "BRL"),
+            totalAmount: Money.create(0, "BRL"),
+            installmentInfo: InstallmentInfo.create(1, 1),
+          };
+
+          const result = Expense.splitIntoInstallments(input);
+
+          expect(result).toHaveLength(1);
+          expect(result[0].amount.cents).toBe(0);
+        });
+
+        it("should return installments as new independent instances", () => {
+          const result = Expense.splitIntoInstallments({
+            ...validInput,
+            installmentInfo: InstallmentInfo.create(1, 3),
+          });
+
+          const unique = new Set(result.map((e) => e));
+
+          expect(unique.size).toBe(3);
+        });
+
+        it("should not mutate the original input", () => {
+          const input = validInput;
+          const originalTotal = input.totalAmount.cents;
+          const originalInstallmentTotal = input.installmentInfo.total;
+
+          Expense.splitIntoInstallments(input);
+
+          expect(input.totalAmount.cents).toBe(originalTotal);
+          expect(input.installmentInfo.total).toBe(originalInstallmentTotal);
+        });
       });
     });
   });
