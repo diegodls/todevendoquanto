@@ -1,4 +1,4 @@
-import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
+import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
@@ -9,7 +9,6 @@ import {
 import { deleteExpenseUseCaseErrors } from "@/core/shared/errors/usecases/expense-usecase-errors";
 import { DeleteExpenseInputDTO } from "@/core/usecases/expense/delete-expense-dto";
 import { DeleteExpenseUseCaseInterface } from "@/core/usecases/expense/delete-expense-usecase-interface";
-import { id } from "zod/locales";
 
 export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
   constructor(
@@ -17,13 +16,14 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
     private readonly userRepository: UserRepositoryInterface,
   ) {}
   async execute(data: DeleteExpenseInputDTO): Promise<void> {
-    const expenseId = ExpenseId.from(data.expenseId);
+    const installmentId = InstallmentId.from(data.expenseId);
 
-    const expenseExists = await this.expenseRepository.findById(expenseId);
+    const existingExpenses =
+      await this.expenseRepository.findInstallmentsById(installmentId);
 
-    if (!expenseExists) {
+    if (!existingExpenses || existingExpenses.length === 0) {
       throw new NotFoundError(
-        `Expense not found with ID provided: ${id}`,
+        `Expense not found with ID provided: ${installmentId.toString()}`,
         {},
         deleteExpenseUseCaseErrors.E_0_DEU_NFE_0001.code,
       );
@@ -31,10 +31,12 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
 
     const requestingUserId = UserId.from(data.requestingUserId);
 
+    const expenseOwnerUserId = existingExpenses[0].userId;
+
     const user = await this.userRepository.findById(requestingUserId);
 
     const userCanDelete =
-      user && (user.id === expenseExists.userId || user.canDeleteContent());
+      user && (user.id.equals(expenseOwnerUserId) || user.canDeleteContent());
 
     if (!userCanDelete) {
       throw new UnauthorizedError(
@@ -44,6 +46,6 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
       );
     }
 
-    await this.expenseRepository.delete(expenseId);
+    await this.expenseRepository.deleteByInstallmentId(installmentId);
   }
 }

@@ -12,8 +12,8 @@ const mockerUserUuidV4 = "550E8400-E29B-41D4-A716-446655440000";
 
 const makeRepository = (): ExpenseRepositoryInterface => ({
   create: vi.fn(),
-  delete: vi.fn(),
-  findById: vi.fn(),
+  deleteByInstallmentId: vi.fn(),
+  findInstallmentsById: vi.fn(),
 });
 
 const makeInput = (

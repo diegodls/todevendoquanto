@@ -1,5 +1,5 @@
 import { Expense } from "@/core/entities/expense/expense";
-import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
+import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { CreateExpenseOutputDTO } from "@/core/usecases/expense/create-expense-dto";
 import { PrismaClientGenerated } from "@/infrastructure/repositories/prisma/config/prisma-client";
@@ -8,12 +8,14 @@ import { ExpenseMapper } from "@/infrastructure/repositories/prisma/mappers/expe
 export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
   constructor(private readonly prismaORMClient: PrismaClientGenerated) {}
 
-  async findById(id: ExpenseId): Promise<Expense | null> {
-    const expenseExists = await this.prismaORMClient.expense.findFirst({
-      where: { id: id.toString() },
+  async findInstallmentsById(id: InstallmentId): Promise<Expense[] | null> {
+    const expenseExists = await this.prismaORMClient.expense.findMany({
+      where: { installmentId: id.toString() },
     });
 
-    return expenseExists ? ExpenseMapper.toDomain(expenseExists) : null;
+    return expenseExists
+      ? expenseExists.map((e) => ExpenseMapper.toDomain(e))
+      : null;
   }
 
   async create(expenses: Expense[]): Promise<CreateExpenseOutputDTO[]> {
@@ -32,7 +34,9 @@ export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
     return [];
   }
 
-  async delete(id: ExpenseId): Promise<void> {
-    await this.prismaORMClient.expense.delete({ where: { id: id.toString() } });
+  async deleteByInstallmentId(id: InstallmentId): Promise<void> {
+    await this.prismaORMClient.expense.deleteMany({
+      where: { installmentId: id.toString() },
+    });
   }
 }
