@@ -16,7 +16,7 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
     private readonly userRepository: UserRepositoryInterface,
   ) {}
   async execute(data: DeleteExpenseInputDTO): Promise<void> {
-    const installmentId = InstallmentId.from(data.expenseId);
+    const installmentId = InstallmentId.from(data.installmentId);
 
     const existingExpenses =
       await this.expenseRepository.findInstallmentsById(installmentId);
@@ -34,6 +34,14 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
     const expenseOwnerUserId = existingExpenses[0].userId;
 
     const user = await this.userRepository.findById(requestingUserId);
+
+    if (!user) {
+      throw new NotFoundError(
+        `User not fount with the following id: $${requestingUserId.toString()}`,
+        {},
+        deleteExpenseUseCaseErrors.E_0_DEU_NFE_0003.code,
+      );
+    }
 
     const userCanDelete =
       user && (user.id.equals(expenseOwnerUserId) || user.canDeleteContent());

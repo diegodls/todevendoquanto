@@ -16,6 +16,7 @@ export const expenseUseCaseErrors: ExpenseUseCaseErrors = {
 interface DeleteExpenseUseCaseErrors {
   E_0_DEU_NFE_0001: ErrorsCodeType;
   E_0_DEU_NFE_0002: ErrorsCodeType;
+  E_0_DEU_NFE_0003: ErrorsCodeType;
 }
 export const deleteExpenseUseCaseErrors: DeleteExpenseUseCaseErrors = {
   E_0_DEU_NFE_0001: {
@@ -29,6 +30,13 @@ export const deleteExpenseUseCaseErrors: DeleteExpenseUseCaseErrors = {
     code: "E_0_DEU_NFE_0002",
     details: "User can't delete expense",
     actions: "Verify users permissions or role",
+    instance: "delete-expense-usecase",
+  },
+
+  E_0_DEU_NFE_0003: {
+    code: "E_0_DEU_NFE_0003",
+    details: "Requesting user not found",
+    actions: "Verify user ir that was send by client",
     instance: "delete-expense-usecase",
   },
 };

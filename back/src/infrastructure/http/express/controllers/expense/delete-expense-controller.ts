@@ -27,7 +27,7 @@ export class DeleteExpenseController implements DeleteExpenseControllerType {
 
     const data: DeleteExpenseInputDTO = {
       requestingUserId: user.sub,
-      expenseId: id,
+      installmentId: id,
     };
 
     await this.usecase.execute(data);

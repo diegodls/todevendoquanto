@@ -4,7 +4,7 @@ export type DeleteExpenseParamsInput = {
 
 export type DeleteExpenseInputDTO = {
   requestingUserId: string;
-  expenseId: string;
+  installmentId: string;
 };
 
 export type DeleteExpenseOutputDTO = {};
