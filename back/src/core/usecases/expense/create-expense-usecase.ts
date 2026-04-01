@@ -16,7 +16,6 @@ import {
   CreateExpenseOutputDTO,
 } from "@/core/usecases/expense/create-expense-dto";
 import { CreateExpenseUseCaseInterface } from "@/core/usecases/expense/create-expense-usecase-interface";
-import { ExpenseMapper } from "@/infrastructure/repositories/prisma/mappers/expense-mapper";
 
 export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
   constructor(private readonly repository: ExpenseRepositoryInterface) {}
@@ -82,10 +81,6 @@ export class CreateExpenseUseCase implements CreateExpenseUseCaseInterface {
       userId: userIdCreated,
       installmentId: installmentIdCreated,
     });
-
-    const output2 = expensesToCreate.map((e) =>
-      ExpenseMapper.toCreateExpenseOutputDTO(e),
-    );
 
     const output = await this.repository.create(expensesToCreate);
 
