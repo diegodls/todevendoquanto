@@ -1,4 +1,5 @@
 import { DeleteExpenseControllerType } from "@/core/ports/infrastructure/http/controllers/expense/delete-expense-controller-type";
+import { UnauthorizedError } from "@/core/shared/errors/api-errors";
 import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
@@ -23,7 +24,15 @@ export class DeleteExpenseController implements DeleteExpenseControllerType {
   ): Promise<AuthenticatedHttpResponseInterface<{}>> {
     const user = request.user;
 
-    const { id } = schemaParser(request.params, DeleteExpenseByIdSchema, "");
+    if (!user || !user.sub) {
+      throw new UnauthorizedError("Requesting user data wasn't send");
+    }
+
+    const { id } = schemaParser(
+      request.params,
+      DeleteExpenseByIdSchema,
+      "params",
+    );
 
     const data: DeleteExpenseInputDTO = {
       requestingUserId: user.sub,
