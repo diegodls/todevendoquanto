@@ -1,5 +1,4 @@
 import { CreateUserControllerInterface } from "@/core/ports/infrastructure/http/controllers/user/create-user-controller-type";
-import { InternalError } from "@/core/shared/errors/api-errors";
 import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
@@ -8,13 +7,12 @@ import {
   CreateUserInputDTO,
   CreateUserOutputDTO,
 } from "@/core/usecases/user/create-user-dto";
-import { CreateUserUseCase } from "@/core/usecases/user/create-user-usecase";
-import { userControllerErrorCodes } from "@/infrastructure/errors/codes/controllers/user/user-error-codes";
+import { CreateUserUseCaseInterface } from "@/core/usecases/user/create-user-usecase-interface";
 import { CreateUserBodySchema } from "@/infrastructure/validation/zod/schemas/user/create-user-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class CreateUserController implements CreateUserControllerInterface {
-  constructor(private readonly usecase: CreateUserUseCase) {}
+  constructor(private readonly usecase: CreateUserUseCaseInterface) {}
 
   async handle(
     request: AuthenticatedHttpRequestInterface<CreateUserInputDTO>,
@@ -23,16 +21,8 @@ export class CreateUserController implements CreateUserControllerInterface {
 
     const createdUser = await this.usecase.execute(input);
 
-    if (!createdUser) {
-      throw new InternalError(
-        "Internal Server Error",
-        {},
-        userControllerErrorCodes.E_0_CTR_USR_0001.code,
-      );
-    }
-
     const output: AuthenticatedHttpResponseInterface<CreateUserOutputDTO> = {
-      statusCode: 200,
+      statusCode: 201,
       body: createdUser,
     };
 
