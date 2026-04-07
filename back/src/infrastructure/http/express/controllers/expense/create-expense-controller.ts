@@ -7,12 +7,12 @@ import {
   CreateExpenseBodyInput,
   CreateExpenseOutputDTO,
 } from "@/core/usecases/expense/create-expense-dto";
-import { CreateExpenseUseCase } from "@/core/usecases/expense/create-expense-usecase";
+import { CreateExpenseUseCaseInterface } from "@/core/usecases/expense/create-expense-usecase-interface";
 import { CreateExpenseBodySchema } from "@/infrastructure/validation/zod/schemas/expense/create-expense-body-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class CreateExpenseController implements CreateExpenseControllerType {
-  constructor(private readonly usecase: CreateExpenseUseCase) {}
+  constructor(private readonly usecase: CreateExpenseUseCaseInterface) {}
 
   async handle(
     request: AuthenticatedHttpRequestInterface<
@@ -20,7 +20,7 @@ export class CreateExpenseController implements CreateExpenseControllerType {
       {},
       {},
       {}
-    >
+    >,
   ): Promise<AuthenticatedHttpResponseInterface<CreateExpenseOutputDTO[]>> {
     const user = request.user;
 
@@ -30,7 +30,7 @@ export class CreateExpenseController implements CreateExpenseControllerType {
 
     const output: AuthenticatedHttpResponseInterface<CreateExpenseOutputDTO[]> =
       {
-        statusCode: 200,
+        statusCode: 201,
         body: createdExpense,
       };
 
