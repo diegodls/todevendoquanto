@@ -8,7 +8,6 @@ import {
 } from "@/core/usecases/user/delete-user-dto";
 
 import { DeleteUserByIDControllerType } from "@/core/ports/infrastructure/http/controllers/user/delete-user-by-id-controller-type";
-import { BadRequestError } from "@/core/shared/errors/api-errors";
 import { DeleteUserUseCaseInterface } from "@/core/usecases/user/delete-user-usecase-interface";
 import { DeleteUserByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/user/delete-user-by-id-params-schema";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
@@ -31,16 +30,12 @@ export class DeleteUserByIDController implements DeleteUserByIDControllerType {
       targetUserId: id,
     };
 
-    const deletedUser = await this.usecase.execute(input);
-
-    if (!deletedUser) {
-      throw new BadRequestError("User to be deleted not found");
-    }
+    await this.usecase.execute(input);
 
     const output: AuthenticatedHttpResponseInterface<DeleteUserByIDOutputDTO> =
       {
-        statusCode: 200,
-        body: { id: deletedUser.id },
+        statusCode: 204,
+        body: {},
       };
 
     return output;

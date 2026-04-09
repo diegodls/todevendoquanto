@@ -9,4 +9,4 @@ export type DeleteUserByIDInputDTO = {
 
 export type DeleteUserByIDQueryInput = DeleteUserByIDProps;
 
-export type DeleteUserByIDOutputDTO = DeleteUserByIDProps;
+export type DeleteUserByIDOutputDTO = {};

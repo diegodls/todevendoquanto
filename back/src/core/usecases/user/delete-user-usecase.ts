@@ -51,10 +51,6 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
       throw new InternalError("Wasn't possible to delete user");
     }
 
-    const output = {
-      id: deletedUser.id.toString(),
-    };
-
-    return output;
+    return {};
   }
 }
