@@ -8,13 +8,13 @@ import {
   ListUsersInputDTO,
   ListUsersPaginatedQueryParams,
 } from "@/core/usecases/user/list-user-dto";
-import { ListUsersUseCase } from "@/core/usecases/user/list-users-usecase";
+import { ListUsersUseCaseInterface } from "@/core/usecases/user/list-users-usecase-interface";
 import { ListUserSchema } from "@/infrastructure/validation/zod/schemas/user/list-user-schema";
 
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class ListUserController implements UserListControllerType {
-  constructor(private readonly service: ListUsersUseCase) {}
+  constructor(private readonly usecase: ListUsersUseCaseInterface) {}
 
   public async handle(
     request: AuthenticatedHttpRequestInterface<
@@ -24,16 +24,14 @@ export class ListUserController implements UserListControllerType {
       ListUsersPaginatedQueryParams
     >,
   ): Promise<AuthenticatedHttpResponseInterface<ListUserOutputDTO>> {
-    const user = request.user;
-
     const queryProps = requestValidation("query", request, ListUserSchema);
 
     const data: ListUsersInputDTO = {
-      requestingUserId: user.sub,
+      requestingUserId: request.user.sub,
       ...queryProps,
     };
 
-    const usersList = await this.service.execute(data);
+    const usersList = await this.usecase.execute(data);
 
     const output: AuthenticatedHttpResponseInterface<ListUserOutputDTO> = {
       statusCode: 200,
