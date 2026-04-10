@@ -1,6 +1,4 @@
 import { UserUpdateControllerType } from "@/core/ports/infrastructure/http/controllers/user/update-user-controller-type";
-import { BadRequestError } from "@/core/shared/errors/api-errors";
-import { SANITIZE_UUID_V4_REGEX } from "@/core/shared/regex/sanitize-uuid";
 import {
   AuthenticatedHttpRequestInterface,
   AuthenticatedHttpResponseInterface,
@@ -18,7 +16,7 @@ import {
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
 
 export class UserUpdateController implements UserUpdateControllerType {
-  constructor(readonly service: UpdateUserUseCaseInterface) {}
+  constructor(private readonly usecase: UpdateUserUseCaseInterface) {}
 
   public async handle(
     request: AuthenticatedHttpRequestInterface<
@@ -27,31 +25,17 @@ export class UserUpdateController implements UserUpdateControllerType {
       UpdateUserInputParams
     >,
   ): Promise<AuthenticatedHttpResponseInterface<UpdateUserOutputDTO>> {
-    const loggedUser = request.user;
-
-    const userIDToChange = requestValidation(
-      "params",
-      request,
-      UpdateUserParamsSchema,
-    ).id;
-
-    if (!String(userIDToChange)) {
-      throw new BadRequestError("User ID to change was not send");
-    }
-
-    if (!SANITIZE_UUID_V4_REGEX.test(userIDToChange)) {
-      throw new BadRequestError("Invalid User ID to change");
-    }
+    const { id } = requestValidation("params", request, UpdateUserParamsSchema);
 
     const input = requestValidation("body", request, UpdateUserBodySchema);
 
     const inputData: UpdateUserInputDTO = {
-      requestingUserId: loggedUser.sub,
-      targetUserId: userIDToChange,
+      requestingUserId: request.user.sub,
+      targetUserId: id,
       ...input,
     };
 
-    const updatedUser = await this.service.execute(inputData);
+    const updatedUser = await this.usecase.execute(inputData);
 
     const output: AuthenticatedHttpResponseInterface<UpdateUserOutputDTO> = {
       statusCode: 200,
