@@ -20,30 +20,25 @@ export class LoginUseCase implements LoginUseCaseInterface {
   ) {}
 
   public async execute(data: LoginUserInputDTO): Promise<LoginUserOutputDTO> {
-    let userEmail: Email;
-    let userPassword: Password;
+    const credentials = this.parseCredentials(data);
 
-    try {
-      userEmail = Email.create(data.email);
-
-      userPassword = Password.create(data.password);
-    } catch (error) {
+    if (!credentials) {
       throw new UnauthorizedError("Wrong credentials!");
     }
 
-    const userExists = await this.repository.findByEmail(userEmail);
+    const user = await this.repository.findByEmail(credentials.email);
 
-    if (!userExists) {
+    if (!user) {
       throw new UnauthorizedError("Wrong credentials!");
     }
 
-    if (!userExists.isActive) {
+    if (!user.isActive) {
       throw new UnauthorizedError("User account is deactivated");
     }
 
     const isPasswordValid = await this.passwordHasher.compare(
-      userPassword.getValue(),
-      userExists.hashedPassword,
+      credentials.password.getValue(),
+      user.hashedPassword,
     );
 
     if (!isPasswordValid) {
@@ -51,12 +46,25 @@ export class LoginUseCase implements LoginUseCaseInterface {
     }
 
     const payload: LoginUserPayloadType = {
-      email: userExists.email.toString(),
-      role: userExists.role.toString(),
+      email: user.email.toString(),
+      role: user.role.toString(),
     };
 
-    const token = this.generateToken.execute(payload, userExists.id.toString());
+    const token = this.generateToken.execute(payload, user.id.toString());
 
     return { token };
+  }
+
+  private parseCredentials(
+    data: LoginUserInputDTO,
+  ): { email: Email; password: Password } | null {
+    try {
+      return {
+        email: Email.create(data.email),
+        password: Password.create(data.password),
+      };
+    } catch {
+      return null;
+    }
   }
 }
