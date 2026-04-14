@@ -19,7 +19,7 @@ export class DeleteExpenseUseCase implements DeleteExpenseUseCaseInterface {
     const installmentId = InstallmentId.from(data.installmentId);
 
     const existingExpenses =
-      await this.expenseRepository.findInstallmentsById(installmentId);
+      await this.expenseRepository.findInstallmentById(installmentId);
 
     if (!existingExpenses || existingExpenses.length === 0) {
       throw new NotFoundError(

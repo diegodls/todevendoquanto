@@ -46,7 +46,7 @@ const makeInput = (
 
 const makeRepositories = () => ({
   expenseRepository: {
-    findInstallmentsById: vi.fn(),
+    findInstallmentById: vi.fn(),
     deleteByInstallmentId: vi.fn().mockResolvedValue(undefined),
   } as unknown as ExpenseRepositoryInterface,
 
@@ -71,7 +71,7 @@ describe("DeleteExpenseUseCase", () => {
 
       const user = makeUser();
 
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         expenses as any,
       );
 
@@ -86,7 +86,7 @@ describe("DeleteExpenseUseCase", () => {
       const expenses = makeExpenses();
       const user = makeUser();
 
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         expenses as any,
       );
 
@@ -102,7 +102,7 @@ describe("DeleteExpenseUseCase", () => {
     it("should allow admin user to delete expense they don't own", async () => {
       const expenses = makeExpenses({ userId: OWNER_USER_ID });
       const adminUser = makeUser({ id: OTHER_USER_ID, canDeleteContent: true });
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         expenses as any,
       );
       vi.mocked(userRepository.findById).mockResolvedValue(adminUser as any);
@@ -114,7 +114,7 @@ describe("DeleteExpenseUseCase", () => {
     });
 
     it("should resolve without returning a value", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         makeExpenses() as any,
       );
       vi.mocked(userRepository.findById).mockResolvedValue(makeUser() as any);
@@ -124,22 +124,22 @@ describe("DeleteExpenseUseCase", () => {
   });
 
   describe("given expenses not found", () => {
-    it("should throw NotFoundError when findInstallmentsById returns null", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+    it("should throw NotFoundError when findInstallmentById returns null", async () => {
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         null as any,
       );
 
       await expect(sut.execute(makeInput())).rejects.toThrow(NotFoundError);
     });
 
-    it("should throw NotFoundError when findInstallmentsById returns empty array", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue([]);
+    it("should throw NotFoundError when findInstallmentById returns empty array", async () => {
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue([]);
 
       await expect(sut.execute(makeInput())).rejects.toThrow(NotFoundError);
     });
 
     it("should not query user when expenses are not found", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue([]);
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue([]);
 
       await sut.execute(makeInput()).catch(() => {});
 
@@ -147,7 +147,7 @@ describe("DeleteExpenseUseCase", () => {
     });
 
     it("should not call delete when expenses are not found", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue([]);
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue([]);
 
       await sut.execute(makeInput()).catch(() => {});
 
@@ -157,7 +157,7 @@ describe("DeleteExpenseUseCase", () => {
 
   describe("given user not found", () => {
     it("should throw NotFoundError when user does not exist", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         makeExpenses() as any,
       );
 
@@ -167,7 +167,7 @@ describe("DeleteExpenseUseCase", () => {
     });
 
     it("should not call delete when user is not found", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         makeExpenses() as any,
       );
 
@@ -179,7 +179,7 @@ describe("DeleteExpenseUseCase", () => {
     });
 
     it("should throw NotFoundError not UnauthorizedError when user is missing", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         makeExpenses() as any,
       );
       vi.mocked(userRepository.findById).mockResolvedValue(null);
@@ -199,7 +199,7 @@ describe("DeleteExpenseUseCase", () => {
         canDeleteContent: false,
       });
 
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         expenses as any,
       );
 
@@ -217,7 +217,7 @@ describe("DeleteExpenseUseCase", () => {
         canDeleteContent: false,
       });
 
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         expenses as any,
       );
 
@@ -237,11 +237,11 @@ describe("DeleteExpenseUseCase", () => {
         sut.execute(makeInput({ installmentId: "not-a-uuid" })),
       ).rejects.toThrow();
 
-      expect(expenseRepository.findInstallmentsById).not.toHaveBeenCalled();
+      expect(expenseRepository.findInstallmentById).not.toHaveBeenCalled();
     });
 
     it("should throw when requestingUserId is not a valid uuid", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         makeExpenses() as any,
       );
 
@@ -252,8 +252,8 @@ describe("DeleteExpenseUseCase", () => {
   });
 
   describe("given repository failures", () => {
-    it("should propagate exception from findInstallmentsById", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockRejectedValue(
+    it("should propagate exception from findInstallmentById", async () => {
+      vi.mocked(expenseRepository.findInstallmentById).mockRejectedValue(
         new Error("DB unavailable"),
       );
 
@@ -261,7 +261,7 @@ describe("DeleteExpenseUseCase", () => {
     });
 
     it("should propagate exception from userRepository.findById", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         makeExpenses() as any,
       );
 
@@ -275,7 +275,7 @@ describe("DeleteExpenseUseCase", () => {
     });
 
     it("should propagate exception from deleteByInstallmentId", async () => {
-      vi.mocked(expenseRepository.findInstallmentsById).mockResolvedValue(
+      vi.mocked(expenseRepository.findInstallmentById).mockResolvedValue(
         makeExpenses() as any,
       );
 

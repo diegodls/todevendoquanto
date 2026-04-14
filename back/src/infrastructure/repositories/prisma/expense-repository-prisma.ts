@@ -1,6 +1,7 @@
 import { Expense } from "@/core/entities/expense/expense";
 import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
+import { InternalError } from "@/core/shared/errors/api-errors";
 import { CreateExpenseOutputDTO } from "@/core/usecases/expense/create-expense-dto";
 import { PrismaClientGenerated } from "@/infrastructure/repositories/prisma/config/prisma-client";
 import { ExpenseMapper } from "@/infrastructure/repositories/prisma/mappers/expense-mapper";
@@ -8,14 +9,16 @@ import { ExpenseMapper } from "@/infrastructure/repositories/prisma/mappers/expe
 export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
   constructor(private readonly prismaORMClient: PrismaClientGenerated) {}
 
-  async findInstallmentsById(id: InstallmentId): Promise<Expense[] | null> {
+  async findInstallmentById(id: InstallmentId): Promise<Expense[] | null> {
     const expenseExists = await this.prismaORMClient.expense.findMany({
       where: { installmentId: id.toString() },
     });
 
-    return expenseExists
-      ? expenseExists.map((e) => ExpenseMapper.toDomain(e))
-      : null;
+    if (!expenseExists || expenseExists.length <= 0) {
+      return null;
+    }
+
+    return expenseExists.map((e) => ExpenseMapper.toDomain(e));
   }
 
   async create(expenses: Expense[]): Promise<CreateExpenseOutputDTO[]> {
@@ -27,11 +30,13 @@ export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
       data: prismaExpenses,
     });
 
-    if (expenses.length === created.count) {
-      return expenses.map((e) => ExpenseMapper.toCreateExpenseOutputDTO(e));
+    if (!created || created.count !== expenses.length) {
+      throw new InternalError(
+        "Error when creating expenses, expenses created mismatch with informed expenses.",
+      );
     }
 
-    return [];
+    return expenses.map((e) => ExpenseMapper.toCreateExpenseOutputDTO(e));
   }
 
   async deleteByInstallmentId(id: InstallmentId): Promise<void> {
