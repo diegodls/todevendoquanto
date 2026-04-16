@@ -4,7 +4,8 @@
 
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*", "./generated/*", "./prisma/*"]
+      "@/*": ["./src/*"],
+      "@/prisma/*": ["./generated/prisma/*"]
     },
     "rootDir": "./src",
     "outDir": "./dist",
