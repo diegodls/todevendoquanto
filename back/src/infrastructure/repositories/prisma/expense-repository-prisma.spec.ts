@@ -5,8 +5,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/infrastructure/repositories/prisma/mappers/expense-mapper");
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 const INSTALLMENT_ID = "550e8400-e29b-41d4-a716-446655440000";
 
 const makeInstallmentId = () => ({
@@ -52,8 +50,6 @@ const makePrismaClient = () => ({
     deleteMany: vi.fn(),
   },
 });
-
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe("ExpenseRepositoryPrisma", () => {
   let prisma: ReturnType<typeof makePrismaClient>;

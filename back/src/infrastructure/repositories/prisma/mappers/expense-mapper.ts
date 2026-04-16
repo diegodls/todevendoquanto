@@ -10,7 +10,7 @@ import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-s
 import { Tags } from "@/core/entities/expense/value-objects/tags";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { CreateExpenseOutputDTO } from "@/core/usecases/expense/create-expense-dto";
-import { Expense as PrismaExpense } from "@/prisma";
+import { Expense as PrismaExpense } from "@/prisma/index";
 
 export class ExpenseMapper {
   static toDomain(raw: PrismaExpense): EntityExpense {

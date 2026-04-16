@@ -1,7 +1,8 @@
 import { ListUsersFiltersOptions } from "@/core/usecases/user/list-user-dto";
 import { PrismaGenerated } from "@/infrastructure/repositories/prisma/config/prisma-client";
 import { GenericFilterMapper } from "@/infrastructure/repositories/prisma/user-repository-prisma";
-import { Role } from "@/prisma";
+
+import { Role } from "../../../../../../generated/prisma";
 
 export const listUsersFilters: GenericFilterMapper<
   ListUsersFiltersOptions,

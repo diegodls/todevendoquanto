@@ -1,7 +1,7 @@
+import { PrismaClient } from "@/prisma/index";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../../../../../generated/prisma";
 
-export { Prisma as PrismaGenerated } from "../../../../../generated/prisma";
+export { Prisma as PrismaGenerated } from "@/prisma/index";
 
 export class PrismaClientGenerated extends PrismaClient {}
 

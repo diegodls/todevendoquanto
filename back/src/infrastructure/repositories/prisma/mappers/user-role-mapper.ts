@@ -1,5 +1,5 @@
 import { UserRole } from "@/core/entities/user/value-objects/user-role";
-import { Role as PrismaRole } from "@/prisma";
+import { Role as PrismaRole } from "../../../../../generated/prisma";
 
 export class UserRoleMapper {
   public static toPersistence(userRole: UserRole): PrismaRole {

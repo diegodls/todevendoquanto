@@ -1,7 +1,6 @@
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import {
-  InternalError,
   NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
@@ -35,6 +34,7 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
     }
 
     const isSelfDelete = requestingUser.id.equals(targetUser.id);
+
     const isAdmin = requestingUser.isAdmin();
 
     if (!isSelfDelete && !isAdmin) {
@@ -45,11 +45,7 @@ export class DeleteUserUseCase implements DeleteUserUseCaseInterface {
       throw new UnauthorizedError("Only admins can delete other admins");
     }
 
-    const deletedUser = await this.repository.deleteById(targetUserId);
-
-    if (!deletedUser) {
-      throw new InternalError("Wasn't possible to delete user");
-    }
+    await this.repository.deleteById(targetUserId);
 
     return {};
   }

@@ -13,7 +13,7 @@ export interface PaginatedResult<T> {
 }
 
 export interface UserRepositoryInterface {
-  deleteById(id: UserId): Promise<User | null>;
+  deleteById(id: UserId): Promise<void>;
   exists(email: Email): Promise<boolean>;
   findByEmail(email: Email): Promise<User | null>;
   findByName(name: User["name"]): Promise<User | null>;

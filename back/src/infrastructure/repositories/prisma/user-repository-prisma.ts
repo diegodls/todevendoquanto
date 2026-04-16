@@ -17,12 +17,12 @@ import {
   PrismaClientGenerated,
   PrismaGenerated,
 } from "@/infrastructure/repositories/prisma/config/prisma-client";
-import { UserRoleMapper } from "@/infrastructure/repositories/prisma/mappers/user/user-role-mapper";
+import { UserRoleMapper } from "@/infrastructure/repositories/prisma/mappers/user-role-mapper";
 
 import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
 
 import { Password } from "@/core/entities/user/value-objects/password";
-import { User as PrismaUser } from "@/prisma";
+import { User as PrismaUser } from "@/prisma/index";
 
 export type GenericFilterMapper<
   TFilterObject extends object,
@@ -54,14 +54,10 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
     await this.prismaORMClient.user.create({ data });
   }
 
-  async deleteById(id: UserId): Promise<EntityUser | null> {
-    const deleteUser = await this.prismaORMClient.user.delete({
+  async deleteById(id: UserId): Promise<void> {
+    await this.prismaORMClient.user.delete({
       where: { id: id.toString() },
     });
-
-    const output = this.toDomain(deleteUser);
-
-    return output;
   }
 
   async exists(email: Email): Promise<boolean> {
@@ -73,7 +69,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
   }
 
   async findById(id: UserId): Promise<EntityUser | null> {
-    const userExists = await this.prismaORMClient.user.findFirst({
+    const userExists = await this.prismaORMClient.user.findUnique({
       where: { id: id.toString() },
     });
 
@@ -140,7 +136,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       }),
     ]);
 
-    let output: PaginatedResult<EntityUser> = {
+    const output: PaginatedResult<EntityUser> = {
       data: usersList.map((user) => this.toDomain(user)),
       total: totalItems,
     };
@@ -165,7 +161,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
     const userId = UserId.from(prismaUser.id);
     const userName = prismaUser.name;
     const userEmail = Email.create(prismaUser.email);
-    const userHashedPassword = Password.create(prismaUser.hashedPassword);
+    const userHashedPassword = Password.fromHash(prismaUser.hashedPassword);
     const userRole = UserRoleMapper.toDomain(prismaUser.role);
 
     const props: EntityUserProps = {

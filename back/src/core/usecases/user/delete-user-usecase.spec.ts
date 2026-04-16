@@ -69,7 +69,7 @@ describe("DeleteUserUseCase", () => {
         };
 
         vi.spyOn(userRepository, "findById").mockResolvedValue(basicUser);
-        vi.spyOn(userRepository, "deleteById").mockResolvedValue(basicUser);
+        vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
         await deleteUserUseCase.execute(input);
 
@@ -84,7 +84,7 @@ describe("DeleteUserUseCase", () => {
       };
 
       vi.spyOn(userRepository, "findById").mockResolvedValue(basicUser);
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(basicUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -165,7 +165,7 @@ describe("DeleteUserUseCase", () => {
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(basicUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(basicUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -192,7 +192,7 @@ describe("DeleteUserUseCase", () => {
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(anotherAdmin);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(adminUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -220,7 +220,7 @@ describe("DeleteUserUseCase", () => {
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(inactiveUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(adminUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -360,7 +360,7 @@ describe("DeleteUserUseCase", () => {
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(basicUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(adminUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -383,7 +383,7 @@ describe("DeleteUserUseCase", () => {
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(basicUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(basicUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -399,7 +399,7 @@ describe("DeleteUserUseCase", () => {
         .mockResolvedValueOnce(basicUser)
         .mockResolvedValueOnce(anotherBasicUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(basicUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow();
 
@@ -416,7 +416,7 @@ describe("DeleteUserUseCase", () => {
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(null);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(adminUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow();
 
@@ -453,7 +453,7 @@ describe("DeleteUserUseCase", () => {
         .mockResolvedValueOnce(adminSameCompany)
         .mockResolvedValueOnce(sameCompanyUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(basicUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -470,7 +470,7 @@ describe("DeleteUserUseCase", () => {
 
       // Mesmo usuário retornado nas duas buscas
       vi.spyOn(userRepository, "findById").mockResolvedValue(basicUser);
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue(basicUser);
+      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
