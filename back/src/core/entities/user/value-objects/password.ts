@@ -1,3 +1,17 @@
+import {
+  CommonPasswordError,
+  PasswordEmptyError,
+  PasswordHashedEmptyError,
+  PasswordHashedError,
+  PasswordInvalidHash,
+  PasswordMissingLowercaseError,
+  PasswordMissingNumberError,
+  PasswordMissingSpecialCharacterError,
+  PasswordMissingUppercaseError,
+  PasswordTooLongError,
+  PasswordTooShortError,
+} from "@/core/shared/errors/domain";
+
 export class Password {
   private readonly value: string;
 
@@ -7,15 +21,15 @@ export class Password {
 
   public static create(password: string): Password {
     if (!password) {
-      throw new Error("Password cannot be empty");
+      throw new PasswordEmptyError();
     }
 
     if (password.length < 8) {
-      throw new Error("Password must have at least 8 characters");
+      throw new PasswordTooShortError();
     }
 
     if (password.length > 128) {
-      throw new Error("Password exceeds maximum length of 128 characters");
+      throw new PasswordTooLongError();
     }
 
     this.validateComplexity(password);
@@ -23,25 +37,45 @@ export class Password {
     return new Password(password);
   }
 
+  public static fromHash(hash: string): Password {
+    if (!hash || hash === null || hash === undefined) {
+      throw new PasswordHashedEmptyError();
+    }
+
+    if (!hash.startsWith("$2")) {
+      throw new PasswordInvalidHash();
+    }
+
+    if (hash.length !== 60) {
+      throw new PasswordInvalidHash();
+    }
+
+    return new Password(hash);
+  }
+
   private static validateComplexity(password: string): void {
     if (this.isCommonPassword(password)) {
-      throw new Error("Password is too common");
+      throw new CommonPasswordError();
     }
 
     if (!/[A-Z]/.test(password)) {
-      throw new Error("Password must contain at least one uppercase letter");
+      throw new PasswordMissingUppercaseError();
     }
 
     if (!/[a-z]/.test(password)) {
-      throw new Error("Password must contain at least one lowercase letter");
+      throw new PasswordMissingLowercaseError();
     }
 
     if (!/[0-9]/.test(password)) {
-      throw new Error("Password must contain at least one number");
+      throw new PasswordMissingNumberError();
     }
 
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      throw new Error("Password must contain at least one special character");
+      throw new PasswordMissingSpecialCharacterError();
+    }
+
+    if (password.startsWith("$2")) {
+      throw new PasswordHashedError();
     }
   }
 

@@ -49,3 +49,21 @@ export class PasswordMissingSpecialCharacterError extends PasswordError {
     super("Password must contain at least one special character");
   }
 }
+
+export class PasswordHashedError extends PasswordError {
+  constructor() {
+    super("Password can't be hashed, must be plain text");
+  }
+}
+
+export class PasswordInvalidHash extends PasswordError {
+  constructor() {
+    super("Invalid hash format");
+  }
+}
+
+export class PasswordHashedEmptyError extends PasswordError {
+  constructor() {
+    super("Password hashed cannot be empty, null or undefined");
+  }
+}

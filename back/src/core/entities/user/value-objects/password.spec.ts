@@ -1,3 +1,8 @@
+import {
+  PasswordHashedEmptyError,
+  PasswordHashedError,
+  PasswordInvalidHash,
+} from "@/core/shared/errors/domain";
 import { describe, expect, it } from "vitest";
 import { Password } from "./password";
 
@@ -306,31 +311,155 @@ describe("Password", () => {
     });
   });
 
-  describe("immutability", () => {
-    it("should maintain same value after multiple operations", () => {
-      const passwordString = "MyP@ssw0rd123";
-      const password = Password.create(passwordString);
+  describe("fromHash", () => {
+    const VALID_HASH =
+      "$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
 
-      password.getValue();
-      password.equals(Password.create("Different1!"));
-      password.getValue();
+    describe("given a valid bcrypt hash", () => {
+      it("should create a Password instance", () => {
+        const result = Password.fromHash(VALID_HASH);
 
-      expect(password.getValue()).toBe(passwordString);
+        expect(result).toBeInstanceOf(Password);
+      });
+
+      it("should store the hash as value", () => {
+        const result = Password.fromHash(VALID_HASH);
+
+        expect(result.getValue()).toBe(VALID_HASH);
+      });
+
+      it("should accept $2b$ prefix", () => {
+        expect(() =>
+          Password.fromHash(
+            "$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+          ),
+        ).not.toThrow();
+      });
+
+      it("should accept $2a$ prefix", () => {
+        expect(() =>
+          Password.fromHash(
+            "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+          ),
+        ).not.toThrow();
+      });
+
+      it("should accept $2y$ prefix", () => {
+        expect(() =>
+          Password.fromHash(
+            "$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+          ),
+        ).not.toThrow();
+      });
     });
-  });
 
-  describe("security", () => {
-    it("should not leak password in error messages", () => {
-      const sensitivePassword = "MySecretP@ss123";
+    describe("given an invalid hash", () => {
+      describe("when hash is empty or missing", () => {
+        it("should throw DomainError when empty string", () => {
+          expect(() => Password.fromHash("")).toThrow(PasswordHashedEmptyError);
+        });
 
-      try {
-        const password = Password.create(sensitivePassword);
-        password.equals(null as any);
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        expect(errorMessage).not.toContain(sensitivePassword);
-      }
+        it("should throw DomainError when null is passed", () => {
+          expect(() => Password.fromHash(null as any)).toThrow(
+            PasswordHashedEmptyError,
+          );
+        });
+
+        it("should throw DomainError when undefined is passed", () => {
+          expect(() => Password.fromHash(undefined as any)).toThrow(
+            PasswordHashedEmptyError,
+          );
+        });
+      });
+
+      describe("when value is plain text instead of hash", () => {
+        it("should throw DomainError when plain password is passed", () => {
+          expect(() => Password.fromHash("Secret123!")).toThrow(
+            PasswordInvalidHash,
+          );
+        });
+
+        it("should throw with a message indicating plain text is not allowed", () => {
+          expect(() => Password.fromHash("Secret123!")).toThrow(
+            "Invalid hash format",
+          );
+        });
+      });
+
+      describe("when hash format is wrong", () => {
+        it("should throw DomainError when prefix is invalid", () => {
+          expect(() => Password.fromHash("$3b$10$somehash")).toThrow(
+            PasswordInvalidHash,
+          );
+        });
+
+        it("should throw DomainError when hash has no cost factor", () => {
+          expect(() => Password.fromHash("$2b$somEhash")).toThrow(
+            PasswordInvalidHash,
+          );
+        });
+      });
+    });
+
+    describe("immutability", () => {
+      it("should maintain same value after multiple operations", () => {
+        const passwordString = "MyP@ssw0rd123";
+        const password = Password.create(passwordString);
+
+        password.getValue();
+        password.equals(Password.create("Different1!"));
+        password.getValue();
+
+        expect(password.getValue()).toBe(passwordString);
+      });
+    });
+
+    describe("security", () => {
+      it("should not leak password in error messages", () => {
+        const sensitivePassword = "$MyS$ecretP@ss123";
+
+        try {
+          const password = Password.create(sensitivePassword);
+          password.equals(null as any);
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          expect(errorMessage).not.toContain(sensitivePassword);
+        }
+      });
+    });
+
+    describe("given a bcrypt hash instead of plain text", () => {
+      const BCRYPT_HASH =
+        "$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
+
+      it("should throw DomainError when bcrypt hash is passed", () => {
+        expect(() => Password.create(BCRYPT_HASH)).toThrow(PasswordHashedError);
+      });
+
+      it("should throw with a message indicating hash is not allowed", () => {
+        expect(() => Password.create(BCRYPT_HASH)).toThrow(
+          "Password can't be hashed, must be plain text",
+        );
+      });
+
+      it("should reject $2b$ prefixed strings", () => {
+        expect(() => Password.create("$2b$10$Domehashvalue")).toThrow(
+          PasswordHashedError,
+        );
+      });
+
+      it("should reject $2a$ prefixed strings", () => {
+        expect(() => Password.create("$2a$10$Domehashvalue")).toThrow(
+          PasswordHashedError,
+        );
+      });
+
+      it("should reject $2y$ prefixed strings", () => {
+        expect(() => Password.create("$2y$10$Domehashvalue")).toThrow(
+          PasswordHashedError,
+        );
+      });
     });
   });
 });
