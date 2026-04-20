@@ -1,10 +1,8 @@
-// core/entities/user/value-objects/email.ts
-
 import {
   EmailEmptyError,
   EmailTooLongError,
   InvalidEmailFormatError,
-} from "@/core/shared/errors/domain";
+} from '@/core/shared/errors/domain';
 
 export class Email {
   private readonly _value: string;
@@ -42,7 +40,7 @@ export class Email {
       return false;
     }
 
-    const [localPart, domain] = email.split("@");
+    const [localPart, domain] = email.split('@');
 
     if (localPart.length > 64) {
       return false;
@@ -52,11 +50,11 @@ export class Email {
       return false;
     }
 
-    if (email.includes("..")) {
+    if (email.includes('..')) {
       return false;
     }
 
-    if (localPart.startsWith(".") || localPart.endsWith(".")) {
+    if (localPart.startsWith('.') || localPart.endsWith('.')) {
       return false;
     }
 
@@ -64,7 +62,7 @@ export class Email {
   }
 
   private static normalizeAccents(email: string): string {
-    return email.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return email.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
   public toString(): string {
@@ -72,11 +70,11 @@ export class Email {
   }
 
   public getLocalPart(): string {
-    return this._value.split("@")[0];
+    return this._value.split('@')[0];
   }
 
   public getDomain(): string {
-    return this._value.split("@")[1];
+    return this._value.split('@')[1];
   }
 
   public equals(other: Email): boolean {

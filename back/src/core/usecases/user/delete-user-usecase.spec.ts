@@ -1,20 +1,20 @@
-import { User } from "@/core/entities/user/user";
-import { Email } from "@/core/entities/user/value-objects/user-email";
-import { UserId } from "@/core/entities/user/value-objects/user-id";
-import { UserRole } from "@/core/entities/user/value-objects/user-role";
-import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
+import { User } from '@/core/entities/user/user';
+import { Email } from '@/core/entities/user/value-objects/user-email';
+import { UserId } from '@/core/entities/user/value-objects/user-id';
+import { UserRole } from '@/core/entities/user/value-objects/user-role';
+import { UserRepositoryInterface } from '@/core/ports/repositories/user-repository-interface';
 import {
   NotFoundError,
   UnauthorizedError,
-} from "@/core/shared/errors/api-errors";
-import { DeleteUserUseCase } from "@/core/usecases/user/delete-user-usecase";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+} from '@/core/shared/errors/api-errors';
+import { DeleteUserUseCase } from '@/core/usecases/user/delete-user-usecase';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-describe("DeleteUserUseCase", () => {
+describe('DeleteUserUseCase', () => {
   let deleteUserUseCase: DeleteUserUseCase;
   let userRepository: UserRepositoryInterface;
 
-  const validHashedPassword = "$2b$10$hashedPassword";
+  const validHashedPassword = '$2b$10$hashedPassword';
 
   let basicUser: User;
   let adminUser: User;
@@ -36,40 +36,40 @@ describe("DeleteUserUseCase", () => {
 
     basicUser = User.create(
       {
-        name: "Basic User",
-        email: "basic@example.com",
+        name: 'Basic User',
+        email: 'basic@example.com',
       },
       validHashedPassword,
     );
 
     adminUser = User.create(
       {
-        name: "Admin User",
-        email: "admin@example.com",
-        role: "ADMIN",
+        name: 'Admin User',
+        email: 'admin@example.com',
+        role: 'ADMIN',
       },
       validHashedPassword,
     );
 
     anotherBasicUser = User.create(
       {
-        name: "Another User",
-        email: "another@example.com",
+        name: 'Another User',
+        email: 'another@example.com',
       },
       validHashedPassword,
     );
   });
 
-  describe("execute", () => {
-    describe("self-delete", () => {
-      it("should allow basic user to delete themselves", async () => {
+  describe('execute', () => {
+    describe('self-delete', () => {
+      it('should allow basic user to delete themselves', async () => {
         const input = {
           requestingUserId: basicUser.id.toString(),
           targetUserId: basicUser.id.toString(),
         };
 
-        vi.spyOn(userRepository, "findById").mockResolvedValue(basicUser);
-        vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+        vi.spyOn(userRepository, 'findById').mockResolvedValue(basicUser);
+        vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
         await deleteUserUseCase.execute(input);
 
@@ -77,14 +77,14 @@ describe("DeleteUserUseCase", () => {
       });
     });
 
-    it("should call repository delete with correct UserId value object", async () => {
+    it('should call repository delete with correct UserId value object', async () => {
       const input = {
         requestingUserId: basicUser.id.toString(),
         targetUserId: basicUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById").mockResolvedValue(basicUser);
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'findById').mockResolvedValue(basicUser);
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -93,13 +93,13 @@ describe("DeleteUserUseCase", () => {
       expect(deleteArg.toString()).toBe(basicUser.id.toString());
     });
 
-    it("should throw UnauthorizedError when admin tries to delete themselves", async () => {
+    it('should throw UnauthorizedError when admin tries to delete themselves', async () => {
       const input = {
         requestingUserId: adminUser.id.toString(),
         targetUserId: adminUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+      vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow(
         UnauthorizedError,
@@ -108,28 +108,28 @@ describe("DeleteUserUseCase", () => {
       expect(userRepository.deleteById).not.toHaveBeenCalled();
     });
 
-    it("should throw correct message when admin tries to delete themselves", async () => {
+    it('should throw correct message when admin tries to delete themselves', async () => {
       const input = {
         requestingUserId: adminUser.id.toString(),
         targetUserId: adminUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+      vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow(
-        "Only admins can delete other admins",
+        'Only admins can delete other admins',
       );
     });
   });
 
-  describe("deleting other users", () => {
-    it("should throw UnauthorizedError when basic user tries to delete another user", async () => {
+  describe('deleting other users', () => {
+    it('should throw UnauthorizedError when basic user tries to delete another user', async () => {
       const input = {
         requestingUserId: basicUser.id.toString(),
         targetUserId: anotherBasicUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(basicUser)
         .mockResolvedValueOnce(anotherBasicUser);
 
@@ -140,45 +140,45 @@ describe("DeleteUserUseCase", () => {
       expect(userRepository.deleteById).not.toHaveBeenCalled();
     });
 
-    it("should throw correct message when basic user tries to delete another user", async () => {
+    it('should throw correct message when basic user tries to delete another user', async () => {
       const input = {
         requestingUserId: basicUser.id.toString(),
         targetUserId: anotherBasicUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(basicUser)
         .mockResolvedValueOnce(anotherBasicUser);
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow(
-        "Only admins can delete other users",
+        'Only admins can delete other users',
       );
     });
 
-    it("should allow admin to delete basic user", async () => {
+    it('should allow admin to delete basic user', async () => {
       const input = {
         requestingUserId: adminUser.id.toString(),
         targetUserId: basicUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(basicUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
       expect(userRepository.deleteById).toHaveBeenCalledWith(basicUser.id);
     });
 
-    it("should allow admin to delete another admin", async () => {
+    it('should allow admin to delete another admin', async () => {
       const anotherAdmin = User.create(
         {
-          name: "Another Admin",
-          email: "anotheradmin@example.com",
+          name: 'Another Admin',
+          email: 'anotheradmin@example.com',
 
-          role: "ADMIN",
+          role: 'ADMIN',
         },
         validHashedPassword,
       );
@@ -188,22 +188,22 @@ describe("DeleteUserUseCase", () => {
         targetUserId: anotherAdmin.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(anotherAdmin);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
       expect(userRepository.deleteById).toHaveBeenCalledWith(anotherAdmin.id);
     });
 
-    it("should delete user even if they are inactive", async () => {
+    it('should delete user even if they are inactive', async () => {
       const inactiveUser = User.reconstitute({
         id: UserId.create(),
-        name: "Inactive User",
-        email: Email.create("inactive@example.com"),
+        name: 'Inactive User',
+        email: Email.create('inactive@example.com'),
         hashedPassword: validHashedPassword,
         role: UserRole.BASIC,
         createdAt: new Date(),
@@ -216,11 +216,11 @@ describe("DeleteUserUseCase", () => {
         targetUserId: inactiveUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(inactiveUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -228,10 +228,10 @@ describe("DeleteUserUseCase", () => {
     });
   });
 
-  describe("validation errors", () => {
-    it("should throw when requesting user ID is invalid UUID", async () => {
+  describe('validation errors', () => {
+    it('should throw when requesting user ID is invalid UUID', async () => {
       const input = {
-        requestingUserId: "invalid-uuid",
+        requestingUserId: 'invalid-uuid',
         targetUserId: basicUser.id.toString(),
       };
 
@@ -241,59 +241,59 @@ describe("DeleteUserUseCase", () => {
       expect(userRepository.deleteById).not.toHaveBeenCalled();
     });
 
-    it("should throw correct message when requesting user ID is invalid", async () => {
+    it('should throw correct message when requesting user ID is invalid', async () => {
       const input = {
-        requestingUserId: "invalid-uuid",
+        requestingUserId: 'invalid-uuid',
         targetUserId: basicUser.id.toString(),
       };
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow(
-        "UserId must be a valid UUID v4",
+        'UserId must be a valid UUID v4',
       );
     });
 
-    it("should throw when target user ID is invalid UUID", async () => {
+    it('should throw when target user ID is invalid UUID', async () => {
       const input = {
         requestingUserId: basicUser.id.toString(),
-        targetUserId: "invalid-uuid",
+        targetUserId: 'invalid-uuid',
       };
 
-      vi.spyOn(userRepository, "findById").mockResolvedValueOnce(basicUser);
+      vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow();
 
       expect(userRepository.deleteById).not.toHaveBeenCalled();
     });
 
-    it("should throw when requesting user ID is empty", async () => {
+    it('should throw when requesting user ID is empty', async () => {
       const input = {
-        requestingUserId: "",
+        requestingUserId: '',
         targetUserId: basicUser.id.toString(),
       };
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow();
     });
 
-    it("should throw ValidationError when target user ID is empty", async () => {
+    it('should throw ValidationError when target user ID is empty', async () => {
       const input = {
         requestingUserId: basicUser.id.toString(),
-        targetUserId: "",
+        targetUserId: '',
       };
 
-      vi.spyOn(userRepository, "findById").mockResolvedValueOnce(basicUser);
+      vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow();
     });
   });
 
-  describe("user not found errors", () => {
-    it("should throw UserNotFoundError when requesting user does not exist", async () => {
+  describe('user not found errors', () => {
+    it('should throw UserNotFoundError when requesting user does not exist', async () => {
       const input = {
         requestingUserId: UserId.create().toString(),
         targetUserId: basicUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById").mockResolvedValueOnce(null);
+      vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(null);
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow(
         NotFoundError,
@@ -302,26 +302,26 @@ describe("DeleteUserUseCase", () => {
       expect(userRepository.deleteById).not.toHaveBeenCalled();
     });
 
-    it("should include user ID in error message when requesting user not found", async () => {
+    it('should include user ID in error message when requesting user not found', async () => {
       const nonExistentId = UserId.create().toString();
       const input = {
         requestingUserId: nonExistentId,
         targetUserId: basicUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById").mockResolvedValueOnce(null);
+      vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(null);
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow(
-        "User not found",
+        'User not found',
       );
     });
-    it("should throw UserNotFoundError when target user does not exist", async () => {
+    it('should throw UserNotFoundError when target user does not exist', async () => {
       const input = {
         requestingUserId: adminUser.id.toString(),
         targetUserId: UserId.create().toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(null);
 
@@ -332,35 +332,35 @@ describe("DeleteUserUseCase", () => {
       expect(userRepository.deleteById).not.toHaveBeenCalled();
     });
 
-    it("should include user ID in error message when target user not found", async () => {
+    it('should include user ID in error message when target user not found', async () => {
       const nonExistentId = UserId.create().toString();
       const input = {
         requestingUserId: adminUser.id.toString(),
         targetUserId: nonExistentId,
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(null);
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow(
-        "User not found",
+        'User not found',
       );
     });
   });
 
-  describe("repository calls", () => {
-    it("should call findById twice with correct parameters", async () => {
+  describe('repository calls', () => {
+    it('should call findById twice with correct parameters', async () => {
       const input = {
         requestingUserId: adminUser.id.toString(),
         targetUserId: basicUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(basicUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -373,50 +373,50 @@ describe("DeleteUserUseCase", () => {
       expect(secondCall.toString()).toBe(basicUser.id.toString());
     });
 
-    it("should call delete only once", async () => {
+    it('should call delete only once', async () => {
       const input = {
         requestingUserId: adminUser.id.toString(),
         targetUserId: basicUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(basicUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
       expect(userRepository.deleteById).toHaveBeenCalledTimes(1);
     });
-    it("should not call delete when authorization fails", async () => {
+    it('should not call delete when authorization fails', async () => {
       const input = {
         requestingUserId: basicUser.id.toString(),
         targetUserId: anotherBasicUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(basicUser)
         .mockResolvedValueOnce(anotherBasicUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow();
 
       expect(userRepository.deleteById).not.toHaveBeenCalled();
     });
 
-    it("should not call delete when user not found", async () => {
+    it('should not call delete when user not found', async () => {
       const input = {
         requestingUserId: adminUser.id.toString(),
         targetUserId: UserId.create().toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(adminUser)
         .mockResolvedValueOnce(null);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await expect(deleteUserUseCase.execute(input)).rejects.toThrow();
 
@@ -424,22 +424,22 @@ describe("DeleteUserUseCase", () => {
     });
   });
 
-  describe("edge cases", () => {
-    it("should handle deleting user with same email domain as requesting user", async () => {
+  describe('edge cases', () => {
+    it('should handle deleting user with same email domain as requesting user', async () => {
       const sameCompanyUser = User.create(
         {
-          name: "Same Company User",
-          email: "colleague@example.com",
+          name: 'Same Company User',
+          email: 'colleague@example.com',
         },
         validHashedPassword,
       );
 
       const adminSameCompany = User.create(
         {
-          name: "Admin Same Company",
-          email: "boss@example.com",
+          name: 'Admin Same Company',
+          email: 'boss@example.com',
 
-          role: "ADMIN",
+          role: 'ADMIN',
         },
         validHashedPassword,
       );
@@ -449,11 +449,11 @@ describe("DeleteUserUseCase", () => {
         targetUserId: sameCompanyUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById")
+      vi.spyOn(userRepository, 'findById')
         .mockResolvedValueOnce(adminSameCompany)
         .mockResolvedValueOnce(sameCompanyUser);
 
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 
@@ -462,15 +462,14 @@ describe("DeleteUserUseCase", () => {
       );
     });
 
-    it("should successfully delete when using same ID twice (self-delete)", async () => {
+    it('should successfully delete when using same ID twice (self-delete)', async () => {
       const input = {
         requestingUserId: basicUser.id.toString(),
         targetUserId: basicUser.id.toString(),
       };
 
-      // Mesmo usuário retornado nas duas buscas
-      vi.spyOn(userRepository, "findById").mockResolvedValue(basicUser);
-      vi.spyOn(userRepository, "deleteById").mockResolvedValue();
+      vi.spyOn(userRepository, 'findById').mockResolvedValue(basicUser);
+      vi.spyOn(userRepository, 'deleteById').mockResolvedValue();
 
       await deleteUserUseCase.execute(input);
 

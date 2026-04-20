@@ -1,24 +1,22 @@
-// core/use-cases/user/list-users/list-users.usecase.spec.ts
-
-import { User } from "@/core/entities/user/user";
-import { UserId } from "@/core/entities/user/value-objects/user-id";
-import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
+import { User } from '@/core/entities/user/user';
+import { UserId } from '@/core/entities/user/value-objects/user-id';
+import { UserRepositoryInterface } from '@/core/ports/repositories/user-repository-interface';
 import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
-} from "@/core/shared/errors/api-errors";
+} from '@/core/shared/errors/api-errors';
 import {
   ListUserOrderDirectionOptions,
   ListUsersInputDTO,
-} from "@/core/usecases/user/list-user-dto";
-import { ListUsersUseCase } from "@/core/usecases/user/list-users-usecase";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+} from '@/core/usecases/user/list-user-dto';
+import { ListUsersUseCase } from '@/core/usecases/user/list-users-usecase';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 let listUsersUseCase: ListUsersUseCase;
 let userRepository: UserRepositoryInterface;
 
-const validHashedPassword = "$2b$10$hashedPassword";
+const validHashedPassword = '$2b$10$hashedPassword';
 
 let adminUser: User;
 let basicUser: User;
@@ -40,42 +38,42 @@ beforeEach(() => {
 
   adminUser = User.create(
     {
-      name: "Admin User",
-      email: "admin@example.com",
-      role: "ADMIN",
+      name: 'Admin User',
+      email: 'admin@example.com',
+      role: 'ADMIN',
     },
     validHashedPassword,
   );
 
   basicUser = User.create(
     {
-      name: "Basic User",
-      email: "basic@example.com",
+      name: 'Basic User',
+      email: 'basic@example.com',
     },
     validHashedPassword,
   );
 
   users = [
     User.create(
-      { name: "User One", email: "user1@example.com" },
+      { name: 'User One', email: 'user1@example.com' },
       validHashedPassword,
     ),
     User.create(
-      { name: "User Two", email: "user2@example.com" },
+      { name: 'User Two', email: 'user2@example.com' },
       validHashedPassword,
     ),
     User.create(
-      { name: "User Three", email: "user3@example.com", role: "ADMIN" },
+      { name: 'User Three', email: 'user3@example.com', role: 'ADMIN' },
       validHashedPassword,
     ),
   ];
 });
 
-describe("ListUsersUseCase", () => {
+describe('ListUsersUseCase', () => {
   let listUsersUseCase: ListUsersUseCase;
   let userRepository: UserRepositoryInterface;
 
-  const validHashedPassword = "$2b$10$hashedPassword";
+  const validHashedPassword = '$2b$10$hashedPassword';
 
   let adminUser: User;
   let basicUser: User;
@@ -97,46 +95,46 @@ describe("ListUsersUseCase", () => {
 
     adminUser = User.create(
       {
-        name: "Admin User",
-        email: "admin@example.com",
-        role: "ADMIN",
+        name: 'Admin User',
+        email: 'admin@example.com',
+        role: 'ADMIN',
       },
       validHashedPassword,
     );
 
     basicUser = User.create(
       {
-        name: "Basic User",
-        email: "basic@example.com",
+        name: 'Basic User',
+        email: 'basic@example.com',
       },
       validHashedPassword,
     );
 
     users = [
       User.create(
-        { name: "User One", email: "user1@example.com" },
+        { name: 'User One', email: 'user1@example.com' },
         validHashedPassword,
       ),
       User.create(
-        { name: "User Two", email: "user2@example.com" },
+        { name: 'User Two', email: 'user2@example.com' },
         validHashedPassword,
       ),
       User.create(
-        { name: "User Three", email: "user3@example.com", role: "ADMIN" },
+        { name: 'User Three', email: 'user3@example.com', role: 'ADMIN' },
         validHashedPassword,
       ),
     ];
   });
 
-  describe("execute", () => {
-    describe("authorization", () => {
-      it("should allow admin to list users", async () => {
+  describe('execute', () => {
+    describe('authorization', () => {
+      it('should allow admin to list users', async () => {
         const input = {
           requestingUserId: adminUser.id.toString(),
         };
 
-        vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-        vi.spyOn(userRepository, "list").mockResolvedValue({
+        vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+        vi.spyOn(userRepository, 'list').mockResolvedValue({
           data: users,
           total: 3,
         });
@@ -149,12 +147,12 @@ describe("ListUsersUseCase", () => {
     });
   });
 
-  it("should throw ForbiddenError when basic user tries to list users", async () => {
+  it('should throw ForbiddenError when basic user tries to list users', async () => {
     const input = {
       requestingUserId: basicUser.id.toString(),
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(basicUser);
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(basicUser);
 
     await expect(listUsersUseCase.execute(input)).rejects.toThrow(
       UnauthorizedError,
@@ -163,24 +161,24 @@ describe("ListUsersUseCase", () => {
     expect(userRepository.list).not.toHaveBeenCalled();
   });
 
-  it("should throw correct message when basic user tries to list users", async () => {
+  it('should throw correct message when basic user tries to list users', async () => {
     const input = {
       requestingUserId: basicUser.id.toString(),
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(basicUser);
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(basicUser);
 
     await expect(listUsersUseCase.execute(input)).rejects.toThrow(
-      "Only admins can list users",
+      'Only admins can list users',
     );
   });
 
-  it("should throw NotFoundError when requesting user does not exist", async () => {
+  it('should throw NotFoundError when requesting user does not exist', async () => {
     const input = {
       requestingUserId: UserId.create().toString(),
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(null);
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(null);
 
     await expect(listUsersUseCase.execute(input)).rejects.toThrow(
       NotFoundError,
@@ -189,14 +187,14 @@ describe("ListUsersUseCase", () => {
     expect(userRepository.list).not.toHaveBeenCalled();
   });
 
-  describe("pagination", () => {
-    it("should use default pagination when not provided", async () => {
+  describe('pagination', () => {
+    it('should use default pagination when not provided', async () => {
       const input = {
         requestingUserId: adminUser.id.toString(),
       };
 
-      vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-      vi.spyOn(userRepository, "list").mockResolvedValue({
+      vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+      vi.spyOn(userRepository, 'list').mockResolvedValue({
         data: users,
         total: 3,
       });
@@ -211,15 +209,15 @@ describe("ListUsersUseCase", () => {
     });
   });
 
-  it("should use custom pagination when provided", async () => {
+  it('should use custom pagination when provided', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
       page: 10,
       pageSize: 5,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -229,21 +227,21 @@ describe("ListUsersUseCase", () => {
     expect(userRepository.list).toHaveBeenCalledWith(
       {},
       {
-        order: "asc",
-        orderBy: "name",
+        order: 'asc',
+        orderBy: 'name',
       },
       { page: 10, pageSize: 5 },
     );
   });
 
-  it("should default to page 1 when page is 0 or negative", async () => {
+  it('should default to page 1 when page is 0 or negative', async () => {
     const input: ListUsersInputDTO = {
       requestingUserId: adminUser.id.toString(),
       page: 0,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -255,15 +253,15 @@ describe("ListUsersUseCase", () => {
     expect(paginationArg.page).toBe(1);
   });
 
-  it("should limit to 100 items per page maximum", async () => {
+  it('should limit to 100 items per page maximum', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
       pageSize: 500,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
 
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -275,15 +273,15 @@ describe("ListUsersUseCase", () => {
     expect(paginationArg.pageSize).toBe(100);
   });
 
-  it("should return correct pagination metadata", async () => {
+  it('should return correct pagination metadata', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
       page: 2,
       pageSize: 5,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -300,16 +298,16 @@ describe("ListUsersUseCase", () => {
     });
   });
 
-  it("should indicate no next page on last page", async () => {
+  it('should indicate no next page on last page', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
       page: 3,
       pageSize: 5,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
 
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -320,15 +318,15 @@ describe("ListUsersUseCase", () => {
     expect(result.meta.hasPreviousPage).toBe(false);
   });
 
-  it("should indicate no previous page on first page", async () => {
+  it('should indicate no previous page on first page', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
       page: 1,
       pageSize: 5,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -340,11 +338,11 @@ describe("ListUsersUseCase", () => {
   });
 });
 
-describe("filters", () => {
+describe('filters', () => {
   let listUsersUseCase: ListUsersUseCase;
   let userRepository: UserRepositoryInterface;
 
-  const validHashedPassword = "$2b$10$hashedPassword";
+  const validHashedPassword = '$2b$10$hashedPassword';
 
   let adminUser: User;
   let basicUser: User;
@@ -366,45 +364,45 @@ describe("filters", () => {
 
     adminUser = User.create(
       {
-        name: "Admin User",
-        email: "admin@example.com",
-        role: "ADMIN",
+        name: 'Admin User',
+        email: 'admin@example.com',
+        role: 'ADMIN',
       },
       validHashedPassword,
     );
 
     basicUser = User.create(
       {
-        name: "Basic User",
-        email: "basic@example.com",
+        name: 'Basic User',
+        email: 'basic@example.com',
       },
       validHashedPassword,
     );
 
     users = [
       User.create(
-        { name: "User One", email: "user1@example.com" },
+        { name: 'User One', email: 'user1@example.com' },
         validHashedPassword,
       ),
       User.create(
-        { name: "User Two", email: "user2@example.com" },
+        { name: 'User Two', email: 'user2@example.com' },
         validHashedPassword,
       ),
       User.create(
-        { name: "User Three", email: "user3@example.com", role: "ADMIN" },
+        { name: 'User Three', email: 'user3@example.com', role: 'ADMIN' },
         validHashedPassword,
       ),
     ];
   });
 
-  it("should filter by name", async () => {
+  it('should filter by name', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
-      name: "John",
+      name: 'John',
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -412,20 +410,20 @@ describe("filters", () => {
     await listUsersUseCase.execute(input);
 
     expect(userRepository.list).toHaveBeenCalledWith(
-      { name: "John" },
+      { name: 'John' },
       expect.any(Object),
       expect.any(Object),
     );
   });
 
-  it("should filter by email", async () => {
+  it('should filter by email', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
-      email: "john@example.com",
+      email: 'john@example.com',
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -433,20 +431,20 @@ describe("filters", () => {
     await listUsersUseCase.execute(input);
 
     expect(userRepository.list).toHaveBeenCalledWith(
-      { email: "john@example.com" },
+      { email: 'john@example.com' },
       expect.any(Object),
       expect.any(Object),
     );
   });
 
-  it("should filter by role", async () => {
+  it('should filter by role', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
-      roles: ["ADMIN"],
+      roles: ['ADMIN'],
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -454,20 +452,20 @@ describe("filters", () => {
     await listUsersUseCase.execute(input);
 
     expect(userRepository.list).toHaveBeenCalledWith(
-      { roles: ["ADMIN"] },
+      { roles: ['ADMIN'] },
       expect.any(Object),
       expect.any(Object),
     );
   });
 
-  it("should filter by isActive", async () => {
+  it('should filter by isActive', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
       isActive: true,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -481,16 +479,16 @@ describe("filters", () => {
     );
   });
 
-  it("should combine multiple filters", async () => {
+  it('should combine multiple filters', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
-      name: "John",
-      roles: ["ADMIN"],
+      name: 'John',
+      roles: ['ADMIN'],
       isActive: true,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -499,8 +497,8 @@ describe("filters", () => {
 
     expect(userRepository.list).toHaveBeenCalledWith(
       {
-        name: "John",
-        roles: ["ADMIN"],
+        name: 'John',
+        roles: ['ADMIN'],
         isActive: true,
       },
       expect.any(Object),
@@ -508,26 +506,26 @@ describe("filters", () => {
     );
   });
 
-  it("should throw when role filter is invalid", async () => {
+  it('should throw when role filter is invalid', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
-      roles: ["SUPER_ADMIN"],
+      roles: ['SUPER_ADMIN'],
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
 
     await expect(listUsersUseCase.execute(input)).rejects.toThrow();
 
     expect(userRepository.list).not.toHaveBeenCalled();
   });
 
-  it("should pass empty filters when none provided", async () => {
+  it('should pass empty filters when none provided', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -535,21 +533,21 @@ describe("filters", () => {
     await listUsersUseCase.execute(input);
 
     expect(userRepository.list).toHaveBeenCalledWith(
-      {}, // ← empty filters
+      {},
       expect.any(Object),
       expect.any(Object),
     );
   });
 });
 
-describe("sorting", () => {
-  it("should use default sort when not provided", async () => {
+describe('sorting', () => {
+  it('should use default sort when not provided', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -558,20 +556,20 @@ describe("sorting", () => {
 
     expect(userRepository.list).toHaveBeenCalledWith(
       expect.any(Object),
-      { orderBy: "name", order: "asc" },
+      { orderBy: 'name', order: 'asc' },
       expect.any(Object),
     );
   });
 
-  it("should sort by name ascending", async () => {
+  it('should sort by name ascending', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
-      orderBy: "name" as const,
-      order: "asc" as const,
+      orderBy: 'name' as const,
+      order: 'asc' as const,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -580,20 +578,20 @@ describe("sorting", () => {
 
     expect(userRepository.list).toHaveBeenCalledWith(
       expect.any(Object),
-      { orderBy: "name", order: "asc" },
+      { orderBy: 'name', order: 'asc' },
       expect.any(Object),
     );
   });
 
-  it("should sort by email descending", async () => {
+  it('should sort by email descending', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
-      orderBy: "email" as const,
-      order: "desc" as const,
+      orderBy: 'email' as const,
+      order: 'desc' as const,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -602,18 +600,18 @@ describe("sorting", () => {
 
     expect(userRepository.list).toHaveBeenCalledWith(
       expect.any(Object),
-      { orderBy: "email", order: "desc" },
+      { orderBy: 'email', order: 'desc' },
       expect.any(Object),
     );
   });
 
-  it("should throw BadRequestError for invalid order field", async () => {
+  it('should throw BadRequestError for invalid order field', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
-      order: "invalid" as any,
+      order: 'invalid' as any,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
 
     await expect(listUsersUseCase.execute(input)).rejects.toThrow(
       new BadRequestError(
@@ -624,13 +622,13 @@ describe("sorting", () => {
     expect(userRepository.list).not.toHaveBeenCalledWith();
   });
 
-  it("should throw BadRequestError for invalid orderBy field", async () => {
+  it('should throw BadRequestError for invalid orderBy field', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
-      orderBy: "invalid" as any,
+      orderBy: 'invalid' as any,
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
 
     await expect(listUsersUseCase.execute(input)).rejects.toThrow(
       BadRequestError,
@@ -638,14 +636,14 @@ describe("sorting", () => {
   });
 });
 
-describe("output", () => {
-  it("should map users to DTOs correctly", async () => {
+describe('output', () => {
+  it('should map users to DTOs correctly', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: [users[0]],
       total: 3,
     });
@@ -662,13 +660,13 @@ describe("output", () => {
       updatedAt: users[0].updatedAt.toISOString(),
     });
   });
-  it("should not return hashedPassword in output", async () => {
+  it('should not return hashedPassword in output', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: users,
       total: 3,
     });
@@ -676,18 +674,18 @@ describe("output", () => {
     const result = await listUsersUseCase.execute(input);
 
     result.data.forEach((user) => {
-      expect(user).not.toHaveProperty("password");
-      expect(user).not.toHaveProperty("hashedPassword");
+      expect(user).not.toHaveProperty('password');
+      expect(user).not.toHaveProperty('hashedPassword');
     });
   });
 
-  it("should return empty array when no users found", async () => {
+  it('should return empty array when no users found', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: [],
       total: 0,
     });
@@ -698,13 +696,13 @@ describe("output", () => {
     expect(result.meta.totalItems).toBe(0);
     expect(result.meta.totalPages).toBe(0);
   });
-  it("should return dates in ISO format", async () => {
+  it('should return dates in ISO format', async () => {
     const input = {
       requestingUserId: adminUser.id.toString(),
     };
 
-    vi.spyOn(userRepository, "findById").mockResolvedValue(adminUser);
-    vi.spyOn(userRepository, "list").mockResolvedValue({
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(adminUser);
+    vi.spyOn(userRepository, 'list').mockResolvedValue({
       data: [users[0]],
       total: 3,
     });
@@ -720,10 +718,10 @@ describe("output", () => {
   });
 });
 
-describe("validation", () => {
-  it("should throw BadRequestError when requesting user ID is invalid", async () => {
+describe('validation', () => {
+  it('should throw BadRequestError when requesting user ID is invalid', async () => {
     const input = {
-      requestingUserId: "invalid-uuid",
+      requestingUserId: 'invalid-uuid',
     };
 
     await expect(listUsersUseCase.execute(input)).rejects.toThrow();

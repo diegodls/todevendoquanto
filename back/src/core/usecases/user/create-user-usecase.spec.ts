@@ -1,9 +1,7 @@
-// core/use-cases/user/create-user/create-user.usecase.spec.ts
-
-import { PasswordHasherInterface } from "@/core/ports/infrastructure/protocols/passwordHasher-interface";
-import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
-import { CreateUserUseCase } from "@/core/usecases/user/create-user-usecase";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { PasswordHasherInterface } from '@/core/ports/infrastructure/protocols/passwordHasher-interface';
+import { UserRepositoryInterface } from '@/core/ports/repositories/user-repository-interface';
+import { CreateUserUseCase } from '@/core/usecases/user/create-user-usecase';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 let createUserUseCase: CreateUserUseCase;
 let userRepository: UserRepositoryInterface;
@@ -29,29 +27,29 @@ beforeEach(() => {
   createUserUseCase = new CreateUserUseCase(userRepository, passwordHasher);
 });
 
-describe("CreateUserUseCase", () => {
-  describe("execute", () => {
-    describe("successful creation", () => {
-      it("should create a new user with valid data", async () => {
+describe('CreateUserUseCase', () => {
+  describe('execute', () => {
+    describe('successful creation', () => {
+      it('should create a new user with valid data', async () => {
         const input = {
-          name: "John Doe",
-          email: "john@example.com",
-          password: "Secret123!",
+          name: 'John Doe',
+          email: 'john@example.com',
+          password: 'Secret123!',
         };
 
-        vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-        vi.spyOn(passwordHasher, "hash").mockResolvedValue(
-          "$2b$10$hashedPassword",
+        vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+        vi.spyOn(passwordHasher, 'hash').mockResolvedValue(
+          '$2b$10$hashedPassword',
         );
-        vi.spyOn(userRepository, "save").mockResolvedValue();
+        vi.spyOn(userRepository, 'save').mockResolvedValue();
 
         const result = await createUserUseCase.execute(input);
 
         expect(result).toEqual({
           id: expect.any(String),
-          name: "John Doe",
-          email: "john@example.com",
-          role: "BASIC",
+          name: 'John Doe',
+          email: 'john@example.com',
+          role: 'BASIC',
           isActive: true,
           createdAt: expect.any(String),
         });
@@ -59,37 +57,37 @@ describe("CreateUserUseCase", () => {
     });
   });
 
-  it("should create user with ADMIN role when specified", async () => {
+  it('should create user with ADMIN role when specified', async () => {
     const input = {
-      name: "Admin User",
-      email: "admin@example.com",
-      password: "Secret123!",
-      role: "ADMIN",
+      name: 'Admin User',
+      email: 'admin@example.com',
+      password: 'Secret123!',
+      role: 'ADMIN',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
-    expect(result.role).toBe("ADMIN");
+    expect(result.role).toBe('ADMIN');
   });
 
-  it("should generate unique UUID for each user", async () => {
+  it('should generate unique UUID for each user', async () => {
     const input = {
-      name: "User One",
-      email: "user1@example.com",
-      password: "Secret123!",
+      name: 'User One',
+      email: 'user1@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result1 = await createUserUseCase.execute(input);
 
-    const input2 = { ...input, email: "user2@example.com" };
+    const input2 = { ...input, email: 'user2@example.com' };
     const result2 = await createUserUseCase.execute(input2);
 
     expect(result1.id).not.toBe(result2.id);
@@ -98,31 +96,31 @@ describe("CreateUserUseCase", () => {
     );
   });
 
-  it("should set user as active by default", async () => {
+  it('should set user as active by default', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
     expect(result.isActive).toBe(true);
   });
-  it("should return createdAt in ISO format", async () => {
+  it('should return createdAt in ISO format', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
@@ -130,12 +128,12 @@ describe("CreateUserUseCase", () => {
   });
 });
 
-describe("email validation", () => {
-  it("should throw when email is invalid format", async () => {
+describe('email validation', () => {
+  it('should throw when email is invalid format', async () => {
     const input = {
-      name: "John Doe",
-      email: "invalid-email",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'invalid-email',
+      password: 'Secret123!',
     };
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
@@ -145,63 +143,63 @@ describe("email validation", () => {
     expect(userRepository.save).not.toHaveBeenCalled();
   });
 
-  it("should throw when email is empty", async () => {
+  it('should throw when email is empty', async () => {
     const input = {
-      name: "John Doe",
-      email: "",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: '',
+      password: 'Secret123!',
     };
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
   });
 
-  it("should throw when email is too long", async () => {
+  it('should throw when email is too long', async () => {
     const input = {
-      name: "John Doe",
-      email: "a".repeat(250) + "@example.com", // > 254 chars
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'a'.repeat(250) + '@example.com',
+      password: 'Secret123!',
     };
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
   });
-  it("should normalize email to lowercase", async () => {
+  it('should normalize email to lowercase', async () => {
     const input = {
-      name: "John Doe",
-      email: "JOHN@EXAMPLE.COM",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'JOHN@EXAMPLE.COM',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
-    expect(result.email).toBe("john@example.com");
+    expect(result.email).toBe('john@example.com');
   });
-  it("should trim whitespace from email", async () => {
+  it('should trim whitespace from email', async () => {
     const input = {
-      name: "John Doe",
-      email: "  john@example.com  ",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: '  john@example.com  ',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
-    expect(result.email).toBe("john@example.com");
+    expect(result.email).toBe('john@example.com');
   });
 });
 
-describe("password validation", () => {
-  it("should throw when password is too short", async () => {
+describe('password validation', () => {
+  it('should throw when password is too short', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Short1!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Short1!',
     };
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
@@ -209,64 +207,64 @@ describe("password validation", () => {
     expect(userRepository.exists).not.toHaveBeenCalled();
   });
 
-  it("should throw when password has no uppercase", async () => {
+  it('should throw when password has no uppercase', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'secret123!',
     };
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
   });
-  it("should throw when password has no lowercase", async () => {
+  it('should throw when password has no lowercase', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "SECRET123!",
-    };
-
-    await expect(createUserUseCase.execute(input)).rejects.toThrow();
-  });
-
-  it("should throw when password has no number", async () => {
-    const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "SecretPass!",
-    };
-
-    await expect(createUserUseCase.execute(input)).rejects.toThrow();
-  });
-  it("should throw when password has no special character", async () => {
-    const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'SECRET123!',
     };
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
   });
 
-  it("should throw when password is too common", async () => {
+  it('should throw when password has no number', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Password1!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'SecretPass!',
+    };
+
+    await expect(createUserUseCase.execute(input)).rejects.toThrow();
+  });
+  it('should throw when password has no special character', async () => {
+    const input = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123',
     };
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
   });
 
-  it("should accept valid complex passwords", async () => {
-    const validPasswords = ["MyP@ssw0rd", "C0mpl3x!Pass", "Str0ng#Secret"];
+  it('should throw when password is too common', async () => {
+    const input = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Password1!',
+    };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    await expect(createUserUseCase.execute(input)).rejects.toThrow();
+  });
+
+  it('should accept valid complex passwords', async () => {
+    const validPasswords = ['MyP@ssw0rd', 'C0mpl3x!Pass', 'Str0ng#Secret'];
+
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     for (const password of validPasswords) {
       const input = {
-        name: "John Doe",
+        name: 'John Doe',
         email: `john${Math.random()}@example.com`,
         password,
       };
@@ -276,79 +274,79 @@ describe("password validation", () => {
   });
 });
 
-describe("name validation", () => {
-  it("should throw when name is empty", async () => {
+describe('name validation', () => {
+  it('should throw when name is empty', async () => {
     const input = {
-      name: "",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: '',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow(
-      "Name cannot be empty",
+      'Name cannot be empty',
     );
   });
 
-  it("should throw when name is too short", async () => {
+  it('should throw when name is too short', async () => {
     const input = {
-      name: "J",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'J',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow(
-      "Name must have at least 2 characters",
+      'Name must have at least 2 characters',
     );
   });
 
-  it("should throw when name is too long", async () => {
+  it('should throw when name is too long', async () => {
     const input = {
-      name: "J".repeat(101),
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'J'.repeat(101),
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow(
-      "Name exceeds maximum length of 100 characters",
+      'Name exceeds maximum length of 100 characters',
     );
   });
 
-  it("should throw when name contains invalid characters", async () => {
+  it('should throw when name contains invalid characters', async () => {
     const input = {
-      name: "John123",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John123',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow(
-      "Name contains invalid characters",
+      'Name contains invalid characters',
     );
   });
 
-  it("should accept names with valid special characters", async () => {
-    const validNames = ["O'Brien", "Mary-Jane", "Jean-Claude", "Mária José"];
+  it('should accept names with valid special characters', async () => {
+    const validNames = ["O'Brien", 'Mary-Jane', 'Jean-Claude', 'Mária José'];
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     for (const name of validNames) {
       const input = {
         name,
-        email: `${name.replace(/\s/g, "").toLowerCase()}@example.com`,
-        password: "Secret123!",
+        email: `${name.replace(/\s/g, '').toLowerCase()}@example.com`,
+        password: 'Secret123!',
       };
 
       const result = await createUserUseCase.execute(input);
@@ -356,82 +354,82 @@ describe("name validation", () => {
       expect(result.name).toBe(name);
     }
   });
-  it("should trim whitespace from name", async () => {
+  it('should trim whitespace from name', async () => {
     const input = {
-      name: "  John Doe  ",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: '  John Doe  ',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
-    expect(result.name).toBe("John Doe");
+    expect(result.name).toBe('John Doe');
   });
 });
 
-describe("role validation", () => {
-  it("should throw when role is invalid", async () => {
+describe('role validation', () => {
+  it('should throw when role is invalid', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
-      role: "SUPER_ADMIN",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
+      role: 'SUPER_ADMIN',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow(
-      "Invalid role",
+      'Invalid role',
     );
   });
 
-  it("should default to BASIC role when not specified", async () => {
+  it('should default to BASIC role when not specified', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
-    expect(result.role).toBe("BASIC");
+    expect(result.role).toBe('BASIC');
   });
-  it("should normalize role to uppercase", async () => {
+  it('should normalize role to uppercase', async () => {
     const input = {
-      name: "Admin User",
-      email: "admin@example.com",
-      password: "Secret123!",
-      role: "admin", // lowercase
+      name: 'Admin User',
+      email: 'admin@example.com',
+      password: 'Secret123!',
+      role: 'admin',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
-    expect(result.role).toBe("ADMIN");
+    expect(result.role).toBe('ADMIN');
   });
 });
 
-describe("email uniqueness", () => {
-  it("should throw UserAlreadyExistsError when email already exists", async () => {
+describe('email uniqueness', () => {
+  it('should throw UserAlreadyExistsError when email already exists', async () => {
     const input = {
-      name: "John Doe",
-      email: "existing@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'existing@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(true);
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(true);
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
 
@@ -439,67 +437,67 @@ describe("email uniqueness", () => {
     expect(userRepository.save).not.toHaveBeenCalled();
   });
 
-  it("should include email in error message when user already exists", async () => {
+  it('should include email in error message when user already exists', async () => {
     const input = {
-      name: "John Doe",
-      email: "existing@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'existing@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(true);
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(true);
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow(
-      "User already exists with given email",
+      'User already exists with given email',
     );
   });
 
-  it("should check email existence with normalized email", async () => {
+  it('should check email existence with normalized email', async () => {
     const input = {
-      name: "John Doe",
-      email: "  JOHN@EXAMPLE.COM  ",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: '  JOHN@EXAMPLE.COM  ',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     await createUserUseCase.execute(input);
 
     const emailArg = (userRepository.exists as any).mock.calls[0][0];
-    expect(emailArg.toString()).toBe("john@example.com");
+    expect(emailArg.toString()).toBe('john@example.com');
   });
 });
 
-describe("password hashing", () => {
-  it("should hash password before saving", async () => {
+describe('password hashing', () => {
+  it('should hash password before saving', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     await createUserUseCase.execute(input);
 
-    expect(passwordHasher.hash).toHaveBeenCalledWith("Secret123!");
+    expect(passwordHasher.hash).toHaveBeenCalledWith('Secret123!');
   });
 
-  it("should save user with hashed password", async () => {
+  it('should save user with hashed password', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    const hashedPassword = "$2b$10$mockedHashedPassword";
+    const hashedPassword = '$2b$10$mockedHashedPassword';
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue(hashedPassword);
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue(hashedPassword);
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     await createUserUseCase.execute(input);
 
@@ -509,36 +507,36 @@ describe("password hashing", () => {
       }),
     );
   });
-  it("should never store plain text password", async () => {
+  it('should never store plain text password', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     await createUserUseCase.execute(input);
 
     const savedUser = (userRepository.save as any).mock.calls[0][0];
-    expect(savedUser.hashedPassword).not.toBe("Secret123!");
-    expect(savedUser.hashedPassword).toBe("$2b$10$hashedPassword");
+    expect(savedUser.hashedPassword).not.toBe('Secret123!');
+    expect(savedUser.hashedPassword).toBe('$2b$10$hashedPassword');
   });
 });
 
-describe("repository interaction", () => {
-  it("should call repository.exists with Email value object", async () => {
+describe('repository interaction', () => {
+  it('should call repository.exists with Email value object', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     await createUserUseCase.execute(input);
 
@@ -549,29 +547,29 @@ describe("repository interaction", () => {
     );
   });
 
-  it("should call repository.save exactly once", async () => {
+  it('should call repository.save exactly once', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     await createUserUseCase.execute(input);
 
     expect(userRepository.save).toHaveBeenCalledTimes(1);
   });
-  it("should not call save when email already exists", async () => {
+  it('should not call save when email already exists', async () => {
     const input = {
-      name: "John Doe",
-      email: "existing@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'existing@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(true);
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(true);
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
 
@@ -579,52 +577,52 @@ describe("repository interaction", () => {
   });
 });
 
-describe("output", () => {
-  it("should not return hashedPassword in output", async () => {
+describe('output', () => {
+  it('should not return hashedPassword in output', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
-    expect(result).not.toHaveProperty("password");
-    expect(result).not.toHaveProperty("hashedPassword");
+    expect(result).not.toHaveProperty('password');
+    expect(result).not.toHaveProperty('hashedPassword');
   });
 
-  it("should return all required fields", async () => {
+  it('should return all required fields', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(false);
-    vi.spyOn(passwordHasher, "hash").mockResolvedValue("$2b$10$hashedPassword");
-    vi.spyOn(userRepository, "save").mockResolvedValue();
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(false);
+    vi.spyOn(passwordHasher, 'hash').mockResolvedValue('$2b$10$hashedPassword');
+    vi.spyOn(userRepository, 'save').mockResolvedValue();
 
     const result = await createUserUseCase.execute(input);
 
-    expect(result).toHaveProperty("id");
-    expect(result).toHaveProperty("name");
-    expect(result).toHaveProperty("email");
-    expect(result).toHaveProperty("role");
-    expect(result).toHaveProperty("isActive");
-    expect(result).toHaveProperty("createdAt");
+    expect(result).toHaveProperty('id');
+    expect(result).toHaveProperty('name');
+    expect(result).toHaveProperty('email');
+    expect(result).toHaveProperty('role');
+    expect(result).toHaveProperty('isActive');
+    expect(result).toHaveProperty('createdAt');
   });
 });
 
-describe("execution order", () => {
-  it("should validate email before checking existence", async () => {
+describe('execution order', () => {
+  it('should validate email before checking existence', async () => {
     const input = {
-      name: "John Doe",
-      email: "invalid-email",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'invalid-email',
+      password: 'Secret123!',
     };
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
@@ -632,11 +630,11 @@ describe("execution order", () => {
     expect(userRepository.exists).not.toHaveBeenCalled();
   });
 
-  it("should validate password before checking email existence", async () => {
+  it('should validate password before checking email existence', async () => {
     const input = {
-      name: "John Doe",
-      email: "john@example.com",
-      password: "weak",
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'weak',
     };
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
@@ -644,14 +642,14 @@ describe("execution order", () => {
     expect(userRepository.exists).not.toHaveBeenCalled();
   });
 
-  it("should check email existence before hashing password", async () => {
+  it('should check email existence before hashing password', async () => {
     const input = {
-      name: "John Doe",
-      email: "existing@example.com",
-      password: "Secret123!",
+      name: 'John Doe',
+      email: 'existing@example.com',
+      password: 'Secret123!',
     };
 
-    vi.spyOn(userRepository, "exists").mockResolvedValue(true);
+    vi.spyOn(userRepository, 'exists').mockResolvedValue(true);
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow();
 

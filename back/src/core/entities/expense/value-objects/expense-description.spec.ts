@@ -1,4 +1,3 @@
-// src/domain/value-objects/Description.test.ts
 import { ExpenseDescription } from '@/core/entities/expense/value-objects/expense-description';
 import { InvalidDescriptionError } from '@/core/shared/errors/domain/description-errors';
 import { describe, expect, it } from 'vitest';
@@ -35,7 +34,7 @@ describe('Description Value Object', () => {
   });
 
   it('should accept description with exactly minimum length', () => {
-    const description = ExpenseDescription.create('One'); // 3 chars
+    const description = ExpenseDescription.create('One');
     expect(description.value).toBe('One');
   });
 
