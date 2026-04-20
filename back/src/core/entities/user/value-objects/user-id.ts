@@ -1,3 +1,8 @@
+import {
+  InvalidUserIdError,
+  UserIdEmptyError,
+} from "@/core/shared/errors/domain";
+
 export class UserId {
   private readonly _value: string;
 
@@ -11,14 +16,14 @@ export class UserId {
 
   public static from(id: string): UserId {
     if (!id || id.trim().length === 0) {
-      throw new Error("UserId cannot be empty");
+      throw new UserIdEmptyError();
     }
 
     const uuidV4Regex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     if (!uuidV4Regex.test(id)) {
-      throw new Error("UserId must be a valid UUID v4");
+      throw new InvalidUserIdError();
     }
 
     return new UserId(id);

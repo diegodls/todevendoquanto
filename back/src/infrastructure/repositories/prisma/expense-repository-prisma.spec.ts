@@ -1,4 +1,5 @@
 import { InternalError } from "@/core/shared/errors/api-errors";
+import { InfrastructureError } from "@/core/shared/errors/infrastructure-errors";
 import { ExpenseRepositoryPrisma } from "@/infrastructure/repositories/prisma/expense-repository-prisma";
 import { ExpenseMapper } from "@/infrastructure/repositories/prisma/mappers/expense-mapper";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -133,7 +134,9 @@ describe("ExpenseRepositoryPrisma", () => {
 
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
-        prisma.expense.findMany.mockRejectedValue(new Error("DB unavailable"));
+        prisma.expense.findMany.mockRejectedValue(
+          new InfrastructureError("DB unavailable"),
+        );
 
         await expect(
           sut.findInstallmentById(makeInstallmentId() as any),
@@ -234,7 +237,7 @@ describe("ExpenseRepositoryPrisma", () => {
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
         prisma.expense.createMany.mockRejectedValue(
-          new Error("DB unavailable"),
+          new InfrastructureError("DB unavailable"),
         );
         vi.mocked(ExpenseMapper.toPersistence).mockReturnValue({} as any);
 
@@ -269,7 +272,7 @@ describe("ExpenseRepositoryPrisma", () => {
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
         prisma.expense.deleteMany.mockRejectedValue(
-          new Error("DB unavailable"),
+          new InfrastructureError("DB unavailable"),
         );
 
         await expect(

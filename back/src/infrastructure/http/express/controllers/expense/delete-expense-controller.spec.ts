@@ -1,8 +1,10 @@
 import {
+  BadRequestError,
   NotFoundError,
   UnauthorizedError,
   InternalError,
 } from "@/core/shared/errors/api-errors";
+import { InfrastructureError } from "@/core/shared/errors/infrastructure-errors";
 import { DeleteExpenseUseCaseInterface } from "@/core/usecases/expense/delete-expense-usecase-interface";
 import { DeleteExpenseController } from "@/infrastructure/http/express/controllers/expense/delete-expense-controller";
 import { DeleteExpenseByIdSchema } from "@/infrastructure/validation/zod/schemas/expense/delete-expense-by-id-schema";
@@ -79,7 +81,9 @@ describe("DeleteExpenseController", () => {
 
         request.user = undefined;
 
-        await expect(sut.handle(request as any)).rejects.toThrow();
+        await expect(sut.handle(request as any)).rejects.toThrow(
+          UnauthorizedError,
+        );
 
         expect(usecase.execute).not.toHaveBeenCalled();
       });
@@ -89,7 +93,9 @@ describe("DeleteExpenseController", () => {
 
         request.user = null;
 
-        await expect(sut.handle(request as any)).rejects.toThrow();
+        await expect(sut.handle(request as any)).rejects.toThrow(
+          UnauthorizedError,
+        );
         expect(usecase.execute).not.toHaveBeenCalled();
       });
     });
@@ -100,7 +106,9 @@ describe("DeleteExpenseController", () => {
 
         request.user.sub = undefined;
 
-        await expect(sut.handle(request as any)).rejects.toThrow();
+        await expect(sut.handle(request as any)).rejects.toThrow(
+          UnauthorizedError,
+        );
 
         expect(usecase.execute).not.toHaveBeenCalled();
       });
@@ -110,7 +118,9 @@ describe("DeleteExpenseController", () => {
 
         request.user.sub = null;
 
-        await expect(sut.handle(request as any)).rejects.toThrow();
+        await expect(sut.handle(request as any)).rejects.toThrow(
+          UnauthorizedError,
+        );
         expect(usecase.execute).not.toHaveBeenCalled();
       });
 
@@ -130,7 +140,7 @@ describe("DeleteExpenseController", () => {
     describe("when id is not a valid value", () => {
       it("should throw when schemaParser throws due to invalid id", async () => {
         vi.mocked(schemaParser).mockImplementation(() => {
-          throw new Error("Validation error: invalid uuid");
+          throw new BadRequestError("Validation error: invalid uuid");
         });
 
         await expect(
@@ -142,7 +152,7 @@ describe("DeleteExpenseController", () => {
 
       it("should not call use case when schema validation fails", async () => {
         vi.mocked(schemaParser).mockImplementation(() => {
-          throw new Error("Validation error");
+          throw new BadRequestError("Validation error");
         });
 
         await sut.handle(makeRequest() as any).catch(() => {});
@@ -154,7 +164,7 @@ describe("DeleteExpenseController", () => {
     describe("when id is not sent", () => {
       it("should throw when schemaParser throws due to missing id", async () => {
         vi.mocked(schemaParser).mockImplementation(() => {
-          throw new Error("Validation error: id is required");
+          throw new BadRequestError("Validation error: id is required");
         });
 
         await expect(
@@ -217,7 +227,7 @@ describe("DeleteExpenseController", () => {
 
       it("should propagate generic unexpected exceptions", async () => {
         vi.mocked(usecase.execute).mockRejectedValue(
-          new Error("DB connection lost"),
+          new InfrastructureError("DB connection lost"),
         );
 
         await expect(sut.handle(makeRequest() as any)).rejects.toThrow(

@@ -2,6 +2,7 @@ import {
   UpdateUserBodyDTO,
   UpdateUserOutputDTO,
 } from "@/core/usecases/user/update-user-dto";
+import { DomainError } from "@/core/shared/errors/domain-error";
 import { UpdateUserUseCaseInterface } from "@/core/usecases/user/update-user-usecase-interface";
 import { UserUpdateController } from "@/infrastructure/http/express/controllers/user/update-user-controller";
 import {
@@ -109,7 +110,9 @@ describe("UserUpdateController", () => {
 
   describe("given use case throws", () => {
     it("should propagate the error without suppressing", async () => {
-      vi.mocked(usecase.execute).mockRejectedValue(new Error("Domain error"));
+      vi.mocked(usecase.execute).mockRejectedValue(
+        new DomainError("Domain error"),
+      );
 
       await expect(sut.handle(makeRequest() as any)).rejects.toThrow(
         "Domain error",

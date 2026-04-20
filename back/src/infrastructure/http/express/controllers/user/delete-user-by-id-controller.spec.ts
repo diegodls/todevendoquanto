@@ -1,4 +1,5 @@
 import { DeleteUserByIDControllerType } from "@/core/ports/infrastructure/http/controllers/user/delete-user-by-id-controller-type";
+import { DomainError } from "@/core/shared/errors/domain-error";
 import { DeleteUserUseCaseInterface } from "@/core/usecases/user/delete-user-usecase-interface";
 import { DeleteUserByIDController } from "@/infrastructure/http/express/controllers/user/delete-user-by-id-controller";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
@@ -54,7 +55,9 @@ describe("DeleteUserByIDController", () => {
 
   describe("given usecase throws", () => {
     it("should propagate the error without suppressing", async () => {
-      vi.mocked(usecase.execute).mockRejectedValue(new Error("Domain Error"));
+      vi.mocked(usecase.execute).mockRejectedValue(
+        new DomainError("Domain Error"),
+      );
 
       await expect(sut.handle(makeRequest() as any)).rejects.toThrow(
         "Domain Error",

@@ -1,3 +1,10 @@
+import {
+  TagEmptyError,
+  TagInvalidFormatError,
+  TagTooLongError,
+  TagTooShortError,
+} from "@/core/shared/errors/domain";
+
 const ONLY_LETTERS_NUMBERS_HYPHENS = /^[a-z0-9-]+$/;
 const LOWERCASE_NOSPACE_HYPHENS = /\s+/g;
 export class Tag {
@@ -6,17 +13,15 @@ export class Tag {
 
   private constructor(private readonly _value: string) {
     if (_value.length < Tag.MIN_LENGTH) {
-      throw new Error(`Tag must have at least ${Tag.MIN_LENGTH} characters`);
+      throw new TagTooShortError(Tag.MIN_LENGTH);
     }
 
     if (_value.length > Tag.MAX_LENGTH) {
-      throw new Error(`Tag cannot exceed ${Tag.MAX_LENGTH} characters`);
+      throw new TagTooLongError(Tag.MAX_LENGTH);
     }
 
     if (!ONLY_LETTERS_NUMBERS_HYPHENS.test(_value)) {
-      throw new Error(
-        "Tag can only contain lowercase letters, numbers, and hyphens",
-      );
+      throw new TagInvalidFormatError();
     }
   }
 
@@ -24,7 +29,7 @@ export class Tag {
     const trimmed = tag.trim();
 
     if (trimmed.length === 0) {
-      throw new Error("Tag cannot be empty or whitespace");
+      throw new TagEmptyError();
     }
 
     const normalized = trimmed

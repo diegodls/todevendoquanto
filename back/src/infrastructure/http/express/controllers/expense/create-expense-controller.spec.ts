@@ -2,6 +2,7 @@ import {
   CreateExpenseBodyInput,
   CreateExpenseOutputDTO,
 } from "@/core/usecases/expense/create-expense-dto";
+import { DomainError } from "@/core/shared/errors/domain-error";
 import { CreateExpenseUseCaseInterface } from "@/core/usecases/expense/create-expense-usecase-interface";
 import { CreateExpenseController } from "@/infrastructure/http/express/controllers/expense/create-expense-controller";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
@@ -89,7 +90,9 @@ describe("CreateExpenseController", () => {
 
   describe("given use case throws", () => {
     it("should propagate the error without suppressing", async () => {
-      vi.mocked(usecase.execute).mockRejectedValue(new Error("Domain error"));
+      vi.mocked(usecase.execute).mockRejectedValue(
+        new DomainError("Domain error"),
+      );
 
       await expect(sut.handle(makeRequest() as any)).rejects.toThrow(
         "Domain error",

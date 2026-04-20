@@ -2,6 +2,7 @@ import {
   CreateUserInputDTO,
   CreateUserOutputDTO,
 } from "@/core/usecases/user/create-user-dto";
+import { DomainError } from "@/core/shared/errors/domain-error";
 import { CreateUserUseCaseInterface } from "@/core/usecases/user/create-user-usecase-interface";
 import { CreateUserController } from "@/infrastructure/http/express/controllers/user/create-user-controller";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
@@ -88,7 +89,9 @@ describe("CreateUserController", () => {
 
   describe("given use case throws", () => {
     it("should propagate the error without suppressing", async () => {
-      vi.mocked(usecase.execute).mockRejectedValue(new Error("Domain error"));
+      vi.mocked(usecase.execute).mockRejectedValue(
+        new DomainError("Domain error"),
+      );
 
       await expect(sut.handle(makeRequest() as any)).rejects.toThrow(
         "Domain error",

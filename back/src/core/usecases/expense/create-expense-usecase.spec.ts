@@ -1,6 +1,7 @@
 import { Money } from "@/core/entities/expense/value-objects/money";
 import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
 import { InternalError } from "@/core/shared/errors/api-errors";
+import { InfrastructureError } from "@/core/shared/errors/infrastructure-errors";
 import {
   CreateExpenseInputDTO,
   CreateExpenseOutputDTO,
@@ -323,7 +324,7 @@ describe("CreateExpenseUseCase", () => {
 
     it("should propagate unexpected repository exceptions", async () => {
       vi.mocked(repository.create).mockRejectedValue(
-        new Error("DB connection lost"),
+        new InfrastructureError("DB connection lost"),
       );
 
       await expect(sut.execute(mockerUserUuidV4, makeInput())).rejects.toThrow(

@@ -1,11 +1,15 @@
 import { Tag } from "@/core/entities/expense/value-objects/tag";
+import {
+  CannotAddMoreTagsError,
+  TagsLimitExceededError,
+} from "@/core/shared/errors/domain";
 
 export class Tags {
   private static readonly MAX_TAGS = 10;
 
   private constructor(private readonly _tags: ReadonlyArray<Tag>) {
     if (_tags.length > Tags.MAX_TAGS) {
-      throw new Error(`Maximum of ${Tags.MAX_TAGS} tags exceeded`);
+      throw new TagsLimitExceededError(Tags.MAX_TAGS);
     }
   }
 
@@ -60,7 +64,7 @@ export class Tags {
 
     // Verifica limite
     if (this._tags.length >= Tags.MAX_TAGS) {
-      throw new Error(`Cannot add more than ${Tags.MAX_TAGS} tags`);
+      throw new CannotAddMoreTagsError(Tags.MAX_TAGS);
     }
 
     // Cria novo Tags com a tag adicionada

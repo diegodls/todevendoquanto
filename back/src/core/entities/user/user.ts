@@ -1,5 +1,18 @@
-// core/entities/user/user.entity.ts
-
+import {
+  UserAlreadyActiveError,
+  UserAlreadyInactiveError,
+  UserCreatedAtRequiredError,
+  UserEmailRequiredError,
+  UserIdRequiredError,
+  UserNameEmptyError,
+  UserNameInvalidCharactersError,
+  UserNameTooLongError,
+  UserNameTooShortError,
+  UserPasswordEmptyError,
+  UserPasswordRequiredError,
+  UserRoleRequiredError,
+  UserUpdatedAtRequiredError,
+} from "@/core/shared/errors/domain";
 import { Email } from "./value-objects/user-email";
 import { UserId } from "./value-objects/user-id";
 import { UserRole } from "./value-objects/user-role";
@@ -46,21 +59,21 @@ export class User {
 
   public static create(props: CreateUserProps, hashedPassword: string): User {
     if (!props.name || props.name.trim().length === 0) {
-      throw new Error("Name cannot be empty");
+      throw new UserNameEmptyError();
     }
 
     const name = props.name.trim();
 
     if (name.length < 2) {
-      throw new Error("Name must have at least 2 characters");
+      throw new UserNameTooShortError();
     }
 
     if (name.length > 100) {
-      throw new Error("Name exceeds maximum length of 100 characters");
+      throw new UserNameTooLongError();
     }
 
     if (!/^[a-zA-ZÀ-ÿ\s'-]+$/.test(name)) {
-      throw new Error("Name contains invalid characters");
+      throw new UserNameInvalidCharactersError();
     }
 
     const email = Email.create(props.email);
@@ -70,7 +83,7 @@ export class User {
       id: UserId.create(),
       name,
       email,
-      hashedPassword: hashedPassword,
+      hashedPassword,
       role,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -84,27 +97,27 @@ export class User {
 
   private validate(): void {
     if (!this._id) {
-      throw new Error("User ID is required");
+      throw new UserIdRequiredError();
     }
 
     if (!this._email) {
-      throw new Error("User email is required");
+      throw new UserEmailRequiredError();
     }
 
     if (!this._hashedPassword || this._hashedPassword.trim().length === 0) {
-      throw new Error("User password is required");
+      throw new UserPasswordRequiredError();
     }
 
     if (!this._role) {
-      throw new Error("User role is required");
+      throw new UserRoleRequiredError();
     }
 
     if (!this._createdAt) {
-      throw new Error("User createdAt is required");
+      throw new UserCreatedAtRequiredError();
     }
 
     if (!this._updatedAt) {
-      throw new Error("User updatedAt is required");
+      throw new UserUpdatedAtRequiredError();
     }
   }
 
@@ -142,21 +155,21 @@ export class User {
 
   public changeName(newName: string): void {
     if (!newName || newName.trim().length === 0) {
-      throw new Error("Name cannot be empty");
+      throw new UserNameEmptyError();
     }
 
     const trimmed = newName.trim();
 
     if (trimmed.length < 2) {
-      throw new Error("Name must have at least 2 characters");
+      throw new UserNameTooShortError();
     }
 
     if (trimmed.length > 100) {
-      throw new Error("Name exceeds maximum length of 100 characters");
+      throw new UserNameTooLongError();
     }
 
     if (!/^[a-zA-ZÀ-ÿ\s'-]+$/.test(trimmed)) {
-      throw new Error("Name contains invalid characters");
+      throw new UserNameInvalidCharactersError();
     }
 
     this._name = trimmed;
@@ -171,7 +184,7 @@ export class User {
 
   public changePassword(newHashedPassword: string): void {
     if (!newHashedPassword || newHashedPassword.trim().length === 0) {
-      throw new Error("Password cannot be empty");
+      throw new UserPasswordEmptyError();
     }
 
     this._hashedPassword = newHashedPassword;
@@ -190,7 +203,7 @@ export class User {
 
   public activate(): void {
     if (this._isActive) {
-      throw new Error("User is already active");
+      throw new UserAlreadyActiveError();
     }
 
     this._isActive = true;
@@ -199,7 +212,7 @@ export class User {
 
   public deactivate(): void {
     if (!this._isActive) {
-      throw new Error("User is already inactive");
+      throw new UserAlreadyInactiveError();
     }
 
     this._isActive = false;

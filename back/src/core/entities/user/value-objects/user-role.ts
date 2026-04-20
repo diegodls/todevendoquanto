@@ -1,3 +1,8 @@
+import {
+  InvalidUserRoleError,
+  UserRoleEmptyError,
+} from "@/core/shared/errors/domain";
+
 export class UserRole {
   private static readonly VALID_ROLES = ["BASIC", "ADMIN"] as const;
 
@@ -12,15 +17,13 @@ export class UserRole {
 
   public static create(role: string): UserRole {
     if (!role || role.trim().length === 0) {
-      throw new Error("Role cannot be empty");
+      throw new UserRoleEmptyError();
     }
 
     const normalized = role.trim().toUpperCase();
 
     if (!this.isValidRole(normalized)) {
-      throw new Error(
-        `Invalid role: ${role}. Valid roles are: ${this.VALID_ROLES.join(", ")}`,
-      );
+      throw new InvalidUserRoleError(role, this.VALID_ROLES);
     }
 
     switch (normalized) {
@@ -29,7 +32,7 @@ export class UserRole {
       case "ADMIN":
         return UserRole.ADMIN;
       default:
-        throw new Error(`Invalid role: ${role}`);
+        throw new InvalidUserRoleError(role, this.VALID_ROLES);
     }
   }
 

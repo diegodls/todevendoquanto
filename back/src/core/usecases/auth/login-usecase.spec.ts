@@ -2,6 +2,7 @@ import { JwtGenerateTokenInterface } from "@/core/ports/infrastructure/protocols
 import { PasswordHasherInterface } from "@/core/ports/infrastructure/protocols/passwordHasher-interface";
 import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
 import { UnauthorizedError } from "@/core/shared/errors/api-errors";
+import { InfrastructureError } from "@/core/shared/errors/infrastructure-errors";
 import { LoginUserInputDTO } from "@/core/usecases/auth/login-dto";
 import { LoginUseCase } from "@/core/usecases/auth/login-usecase";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -208,7 +209,7 @@ describe("LoginUseCase", () => {
   describe("given infrastructure failures", () => {
     it("should propagate repository exception", async () => {
       vi.mocked(repository.findByEmail).mockRejectedValue(
-        new Error("DB unavailable"),
+        new InfrastructureError("DB unavailable"),
       );
 
       await expect(sut.execute(makeInput())).rejects.toThrow("DB unavailable");
@@ -216,7 +217,7 @@ describe("LoginUseCase", () => {
 
     it("should propagate passwordHasher exception", async () => {
       vi.mocked(passwordHasher.compare).mockRejectedValue(
-        new Error("Hasher failed"),
+        new InfrastructureError("Hasher failed"),
       );
 
       await expect(sut.execute(makeInput())).rejects.toThrow("Hasher failed");
@@ -224,7 +225,7 @@ describe("LoginUseCase", () => {
 
     it("should propagate generateToken exception", async () => {
       vi.mocked(generateToken.execute).mockImplementation(() => {
-        throw new Error("JWT signing failed");
+        throw new InfrastructureError("JWT signing failed");
       });
 
       await expect(sut.execute(makeInput())).rejects.toThrow(

@@ -1,23 +1,30 @@
+import {
+  ExpenseNameBlankError,
+  ExpenseNameEmptyError,
+  ExpenseNameTooLongError,
+  ExpenseNameTooShortError,
+} from "@/core/shared/errors/domain";
+
 export class ExpenseName {
   private constructor(private readonly _value: string) {
     if (_value.length < 3) {
-      throw new Error("Expense name must have at least 3 characters");
+      throw new ExpenseNameTooShortError();
     }
 
     if (_value.length > 100) {
-      throw new Error("Expense name cannot exceed 100 characters");
+      throw new ExpenseNameTooLongError();
     }
   }
 
   public static create(name?: string): ExpenseName {
     if (!name) {
-      throw new Error("Expense name cannot be empty");
+      throw new ExpenseNameEmptyError();
     }
 
     const trimmed = name.trim();
 
     if (trimmed.length === 0) {
-      throw new Error("Expense name cannot be empty or whitespace");
+      throw new ExpenseNameBlankError();
     }
 
     return new ExpenseName(trimmed);

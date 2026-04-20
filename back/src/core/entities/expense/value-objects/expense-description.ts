@@ -1,5 +1,5 @@
-import { InvalidDescriptionError } from "@/core/shared/errors/domain/InvalidDescriptionError";
-import { HTML_TAG_REGEX } from "./../../../shared/regex/html-tag";
+import { InvalidDescriptionError } from '@/core/shared/errors/domain/description-errors';
+import { HTML_TAG_REGEX } from './../../../shared/regex/html-tag';
 
 interface DescriptionProps {
   value: string;
@@ -20,7 +20,7 @@ export class ExpenseDescription {
 
     if (!trimmed) {
       throw new InvalidDescriptionError(
-        "Description cannot be empty or whitespace.",
+        'Description cannot be empty or whitespace.',
       );
     }
 
@@ -32,7 +32,7 @@ export class ExpenseDescription {
 
     if (HTML_TAG_REGEX.test(trimmed)) {
       throw new InvalidDescriptionError(
-        "Description cannot contain HTML tags.",
+        'Description cannot contain HTML tags.',
       );
     }
 

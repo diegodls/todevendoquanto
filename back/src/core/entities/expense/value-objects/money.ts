@@ -1,3 +1,22 @@
+import {
+  EmptyMoneyAllocationRatiosError,
+  InvalidMoneyAmountError,
+  InvalidMoneyCurrencyError,
+  InvalidMoneyDivisorError,
+  InvalidMoneyMultiplicationFactorError,
+  InvalidMoneySplitQuantityError,
+  MoneyCurrencyEmptyError,
+  MoneyCurrencyMismatchError,
+  MoneyDivisionByZeroError,
+  MoneySplitAmountTooSmallError,
+  NegativeMoneyAllocationRatioError,
+  NegativeMoneyAmountError,
+  NegativeMoneyDivisorError,
+  NegativeMoneyMultiplicationFactorError,
+  NegativeMoneyResultError,
+  ZeroMoneyAllocationRatiosTotalError,
+} from "@/core/shared/errors/domain";
+
 export class Money {
   private static readonly VALID_CURRENCIES = ["BRL", "USD"];
   private static readonly DEFAULT_CURRENCY = "BRL";
@@ -7,19 +26,19 @@ export class Money {
     private readonly _currency: string = Money.DEFAULT_CURRENCY,
   ) {
     if (_cents < 0) {
-      throw new Error("Money amount cannot be negative");
+      throw new NegativeMoneyAmountError();
     }
 
     if (!Number.isFinite(_cents)) {
-      throw new Error("Money amount must be a valid number");
+      throw new InvalidMoneyAmountError();
     }
 
     if (!_currency || _currency.trim().length === 0) {
-      throw new Error("Currency cannot be empty");
+      throw new MoneyCurrencyEmptyError();
     }
 
     if (!Money.VALID_CURRENCIES.includes(_currency)) {
-      throw new Error(`Invalid currency: ${_currency}`);
+      throw new InvalidMoneyCurrencyError(_currency);
     }
   }
 
@@ -96,20 +115,18 @@ export class Money {
     const result = this._cents - other._cents;
 
     if (result < 0) {
-      throw new Error(
-        `Subtraction would result in negative amount: ${this.cents} - ${other._cents} = ${this.cents - other._cents}`,
-      );
+      throw new NegativeMoneyResultError(this.cents, other.cents);
     }
     return new Money(result, this._currency);
   }
 
   public multiply(factor: number): Money {
     if (!Number.isFinite(factor)) {
-      throw new Error("Multiplication factor must be a finite number");
+      throw new InvalidMoneyMultiplicationFactorError();
     }
 
     if (factor < 0) {
-      throw new Error("Multiplication factor cannot be negative");
+      throw new NegativeMoneyMultiplicationFactorError();
     }
 
     return new Money(this._cents * factor, this._currency);
@@ -117,15 +134,15 @@ export class Money {
 
   public divide(divisor: number): Money {
     if (!Number.isFinite(divisor)) {
-      throw new Error("Divisor factor must be a finite number");
+      throw new InvalidMoneyDivisorError();
     }
 
     if (divisor === 0) {
-      throw new Error("Cannot divide by zero");
+      throw new MoneyDivisionByZeroError();
     }
 
     if (divisor < 0) {
-      throw new Error("Divisor cannot be negative");
+      throw new NegativeMoneyDivisorError();
     }
 
     return new Money(this._cents / divisor, this.currency);
@@ -133,15 +150,13 @@ export class Money {
 
   public split(parts: number): Money[] {
     if (!Number.isInteger(parts) || parts <= 0) {
-      throw new Error("The split quantity must be a integer positive");
+      throw new InvalidMoneySplitQuantityError();
     }
 
     const base = Math.floor(this.cents / parts);
 
     if (base <= 0) {
-      throw new Error(
-        `Is not possible to split ${this.decimal} in ${parts} parts`,
-      );
+      throw new MoneySplitAmountTooSmallError(this.decimal, parts);
     }
 
     const remainder = this.cents % parts;
@@ -157,13 +172,13 @@ export class Money {
 
   public allocate(ratios: number[]): Money[] {
     if (ratios.length === 0) {
-      throw new Error("Ratios array cannot be empty");
+      throw new EmptyMoneyAllocationRatiosError();
     }
 
     const totalRatio = ratios.reduce((sum, ratio) => sum + ratio, 0);
 
     if (totalRatio === 0) {
-      throw new Error("Total of ratios cannot be zero");
+      throw new ZeroMoneyAllocationRatiosTotalError();
     }
 
     const totalCents = this.cents;
@@ -174,7 +189,7 @@ export class Money {
 
     ratios.forEach((ratio, index) => {
       if (ratio < 0) {
-        throw new Error("Ratios cannot be negative");
+        throw new NegativeMoneyAllocationRatioError();
       }
 
       let share: number = 0;
@@ -205,9 +220,7 @@ export class Money {
 
   private assertSameCurrency(other: Money): void {
     if (this._currency !== other._currency) {
-      throw new Error(
-        `Cannot operate on different currencies: ${this._currency} vs ${other._currency}`,
-      );
+      throw new MoneyCurrencyMismatchError(this._currency, other._currency);
     }
   }
 }

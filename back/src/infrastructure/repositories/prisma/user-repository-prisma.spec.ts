@@ -3,6 +3,11 @@ import { Password } from "@/core/entities/user/value-objects/password";
 import { Email } from "@/core/entities/user/value-objects/user-email";
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 import { UserRole } from "@/core/entities/user/value-objects/user-role";
+import {
+  ConflictError,
+  NotFoundError,
+} from "@/core/shared/errors/api-errors";
+import { InfrastructureError } from "@/core/shared/errors/infrastructure-errors";
 import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-repository-prisma";
 import { User as PrismaUser } from "@/prisma/index";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -122,7 +127,7 @@ describe("UserRepositoryPrisma", () => {
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
         prisma.user.create.mockRejectedValue(
-          new Error("Unique constraint failed"),
+          new ConflictError("Unique constraint failed"),
         );
 
         await expect(sut.save(makeDomainUser())).rejects.toThrow(
@@ -155,7 +160,9 @@ describe("UserRepositoryPrisma", () => {
 
     describe("when user does not exist", () => {
       it("should propagate prisma not found exception", async () => {
-        prisma.user.delete.mockRejectedValue(new Error("Record not found"));
+        prisma.user.delete.mockRejectedValue(
+          new NotFoundError("Record not found"),
+        );
 
         await expect(sut.deleteById(makeUserId() as any)).rejects.toThrow(
           "Record not found",
@@ -199,7 +206,9 @@ describe("UserRepositoryPrisma", () => {
 
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
-        prisma.user.count.mockRejectedValue(new Error("DB unavailable"));
+        prisma.user.count.mockRejectedValue(
+          new InfrastructureError("DB unavailable"),
+        );
 
         await expect(sut.exists(makeEmail() as any)).rejects.toThrow(
           "DB unavailable",
@@ -255,7 +264,9 @@ describe("UserRepositoryPrisma", () => {
 
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
-        prisma.user.findUnique.mockRejectedValue(new Error("DB unavailable"));
+        prisma.user.findUnique.mockRejectedValue(
+          new InfrastructureError("DB unavailable"),
+        );
 
         await expect(sut.findById(makeUserId() as any)).rejects.toThrow(
           "DB unavailable",
@@ -299,7 +310,9 @@ describe("UserRepositoryPrisma", () => {
 
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
-        prisma.user.findFirst.mockRejectedValue(new Error("DB unavailable"));
+        prisma.user.findFirst.mockRejectedValue(
+          new InfrastructureError("DB unavailable"),
+        );
 
         await expect(sut.findByEmail(makeEmail() as any)).rejects.toThrow(
           "DB unavailable",
@@ -343,7 +356,9 @@ describe("UserRepositoryPrisma", () => {
 
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
-        prisma.user.findFirst.mockRejectedValue(new Error("DB unavailable"));
+        prisma.user.findFirst.mockRejectedValue(
+          new InfrastructureError("DB unavailable"),
+        );
 
         await expect(sut.findByName("John Doe")).rejects.toThrow(
           "DB unavailable",
@@ -434,7 +449,9 @@ describe("UserRepositoryPrisma", () => {
 
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
-        prisma.user.count.mockRejectedValue(new Error("DB unavailable"));
+        prisma.user.count.mockRejectedValue(
+          new InfrastructureError("DB unavailable"),
+        );
 
         const { filters, order, pagination } = makeListArgs();
         await expect(sut.list(filters, order, pagination)).rejects.toThrow(
@@ -469,7 +486,9 @@ describe("UserRepositoryPrisma", () => {
 
     describe("when user does not exist", () => {
       it("should propagate prisma not found exception", async () => {
-        prisma.user.update.mockRejectedValue(new Error("Record not found"));
+        prisma.user.update.mockRejectedValue(
+          new NotFoundError("Record not found"),
+        );
 
         await expect(sut.update(makeDomainUser())).rejects.toThrow(
           "Record not found",
@@ -479,7 +498,9 @@ describe("UserRepositoryPrisma", () => {
 
     describe("when database throws", () => {
       it("should propagate the exception", async () => {
-        prisma.user.update.mockRejectedValue(new Error("DB unavailable"));
+        prisma.user.update.mockRejectedValue(
+          new InfrastructureError("DB unavailable"),
+        );
 
         await expect(sut.update(makeDomainUser())).rejects.toThrow(
           "DB unavailable",

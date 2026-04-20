@@ -1,5 +1,11 @@
 // core/entities/user/value-objects/email.ts
 
+import {
+  EmailEmptyError,
+  EmailTooLongError,
+  InvalidEmailFormatError,
+} from "@/core/shared/errors/domain";
+
 export class Email {
   private readonly _value: string;
 
@@ -9,7 +15,7 @@ export class Email {
 
   public static create(email: string): Email {
     if (!email || email.trim().length === 0) {
-      throw new Error("Email cannot be empty");
+      throw new EmailEmptyError();
     }
 
     let normalized = email.trim().toLowerCase();
@@ -17,11 +23,11 @@ export class Email {
     normalized = this.normalizeAccents(normalized);
 
     if (!this.isValid(normalized)) {
-      throw new Error("Email format is invalid");
+      throw new InvalidEmailFormatError();
     }
 
     if (normalized.length > 254) {
-      throw new Error("Email exceeds maximum length of 254 characters");
+      throw new EmailTooLongError();
     }
 
     return new Email(normalized);

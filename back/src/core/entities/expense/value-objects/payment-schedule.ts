@@ -1,3 +1,11 @@
+import {
+  ExpirationDayOutsidePaymentPeriodError,
+  InvalidPaymentScheduleDateError,
+  PaymentPeriodStartAfterEndError,
+  PaymentScheduleDateBeforeMinimumError,
+  PaymentScheduleDateTooFarInFutureError,
+} from "@/core/shared/errors/domain";
+
 export class PaymentSchedule {
   private readonly MIN_DATE_LIMIT: Date = new Date("1970-01-01");
   private readonly MAX_YEAR_LIMIT: number = 30;
@@ -118,21 +126,24 @@ export class PaymentSchedule {
 
     dates.forEach(({ date, name }) => {
       if (!(date instanceof Date) || isNaN(date.getTime())) {
-        throw new Error(`${name} must be a valid date`);
+        throw new InvalidPaymentScheduleDateError(name);
       }
     });
   }
 
   private validateLogicalOrder(): void {
     if (this._startAt > this._endAt) {
-      throw new Error(
-        `Payment period start (${this.formatDate(this._startAt)}) must be before end (${this.formatDate(this._endAt)})`,
+      throw new PaymentPeriodStartAfterEndError(
+        this.formatDate(this._startAt),
+        this.formatDate(this._endAt),
       );
     }
 
     if (this._expirationDay > this._endAt) {
-      throw new Error(
-        `Expiration day (${this.formatDate(this._expirationDay)}) must be within payment period (${this.formatDate(this._startAt)} to ${this.formatDate(this._endAt)})`,
+      throw new ExpirationDayOutsidePaymentPeriodError(
+        this.formatDate(this._expirationDay),
+        this.formatDate(this._startAt),
+        this.formatDate(this._endAt),
       );
     }
   }
@@ -151,13 +162,15 @@ export class PaymentSchedule {
 
     dates.forEach((date) => {
       if (date < this.MIN_DATE_LIMIT) {
-        throw new Error(
-          `Date cannot be before year ${this.MIN_DATE_LIMIT.getFullYear()}: ${this.formatDate(date)}`,
+        throw new PaymentScheduleDateBeforeMinimumError(
+          this.MIN_DATE_LIMIT.getFullYear(),
+          this.formatDate(date),
         );
       }
       if (date > maxDate) {
-        throw new Error(
-          `Date cannot be more than ${this.MAX_YEAR_LIMIT} years in the future: ${this.formatDate(date)}`,
+        throw new PaymentScheduleDateTooFarInFutureError(
+          this.MAX_YEAR_LIMIT,
+          this.formatDate(date),
         );
       }
     });

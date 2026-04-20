@@ -4,6 +4,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/core/shared/errors/api-errors";
+import { InfrastructureError } from "@/core/shared/errors/infrastructure-errors";
 import { DeleteExpenseInputDTO } from "@/core/usecases/expense/delete-expense-dto";
 import { DeleteExpenseUseCase } from "@/core/usecases/expense/delete-expense-usecase";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -254,7 +255,7 @@ describe("DeleteExpenseUseCase", () => {
   describe("given repository failures", () => {
     it("should propagate exception from findInstallmentById", async () => {
       vi.mocked(expenseRepository.findInstallmentById).mockRejectedValue(
-        new Error("DB unavailable"),
+        new InfrastructureError("DB unavailable"),
       );
 
       await expect(sut.execute(makeInput())).rejects.toThrow("DB unavailable");
@@ -266,7 +267,7 @@ describe("DeleteExpenseUseCase", () => {
       );
 
       vi.mocked(userRepository.findById).mockRejectedValue(
-        new Error("User DB unavailable"),
+        new InfrastructureError("User DB unavailable"),
       );
 
       await expect(sut.execute(makeInput())).rejects.toThrow(
@@ -282,7 +283,7 @@ describe("DeleteExpenseUseCase", () => {
       vi.mocked(userRepository.findById).mockResolvedValue(makeUser() as any);
 
       vi.mocked(expenseRepository.deleteByInstallmentId).mockRejectedValue(
-        new Error("Delete failed"),
+        new InfrastructureError("Delete failed"),
       );
 
       await expect(sut.execute(makeInput())).rejects.toThrow("Delete failed");

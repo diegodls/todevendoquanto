@@ -10,6 +10,16 @@ import { InstallmentInfo } from "@/core/entities/expense/value-objects/installme
 import { Money } from "@/core/entities/expense/value-objects/money";
 import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
 import { Tags } from "@/core/entities/expense/value-objects/tags";
+import {
+  CannotAdvanceAbandonedExpenseInstallmentError,
+  CannotAdvanceFinalExpenseInstallmentError,
+  CannotAdvancePaidExpenseInstallmentError,
+  ExpenseAmountCurrencyMismatchError,
+  ExpenseCannotBePaidBeforeFinalInstallmentError,
+  ExpenseInstallmentIdRequiredError,
+  ExpenseUserRequiredError,
+  PaidExpenseInstallmentIncompleteError,
+} from "@/core/shared/errors/domain";
 
 import { UserId } from "@/core/entities/user/value-objects/user-id";
 
@@ -259,15 +269,15 @@ export class Expense {
 
   public advanceInstallment(): void {
     if (this._status.isPaid()) {
-      throw new Error("Cannot advance installment of paid expense");
+      throw new CannotAdvancePaidExpenseInstallmentError();
     }
 
     if (this._status.isAbandoned()) {
-      throw new Error("Cannot advance installment of abandoned expense");
+      throw new CannotAdvanceAbandonedExpenseInstallmentError();
     }
 
     if (this._installmentInfo.isComplete()) {
-      throw new Error("Cannot advance: already at final installment");
+      throw new CannotAdvanceFinalExpenseInstallmentError();
     }
 
     this._installmentInfo = this._installmentInfo.next();
@@ -356,30 +366,33 @@ export class Expense {
 
   private validateInvariants(): void {
     if (!this._userId) {
-      throw new Error("Expense must belong to a user");
+      throw new ExpenseUserRequiredError();
     }
 
     if (!this._installmentId) {
-      throw new Error("Expense must have an installment ID");
+      throw new ExpenseInstallmentIdRequiredError();
     }
 
     if (this._amount.currency !== this._totalAmount.currency) {
-      throw new Error(
-        `Amount and totalAmount must have same currency: ${this._amount.currency} vs ${this._totalAmount.currency}`,
+      throw new ExpenseAmountCurrencyMismatchError(
+        this._amount.currency,
+        this._totalAmount.currency,
       );
     }
 
     if (this._status.isPaid() && !this._installmentInfo.isComplete()) {
-      throw new Error(
-        `Expense marked as PAID but installment is ${this._installmentInfo.current}/${this._installmentInfo.total}`,
+      throw new PaidExpenseInstallmentIncompleteError(
+        this._installmentInfo.current,
+        this._installmentInfo.total,
       );
     }
   }
 
   private assertCanBePaid(): void {
     if (!this._installmentInfo.isComplete()) {
-      throw new Error(
-        `Cannot mark as paid: installment ${this._installmentInfo.current}/${this._installmentInfo.total} is not complete`,
+      throw new ExpenseCannotBePaidBeforeFinalInstallmentError(
+        this._installmentInfo.current,
+        this._installmentInfo.total,
       );
     }
   }

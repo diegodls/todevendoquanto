@@ -1,4 +1,5 @@
 import { ListUserOutputDTO } from "@/core/usecases/user/list-user-dto";
+import { DomainError } from "@/core/shared/errors/domain-error";
 import { ListUsersUseCaseInterface } from "@/core/usecases/user/list-users-usecase-interface";
 import { ListUserController } from "@/infrastructure/http/express/controllers/user/list-user-controller";
 import { requestValidation } from "@/infrastructure/validation/zod/validation/request-validation";
@@ -88,7 +89,9 @@ describe("ListUserController", () => {
 
   describe("given use case throws", () => {
     it("should propagate the error without suppressing", async () => {
-      vi.mocked(usecase.execute).mockRejectedValue(new Error("Domain error"));
+      vi.mocked(usecase.execute).mockRejectedValue(
+        new DomainError("Domain error"),
+      );
 
       await expect(sut.handle(makeRequest() as any)).rejects.toThrow(
         "Domain error",
