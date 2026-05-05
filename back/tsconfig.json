@@ -3,19 +3,19 @@
   "_version": "24.0.0",
 
   "compilerOptions": {
+    "target": "es2022",
+    "module": "node16",
+    "moduleResolution": "node16",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/prisma/*": ["./generated/prisma/*"]
+      "@/prisma/*": ["./generated/prisma/*"],
+      "@/*": ["./src/*"]
     },
     "rootDir": "./src",
     "outDir": "./dist",
     "lib": ["ES2022", "ESNext"],
-    "module": "node16",
-    "target": "es2022",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node16",
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["./node_modules/@types", "src/@types"]

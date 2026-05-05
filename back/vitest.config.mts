@@ -1,69 +1,56 @@
-import path from "path";
-import { defineConfig } from "vitest/config";
+import path from 'path';
+import { defineConfig, defineProject } from 'vitest/config';
+
+const alias = {
+  '@prisma': path.resolve(__dirname, './generated/prisma/'),
+  '@': path.resolve(__dirname, './src/'),
+};
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src/"),
-      "@prisma": path.resolve(__dirname, "./generated/prisma/"),
-    },
-  },
+  resolve: { alias, tsconfigPaths: true },
 
   test: {
-    environment: "node", // 'node' = backend, 'jsdom'/'happy-dom' = frontend.
-
-    globals: false, // Importar explicitamente evita conflitos
-
-    include: ["**/*.spec.ts", "**/*.test.ts"], // Padronize: .spec = unitários | .test = integração |  ['tests/unit/**/*.{test,spec}.ts'],
-
-    fileParallelism: false, // Testes podem executar tarefas no banco ao mesmo tempo (ou outros), gerando erros
+    environment: 'node',
+    globals: false,
+    include: ['**/*.spec.ts', '**/*.test.ts'],
+    fileParallelism: false,
 
     projects: [
-      {
+      defineProject({
         resolve: {
-          alias: {
-            "@": path.resolve(__dirname, "./src/"),
-            "@prisma": path.resolve(__dirname, "./generated/prisma/"),
-          },
+          alias,
+          tsconfigPaths: true,
         },
-
-        // extends: true,
-
         test: {
-          name: { label: "unit", color: "cyan" },
-          environment: "node",
-          include: ["**/*.spec.ts"],
+          name: { label: 'unit', color: 'cyan' },
+          environment: 'node',
+          include: ['**/*.spec.ts'],
         },
-      },
-      {
+      }),
+      defineProject({
         resolve: {
-          alias: {
-            "@": path.resolve(__dirname, "./src/"),
-            "@prisma": path.resolve(__dirname, "./generated/prisma/"),
-          },
+          alias,
+          tsconfigPaths: true,
         },
-
-        // extends: true,
-
         test: {
-          name: { label: "integration", color: "magenta" },
-          environment: "node",
-          include: ["**/*test.ts"],
+          name: { label: 'integration', color: 'magenta' },
+          environment: 'node',
+          include: ['**/*test.ts'],
         },
-      },
+      }),
     ],
 
     coverage: {
-      provider: "v8", // V8 é extremamente rápida
-      reporter: ["text", "json", "html"],
-      include: ["src/**/*.ts"],
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      include: ['src/**/*.ts'],
       exclude: [
-        "**/*.spec.ts",
-        "**/*.test.ts",
-        "node_modules/",
-        "dist/",
-        "src/types/**",
-      ], // Não meça cobertura deste arquivos/pastas
+        '**/*.spec.ts',
+        '**/*.test.ts',
+        'node_modules/',
+        'dist/',
+        'src/types/**',
+      ],
     },
   },
 });
