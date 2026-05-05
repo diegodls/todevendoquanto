@@ -1,13 +1,23 @@
 import { AUTH_ROUTES_PATH } from "@/core/ports/infrastructure/http/app-routes-paths";
+import {
+  badRequestResponse,
+  buildOpenApiPath,
+  forbiddenResponse,
+} from "@/infrastructure/docs/endpoints/shared-docs";
 import { registry } from "@/infrastructure/docs/registry";
 import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/auth/user-login-body-schema";
+import { z } from "zod";
+
+const LoginResponseSchema = z.object({
+  token: z.string(),
+});
 
 export function registerAuthDocs() {
   registry.registerPath({
     method: "post",
-    path: AUTH_ROUTES_PATH.login,
+    path: buildOpenApiPath(AUTH_ROUTES_PATH.root, AUTH_ROUTES_PATH.login),
     tags: ["Auth"],
-    summary: "User Authentication",
+    summary: "User authentication",
     request: {
       body: {
         required: true,
@@ -20,10 +30,17 @@ export function registerAuthDocs() {
     },
     responses: {
       200: {
-        description: "Token generation successfully",
+        description: "Authentication completed successfully",
+        content: {
+          "application/json": {
+            schema: LoginResponseSchema,
+          },
+        },
       },
-      401: {
-        description: "Invalid credentials",
+      400: badRequestResponse,
+      403: {
+        ...forbiddenResponse,
+        description: "Invalid credentials or deactivated user account",
       },
     },
   });
