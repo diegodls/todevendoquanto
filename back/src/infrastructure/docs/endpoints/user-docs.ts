@@ -3,61 +3,21 @@ import {
   badRequestResponse,
   buildOpenApiPath,
   forbiddenResponse,
-  idParamsSchema,
   internalServerErrorResponse,
   notFoundResponse,
   unprocessableEntityResponse,
 } from "@/infrastructure/docs/endpoints/shared-docs";
 import { registry } from "@/infrastructure/docs/registry";
 import { CreateUserBodySchema } from "@/infrastructure/validation/zod/schemas/user/create-user-body-schema";
-import { UpdateUserBodySchema } from "@/infrastructure/validation/zod/schemas/user/update-user-profile-body-schema";
-import { z } from "zod";
-
-const UserListQuerySchema = z
-  .object({
-    page: z.string().optional(),
-    pageSize: z.string().optional(),
-    name: z.string().optional(),
-    email: z.string().optional(),
-    isActive: z.string().optional(),
-    roles: z.string().optional(),
-    created_after: z.string().optional(),
-    created_before: z.string().optional(),
-    updated_after: z.string().optional(),
-    updated_before: z.string().optional(),
-    order: z.enum(["asc", "desc"]).optional(),
-    orderBy: z
-      .enum(["name", "email", "role", "createdAt", "updatedAt", "isActive"])
-      .optional(),
-  })
-  .strip();
-
-const CreateUserResponseSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  email: z.string(),
-  role: z.string(),
-  createdAt: z.string(),
-  isActive: z.boolean(),
-});
-
-const UserResponseSchema = CreateUserResponseSchema.extend({
-  updatedAt: z.string(),
-});
-
-const PaginationMetaSchema = z.object({
-  page: z.number(),
-  pageSize: z.number(),
-  hasNextPage: z.boolean(),
-  hasPreviousPage: z.boolean(),
-  totalPages: z.number(),
-  totalItems: z.number(),
-});
-
-const ListUsersResponseSchema = z.object({
-  data: z.array(UserResponseSchema),
-  meta: PaginationMetaSchema,
-});
+import { DeleteUserByIDParamsSchema } from "@/infrastructure/validation/zod/schemas/user/delete-user-by-id-params-schema";
+import { ListUserResponseSchema } from "@/infrastructure/validation/zod/schemas/user/list-user-response-schema";
+import { ListUserSchema } from "@/infrastructure/validation/zod/schemas/user/list-user-schema";
+import { CreateUserResponseSchema } from "@/infrastructure/validation/zod/schemas/user/create-user-response-schema";
+import {
+  UpdateUserBodySchema,
+  UpdateUserParamsSchema,
+} from "@/infrastructure/validation/zod/schemas/user/update-user-profile-body-schema";
+import { UpdateUserResponseSchema } from "@/infrastructure/validation/zod/schemas/user/update-user-response-schema";
 
 export function registerUserDocs() {
   registry.registerPath({
@@ -66,14 +26,14 @@ export function registerUserDocs() {
     tags: ["Users"],
     summary: "List users with filters and pagination",
     request: {
-      query: UserListQuerySchema,
+      query: ListUserSchema,
     },
     responses: {
       200: {
         description: "Users listed successfully",
         content: {
           "application/json": {
-            schema: ListUsersResponseSchema,
+            schema: ListUserResponseSchema,
           },
         },
       },
@@ -119,7 +79,7 @@ export function registerUserDocs() {
     tags: ["Users"],
     summary: "Update a user profile",
     request: {
-      params: idParamsSchema,
+      params: UpdateUserParamsSchema,
       body: {
         required: true,
         content: {
@@ -134,7 +94,7 @@ export function registerUserDocs() {
         description: "User updated successfully",
         content: {
           "application/json": {
-            schema: UserResponseSchema,
+            schema: UpdateUserResponseSchema,
           },
         },
       },
@@ -151,7 +111,7 @@ export function registerUserDocs() {
     tags: ["Users"],
     summary: "Delete a user by id",
     request: {
-      params: idParamsSchema,
+      params: DeleteUserByIDParamsSchema,
     },
     responses: {
       204: {

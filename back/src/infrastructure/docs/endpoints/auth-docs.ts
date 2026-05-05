@@ -6,11 +6,7 @@ import {
 } from "@/infrastructure/docs/endpoints/shared-docs";
 import { registry } from "@/infrastructure/docs/registry";
 import { UserLoginBodySchema } from "@/infrastructure/validation/zod/schemas/auth/user-login-body-schema";
-import { z } from "zod";
-
-const LoginResponseSchema = z.object({
-  token: z.string(),
-});
+import { UserLoginResponseSchema } from "@/infrastructure/validation/zod/schemas/auth/user-login-response-schema";
 
 export function registerAuthDocs() {
   registry.registerPath({
@@ -33,7 +29,7 @@ export function registerAuthDocs() {
         description: "Authentication completed successfully",
         content: {
           "application/json": {
-            schema: LoginResponseSchema,
+            schema: UserLoginResponseSchema,
           },
         },
       },

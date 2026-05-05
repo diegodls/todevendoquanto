@@ -5,26 +5,9 @@ import {
   internalServerErrorResponse,
 } from "@/infrastructure/docs/endpoints/shared-docs";
 import { registry } from "@/infrastructure/docs/registry";
-import { z } from "zod";
-
-const TestRouteResponseSchema = z.object({
-  message: z.string(),
-});
-
-const ErrorRouteBodySchema = z
-  .object({
-    where: z
-      .string()
-      .optional()
-      .describe(
-        "Use 'controller' or 'service' to force an internal error for tests.",
-      ),
-  })
-  .strip();
-
-const ErrorRouteResponseSchema = z.object({
-  where: z.string(),
-});
+import { ErrorRouteBodySchema } from "@/infrastructure/validation/zod/schemas/api/error-route-body-schema";
+import { ErrorRouteResponseSchema } from "@/infrastructure/validation/zod/schemas/api/error-route-response-schema";
+import { TestRouteResponseSchema } from "@/infrastructure/validation/zod/schemas/api/test-route-response-schema";
 
 export function registerApiDocs() {
   registry.registerPath({

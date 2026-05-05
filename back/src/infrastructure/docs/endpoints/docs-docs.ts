@@ -4,18 +4,7 @@ import {
   forbiddenResponse,
 } from "@/infrastructure/docs/endpoints/shared-docs";
 import { registry } from "@/infrastructure/docs/registry";
-import { z } from "zod";
-
-const OpenApiDocumentSchema = z
-  .object({
-    openapi: z.string(),
-    info: z.object({
-      version: z.string(),
-      title: z.string(),
-      description: z.string(),
-    }),
-  })
-  .passthrough();
+import { OpenApiDocumentSchema } from "@/infrastructure/validation/zod/schemas/docs/open-api-document-schema";
 
 export function registerDocsRoutesDocs() {
   registry.registerPath({

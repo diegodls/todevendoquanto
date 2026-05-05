@@ -3,29 +3,13 @@ import {
   badRequestResponse,
   buildOpenApiPath,
   forbiddenResponse,
-  idParamsSchema,
   internalServerErrorResponse,
   notFoundResponse,
 } from "@/infrastructure/docs/endpoints/shared-docs";
 import { registry } from "@/infrastructure/docs/registry";
 import { CreateExpenseBodySchema } from "@/infrastructure/validation/zod/schemas/expense/create-expense-body-schema";
-import { z } from "zod";
-
-const ExpenseResponseSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  amount: z.number(),
-  currency: z.string(),
-  totalAmount: z.number(),
-  status: z.string(),
-  tags: z.array(z.string()),
-  currentInstallment: z.number(),
-  totalInstallment: z.number(),
-  paymentDay: z.string(),
-  expirationDay: z.string(),
-  paymentStartAt: z.string(),
-  paymentEndAt: z.string(),
-});
+import { DeleteExpenseByIdSchema } from "@/infrastructure/validation/zod/schemas/expense/delete-expense-by-id-schema";
+import { CreateExpenseResponseSchema } from "@/infrastructure/validation/zod/schemas/expense/create-expense-response-schema";
 
 export function registerExpenseDocs() {
   registry.registerPath({
@@ -48,7 +32,7 @@ export function registerExpenseDocs() {
         description: "Expense created successfully",
         content: {
           "application/json": {
-            schema: z.array(ExpenseResponseSchema),
+            schema: CreateExpenseResponseSchema.array(),
           },
         },
       },
@@ -64,7 +48,7 @@ export function registerExpenseDocs() {
     tags: ["Expenses"],
     summary: "Delete an expense installment group by installment id",
     request: {
-      params: idParamsSchema,
+      params: DeleteExpenseByIdSchema,
     },
     responses: {
       204: {
