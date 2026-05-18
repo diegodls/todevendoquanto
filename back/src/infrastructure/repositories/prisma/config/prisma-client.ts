@@ -1,7 +1,6 @@
-import { PrismaClient } from "@/prisma/index";
-import { PrismaPg } from "@prisma/adapter-pg";
-
-export { Prisma as PrismaGenerated } from "@/prisma/index";
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '@prisma/client';
+export { Prisma as PrismaGenerated } from '@prisma/client';
 
 export class PrismaClientGenerated extends PrismaClient {}
 
@@ -12,5 +11,5 @@ const adapter = new PrismaPg({ connectionString });
 
 export const prisma = new PrismaClientGenerated({
   adapter,
-  log: ["query", "info", "warn", "error"],
+  log: ['query', 'info', 'warn', 'error'],
 });

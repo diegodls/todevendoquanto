@@ -6,11 +6,10 @@
     "target": "es2022",
     "module": "node16",
     "moduleResolution": "node16",
-    "paths": {
-      "@/prisma/*": ["./generated/prisma/*"],
-      "@/*": ["./src/*"]
+    "paths": {    
+      "@/*": ["./src/*"],
     },
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
     "lib": ["ES2022", "ESNext"],
     "strict": true,

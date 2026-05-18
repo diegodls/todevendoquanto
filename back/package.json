@@ -9,7 +9,7 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "start": "node -r tsconfig-paths/register dist/main.js",
+    "start": "node -r tsconfig-paths/register dist/src/main.js",
     "dev": "tsnd -r tsconfig-paths/register --transpile-only --respawn --ignore-watch node_modules src/main.ts",
     "tsc": "tsc --noEmit --watch",
     "lazy": "start cmd . /k npm run test & start cmd . /k npm run tsc & start cmd . /k npm run db:cli & npm run dev",
@@ -41,7 +41,7 @@
     "swagger-ui-express": "^5.0.1",
     "tsconfig-paths": "^4.2.0",
     "zod": "^4.3.6"
-  },
+  }, 
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.6",
     "@types/bcrypt": "^6.0.0",

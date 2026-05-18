@@ -1,8 +1,8 @@
-import { ListUsersFiltersOptions } from "@/core/usecases/user/list-user-dto";
-import { PrismaGenerated } from "@/infrastructure/repositories/prisma/config/prisma-client";
-import { GenericFilterMapper } from "@/infrastructure/repositories/prisma/user-repository-prisma";
+import { ListUsersFiltersOptions } from '@/core/usecases/user/list-user-dto';
+import { PrismaGenerated } from '@/infrastructure/repositories/prisma/config/prisma-client';
+import { GenericFilterMapper } from '@/infrastructure/repositories/prisma/user-repository-prisma';
 
-import { Role } from "../../../../../../generated/prisma";
+import { Role } from '@prisma/client';
 
 export const listUsersFilters: GenericFilterMapper<
   ListUsersFiltersOptions,
@@ -11,13 +11,13 @@ export const listUsersFilters: GenericFilterMapper<
   name: (value: string) => ({
     name: {
       contains: value,
-      mode: "insensitive",
+      mode: 'insensitive',
     },
   }),
   email: (value: string) => ({
     email: {
       equals: value,
-      mode: "insensitive",
+      mode: 'insensitive',
     },
   }),
   isActive: (value: boolean) => ({ isActive: value }),

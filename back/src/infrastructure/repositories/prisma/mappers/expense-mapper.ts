@@ -1,16 +1,16 @@
-import { Expense as EntityExpense } from "@/core/entities/expense/expense";
-import { ExpenseDescription } from "@/core/entities/expense/value-objects/expense-description";
-import { ExpenseId } from "@/core/entities/expense/value-objects/expense-id";
-import { ExpenseName } from "@/core/entities/expense/value-objects/expense-name";
-import { ExpenseStatus } from "@/core/entities/expense/value-objects/expense-status";
-import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
-import { InstallmentInfo } from "@/core/entities/expense/value-objects/installment-info";
-import { Money } from "@/core/entities/expense/value-objects/money";
-import { PaymentSchedule } from "@/core/entities/expense/value-objects/payment-schedule";
-import { Tags } from "@/core/entities/expense/value-objects/tags";
-import { UserId } from "@/core/entities/user/value-objects/user-id";
-import { CreateExpenseOutputDTO } from "@/core/usecases/expense/create-expense-dto";
-import { Expense as PrismaExpense } from "@/prisma/index";
+import { Expense as EntityExpense } from '@/core/entities/expense/expense';
+import { ExpenseDescription } from '@/core/entities/expense/value-objects/expense-description';
+import { ExpenseId } from '@/core/entities/expense/value-objects/expense-id';
+import { ExpenseName } from '@/core/entities/expense/value-objects/expense-name';
+import { ExpenseStatus } from '@/core/entities/expense/value-objects/expense-status';
+import { InstallmentId } from '@/core/entities/expense/value-objects/installment-id';
+import { InstallmentInfo } from '@/core/entities/expense/value-objects/installment-info';
+import { Money } from '@/core/entities/expense/value-objects/money';
+import { PaymentSchedule } from '@/core/entities/expense/value-objects/payment-schedule';
+import { Tags } from '@/core/entities/expense/value-objects/tags';
+import { UserId } from '@/core/entities/user/value-objects/user-id';
+import { CreateExpenseOutputDTO } from '@/core/usecases/expense/create-expense-dto';
+import { Expense as PrismaExpense } from '@prisma/client';
 
 export class ExpenseMapper {
   static toDomain(raw: PrismaExpense): EntityExpense {
@@ -54,7 +54,7 @@ export class ExpenseMapper {
     return {
       id: entity.id.toString(),
       name: entity.name.value,
-      description: entity.description?.value || "",
+      description: entity.description?.value || '',
       amount: entity.amount.cents,
       totalAmount: entity.totalAmount.cents,
       currency: entity.amount.currency,
@@ -78,7 +78,7 @@ export class ExpenseMapper {
   ): CreateExpenseOutputDTO {
     return {
       name: expense.name.value,
-      description: expense.description?.value || "",
+      description: expense.description?.value || '',
       amount: expense.amount.cents,
       totalAmount: expense.totalAmount.cents,
       currency: expense.amount.currency,

@@ -2,7 +2,6 @@ import path from 'path';
 import { defineConfig, defineProject } from 'vitest/config';
 
 const alias = {
-  '@prisma': path.resolve(__dirname, './generated/prisma/'),
   '@': path.resolve(__dirname, './src/'),
 };
 

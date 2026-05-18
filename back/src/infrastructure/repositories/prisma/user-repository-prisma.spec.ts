@@ -1,42 +1,39 @@
-import { User as EntityUser } from "@/core/entities/user/user";
-import { Password } from "@/core/entities/user/value-objects/password";
-import { Email } from "@/core/entities/user/value-objects/user-email";
-import { UserId } from "@/core/entities/user/value-objects/user-id";
-import { UserRole } from "@/core/entities/user/value-objects/user-role";
-import {
-  ConflictError,
-  NotFoundError,
-} from "@/core/shared/errors/api-errors";
-import { InfrastructureError } from "@/core/shared/errors/infrastructure-errors";
-import { UserRepositoryPrisma } from "@/infrastructure/repositories/prisma/user-repository-prisma";
-import { User as PrismaUser } from "@/prisma/index";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { UserRoleMapper } from "./mappers/user-role-mapper";
-import { PaginationDTO } from "@/application/dtos/shared/pagination-dto";
+import { PaginationDTO } from '@/application/dtos/shared/pagination-dto';
+import { User as EntityUser } from '@/core/entities/user/user';
+import { Password } from '@/core/entities/user/value-objects/password';
+import { Email } from '@/core/entities/user/value-objects/user-email';
+import { UserId } from '@/core/entities/user/value-objects/user-id';
+import { UserRole } from '@/core/entities/user/value-objects/user-role';
+import { ConflictError, NotFoundError } from '@/core/shared/errors/api-errors';
+import { InfrastructureError } from '@/core/shared/errors/infrastructure-errors';
 import {
   ListUsersFiltersOptions,
   ListUsersOrderRequestProps,
-} from "@/core/usecases/user/list-user-dto";
+} from '@/core/usecases/user/list-user-dto';
+import { UserRepositoryPrisma } from '@/infrastructure/repositories/prisma/user-repository-prisma';
+import { User as PrismaUser } from '@prisma/client';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { UserRoleMapper } from './mappers/user-role-mapper';
 
-vi.mock("@/core/entities/user/user");
-vi.mock("@/core/entities/user/value-objects/user-role");
-vi.mock("@/core/entities/user/value-objects/user-id");
-vi.mock("@/core/entities/user/value-objects/user-email");
-vi.mock("@/core/entities/user/value-objects/password");
-vi.mock("@/infrastructure/repositories/prisma/mappers/user-role-mapper");
+vi.mock('@/core/entities/user/user');
+vi.mock('@/core/entities/user/value-objects/user-role');
+vi.mock('@/core/entities/user/value-objects/user-id');
+vi.mock('@/core/entities/user/value-objects/user-email');
+vi.mock('@/core/entities/user/value-objects/password');
+vi.mock('@/infrastructure/repositories/prisma/mappers/user-role-mapper');
 
-const VALID_UUID = "550e8400-e29b-41d4-a716-446655440000";
+const VALID_UUID = '550e8400-e29b-41d4-a716-446655440000';
 const VALID_HASHED_PWD =
-  "$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
+  '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy';
 
 const makePrismaUser = (overrides?: Partial<PrismaUser>): PrismaUser => ({
   id: VALID_UUID,
-  name: "John Doe",
-  email: "john@example.com",
+  name: 'John Doe',
+  email: 'john@example.com',
   hashedPassword: VALID_HASHED_PWD,
-  role: UserRoleMapper.toPersistence(UserRole.create("BASIC")),
-  createdAt: new Date("2024-01-01"),
-  updatedAt: new Date("2024-01-01"),
+  role: UserRoleMapper.toPersistence(UserRole.create('BASIC')),
+  createdAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01'),
   isActive: true,
   ...overrides,
 });
@@ -44,12 +41,12 @@ const makePrismaUser = (overrides?: Partial<PrismaUser>): PrismaUser => ({
 const makeDomainUser = (overrides?: Partial<EntityUser>): EntityUser =>
   ({
     id: { toString: () => VALID_UUID },
-    name: "John Doe",
-    email: { toString: () => "john@example.com" },
+    name: 'John Doe',
+    email: { toString: () => 'john@example.com' },
     hashedPassword: VALID_HASHED_PWD,
-    role: { toString: () => "BASIC" },
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    role: { toString: () => 'BASIC' },
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
     isActive: true,
     ...overrides,
   }) as unknown as EntityUser;
@@ -58,7 +55,7 @@ const makeUserId = (value = VALID_UUID) => ({
   toString: () => value,
 });
 
-const makeEmail = (value = "john@example.com") => ({
+const makeEmail = (value = 'john@example.com') => ({
   toString: () => value,
 });
 
@@ -74,7 +71,7 @@ const makePrismaClient = () => ({
   },
 });
 
-describe("UserRepositoryPrisma", () => {
+describe('UserRepositoryPrisma', () => {
   let prisma: ReturnType<typeof makePrismaClient>;
   let sut: UserRepositoryPrisma;
 
@@ -84,10 +81,10 @@ describe("UserRepositoryPrisma", () => {
     sut = new UserRepositoryPrisma(prisma as any);
 
     vi.mocked(EntityUser.reconstitute).mockReturnValue(makeDomainUser());
-    vi.mocked(UserRoleMapper.toDomain).mockReturnValue("BASIC" as any);
-    vi.mocked(UserRoleMapper.toPersistence).mockReturnValue("BASIC" as any);
+    vi.mocked(UserRoleMapper.toDomain).mockReturnValue('BASIC' as any);
+    vi.mocked(UserRoleMapper.toPersistence).mockReturnValue('BASIC' as any);
     vi.mocked(Password.create).mockReturnValue({
-      getValue: () => "123456789",
+      getValue: () => '123456789',
     } as any);
     vi.mocked(Password.fromHash).mockReturnValue({
       getValue: () => VALID_HASHED_PWD,
@@ -96,15 +93,15 @@ describe("UserRepositoryPrisma", () => {
     vi.mocked(UserId.from).mockReturnValue(makeUserId() as any);
   });
 
-  describe("save", () => {
-    describe("when user is created successfully", () => {
-      it("should resolve without returning a value", async () => {
+  describe('save', () => {
+    describe('when user is created successfully', () => {
+      it('should resolve without returning a value', async () => {
         prisma.user.create.mockResolvedValue(makePrismaUser());
 
         await expect(sut.save(makeDomainUser())).resolves.toBeUndefined();
       });
 
-      it("should call prisma.create once", async () => {
+      it('should call prisma.create once', async () => {
         prisma.user.create.mockResolvedValue(makePrismaUser());
 
         await sut.save(makeDomainUser());
@@ -112,7 +109,7 @@ describe("UserRepositoryPrisma", () => {
         expect(prisma.user.create).toHaveBeenCalledOnce();
       });
 
-      it("should persist mapped user data", async () => {
+      it('should persist mapped user data', async () => {
         const user = makeDomainUser();
         prisma.user.create.mockResolvedValue(makePrismaUser());
 
@@ -124,22 +121,22 @@ describe("UserRepositoryPrisma", () => {
       });
     });
 
-    describe("when database throws", () => {
-      it("should propagate the exception", async () => {
+    describe('when database throws', () => {
+      it('should propagate the exception', async () => {
         prisma.user.create.mockRejectedValue(
-          new ConflictError("Unique constraint failed"),
+          new ConflictError('Unique constraint failed'),
         );
 
         await expect(sut.save(makeDomainUser())).rejects.toThrow(
-          "Unique constraint failed",
+          'Unique constraint failed',
         );
       });
     });
   });
 
-  describe("deleteById", () => {
-    describe("when user is deleted successfully", () => {
-      it("should resolve without returning a value", async () => {
+  describe('deleteById', () => {
+    describe('when user is deleted successfully', () => {
+      it('should resolve without returning a value', async () => {
         prisma.user.delete.mockResolvedValue(makePrismaUser());
 
         await expect(
@@ -147,7 +144,7 @@ describe("UserRepositoryPrisma", () => {
         ).resolves.toBeUndefined();
       });
 
-      it("should call delete with correct id", async () => {
+      it('should call delete with correct id', async () => {
         prisma.user.delete.mockResolvedValue(makePrismaUser());
 
         await sut.deleteById(makeUserId() as any);
@@ -158,22 +155,22 @@ describe("UserRepositoryPrisma", () => {
       });
     });
 
-    describe("when user does not exist", () => {
-      it("should propagate prisma not found exception", async () => {
+    describe('when user does not exist', () => {
+      it('should propagate prisma not found exception', async () => {
         prisma.user.delete.mockRejectedValue(
-          new NotFoundError("Record not found"),
+          new NotFoundError('Record not found'),
         );
 
         await expect(sut.deleteById(makeUserId() as any)).rejects.toThrow(
-          "Record not found",
+          'Record not found',
         );
       });
     });
   });
 
-  describe("exists", () => {
-    describe("when user exists", () => {
-      it("should return true when count is greater than zero", async () => {
+  describe('exists', () => {
+    describe('when user exists', () => {
+      it('should return true when count is greater than zero', async () => {
         prisma.user.count.mockResolvedValue(1);
 
         const result = await sut.exists(makeEmail() as any);
@@ -182,8 +179,8 @@ describe("UserRepositoryPrisma", () => {
       });
     });
 
-    describe("when user does not exist", () => {
-      it("should return false when count is zero", async () => {
+    describe('when user does not exist', () => {
+      it('should return false when count is zero', async () => {
         prisma.user.count.mockResolvedValue(0);
 
         const result = await sut.exists(makeEmail() as any);
@@ -192,34 +189,34 @@ describe("UserRepositoryPrisma", () => {
       });
     });
 
-    describe("when querying", () => {
-      it("should query by email string value", async () => {
+    describe('when querying', () => {
+      it('should query by email string value', async () => {
         prisma.user.count.mockResolvedValue(0);
 
         await sut.exists(makeEmail() as any);
 
         expect(prisma.user.count).toHaveBeenCalledWith({
-          where: { email: "john@example.com" },
+          where: { email: 'john@example.com' },
         });
       });
     });
 
-    describe("when database throws", () => {
-      it("should propagate the exception", async () => {
+    describe('when database throws', () => {
+      it('should propagate the exception', async () => {
         prisma.user.count.mockRejectedValue(
-          new InfrastructureError("DB unavailable"),
+          new InfrastructureError('DB unavailable'),
         );
 
         await expect(sut.exists(makeEmail() as any)).rejects.toThrow(
-          "DB unavailable",
+          'DB unavailable',
         );
       });
     });
   });
 
-  describe("findById", () => {
-    describe("when user is found", () => {
-      it("should return mapped domain user", async () => {
+  describe('findById', () => {
+    describe('when user is found', () => {
+      it('should return mapped domain user', async () => {
         const prismaUser = makePrismaUser();
 
         const domainUser = makeDomainUser();
@@ -233,7 +230,7 @@ describe("UserRepositoryPrisma", () => {
         expect(result).toStrictEqual(domainUser);
       });
 
-      it("should query with findUnique by id", async () => {
+      it('should query with findUnique by id', async () => {
         prisma.user.findUnique.mockResolvedValue(makePrismaUser());
 
         await sut.findById(makeUserId() as any);
@@ -244,8 +241,8 @@ describe("UserRepositoryPrisma", () => {
       });
     });
 
-    describe("when user is not found", () => {
-      it("should return null", async () => {
+    describe('when user is not found', () => {
+      it('should return null', async () => {
         prisma.user.findUnique.mockResolvedValue(null);
 
         const result = await sut.findById(makeUserId() as any);
@@ -253,7 +250,7 @@ describe("UserRepositoryPrisma", () => {
         expect(result).toBeNull();
       });
 
-      it("should not call reconstitute when user is not found", async () => {
+      it('should not call reconstitute when user is not found', async () => {
         prisma.user.findUnique.mockResolvedValue(null);
 
         await sut.findById(makeUserId() as any);
@@ -262,22 +259,22 @@ describe("UserRepositoryPrisma", () => {
       });
     });
 
-    describe("when database throws", () => {
-      it("should propagate the exception", async () => {
+    describe('when database throws', () => {
+      it('should propagate the exception', async () => {
         prisma.user.findUnique.mockRejectedValue(
-          new InfrastructureError("DB unavailable"),
+          new InfrastructureError('DB unavailable'),
         );
 
         await expect(sut.findById(makeUserId() as any)).rejects.toThrow(
-          "DB unavailable",
+          'DB unavailable',
         );
       });
     });
   });
 
-  describe("findByEmail", () => {
-    describe("when user is found", () => {
-      it("should return mapped domain user", async () => {
+  describe('findByEmail', () => {
+    describe('when user is found', () => {
+      it('should return mapped domain user', async () => {
         const domainUser = makeDomainUser();
         prisma.user.findFirst.mockResolvedValue(makePrismaUser());
         vi.mocked(EntityUser.reconstitute).mockReturnValue(domainUser);
@@ -287,19 +284,19 @@ describe("UserRepositoryPrisma", () => {
         expect(result).toStrictEqual(domainUser);
       });
 
-      it("should query by email string value", async () => {
+      it('should query by email string value', async () => {
         prisma.user.findFirst.mockResolvedValue(makePrismaUser());
 
         await sut.findByEmail(makeEmail() as any);
 
         expect(prisma.user.findFirst).toHaveBeenCalledWith({
-          where: { email: "john@example.com" },
+          where: { email: 'john@example.com' },
         });
       });
     });
 
-    describe("when user is not found", () => {
-      it("should return null", async () => {
+    describe('when user is not found', () => {
+      it('should return null', async () => {
         prisma.user.findFirst.mockResolvedValue(null);
 
         const result = await sut.findByEmail(makeEmail() as any);
@@ -308,77 +305,77 @@ describe("UserRepositoryPrisma", () => {
       });
     });
 
-    describe("when database throws", () => {
-      it("should propagate the exception", async () => {
+    describe('when database throws', () => {
+      it('should propagate the exception', async () => {
         prisma.user.findFirst.mockRejectedValue(
-          new InfrastructureError("DB unavailable"),
+          new InfrastructureError('DB unavailable'),
         );
 
         await expect(sut.findByEmail(makeEmail() as any)).rejects.toThrow(
-          "DB unavailable",
+          'DB unavailable',
         );
       });
     });
   });
 
-  describe("findByName", () => {
-    describe("when user is found", () => {
-      it("should return mapped domain user", async () => {
+  describe('findByName', () => {
+    describe('when user is found', () => {
+      it('should return mapped domain user', async () => {
         const domainUser = makeDomainUser();
         prisma.user.findFirst.mockResolvedValue(makePrismaUser());
         vi.mocked(EntityUser.reconstitute).mockReturnValue(domainUser);
 
-        const result = await sut.findByName("John Doe");
+        const result = await sut.findByName('John Doe');
 
         expect(result).toStrictEqual(domainUser);
       });
 
-      it("should query by name", async () => {
+      it('should query by name', async () => {
         prisma.user.findFirst.mockResolvedValue(makePrismaUser());
 
-        await sut.findByName("John Doe");
+        await sut.findByName('John Doe');
 
         expect(prisma.user.findFirst).toHaveBeenCalledWith({
-          where: { name: "John Doe" },
+          where: { name: 'John Doe' },
         });
       });
     });
 
-    describe("when user is not found", () => {
-      it("should return null", async () => {
+    describe('when user is not found', () => {
+      it('should return null', async () => {
         prisma.user.findFirst.mockResolvedValue(null);
 
-        const result = await sut.findByName("Unknown");
+        const result = await sut.findByName('Unknown');
 
         expect(result).toBeNull();
       });
     });
 
-    describe("when database throws", () => {
-      it("should propagate the exception", async () => {
+    describe('when database throws', () => {
+      it('should propagate the exception', async () => {
         prisma.user.findFirst.mockRejectedValue(
-          new InfrastructureError("DB unavailable"),
+          new InfrastructureError('DB unavailable'),
         );
 
-        await expect(sut.findByName("John Doe")).rejects.toThrow(
-          "DB unavailable",
+        await expect(sut.findByName('John Doe')).rejects.toThrow(
+          'DB unavailable',
         );
       });
     });
   });
 
-  describe("list", () => {
+  describe('list', () => {
     const makeListArgs = () => ({
       filters: {} as ListUsersFiltersOptions,
       order: {
-        orderBy: "createdAt",
-        order: "desc",
+        orderBy: 'createdAt',
+        order: 'desc',
       } as ListUsersOrderRequestProps,
       pagination: { page: 1, pageSize: 10 } as PaginationDTO,
     });
 
-    describe("when users are found", () => {
-      it("should return paginated result with mapped domain users", async () => {
+    describe('when users are found', () => {
+      it('should return paginated result with mapped domain users', async () => {
         const prismaUsers = [makePrismaUser(), makePrismaUser()];
         const domainUser = makeDomainUser();
         prisma.user.count.mockResolvedValue(2);
@@ -392,7 +389,7 @@ describe("UserRepositoryPrisma", () => {
         expect(result.total).toBe(2);
       });
 
-      it("should call count and findMany concurrently", async () => {
+      it('should call count and findMany concurrently', async () => {
         prisma.user.count.mockResolvedValue(0);
         prisma.user.findMany.mockResolvedValue([]);
 
@@ -403,13 +400,13 @@ describe("UserRepositoryPrisma", () => {
         expect(prisma.user.findMany).toHaveBeenCalledOnce();
       });
 
-      it("should apply correct skip and take from pagination", async () => {
+      it('should apply correct skip and take from pagination', async () => {
         prisma.user.count.mockResolvedValue(0);
         prisma.user.findMany.mockResolvedValue([]);
 
         await sut.list(
           {} as any,
-          { orderBy: "createdAt", order: "desc" } as any,
+          { orderBy: 'createdAt', order: 'desc' } as any,
           { page: 3, pageSize: 10 } as any,
         );
 
@@ -418,24 +415,24 @@ describe("UserRepositoryPrisma", () => {
         );
       });
 
-      it("should apply correct orderBy from order props", async () => {
+      it('should apply correct orderBy from order props', async () => {
         prisma.user.count.mockResolvedValue(0);
         prisma.user.findMany.mockResolvedValue([]);
 
         await sut.list(
           {} as any,
-          { orderBy: "name", order: "asc" } as any,
+          { orderBy: 'name', order: 'asc' } as any,
           { page: 1, pageSize: 10 } as any,
         );
 
         expect(prisma.user.findMany).toHaveBeenCalledWith(
-          expect.objectContaining({ orderBy: { name: "asc" } }),
+          expect.objectContaining({ orderBy: { name: 'asc' } }),
         );
       });
     });
 
-    describe("when no users are found", () => {
-      it("should return empty data array and total zero", async () => {
+    describe('when no users are found', () => {
+      it('should return empty data array and total zero', async () => {
         prisma.user.count.mockResolvedValue(0);
         prisma.user.findMany.mockResolvedValue([]);
 
@@ -447,23 +444,23 @@ describe("UserRepositoryPrisma", () => {
       });
     });
 
-    describe("when database throws", () => {
-      it("should propagate the exception", async () => {
+    describe('when database throws', () => {
+      it('should propagate the exception', async () => {
         prisma.user.count.mockRejectedValue(
-          new InfrastructureError("DB unavailable"),
+          new InfrastructureError('DB unavailable'),
         );
 
         const { filters, order, pagination } = makeListArgs();
         await expect(sut.list(filters, order, pagination)).rejects.toThrow(
-          "DB unavailable",
+          'DB unavailable',
         );
       });
     });
   });
 
-  describe("update", () => {
-    describe("when user is updated successfully", () => {
-      it("should return the updated mapped domain user", async () => {
+  describe('update', () => {
+    describe('when user is updated successfully', () => {
+      it('should return the updated mapped domain user', async () => {
         const domainUser = makeDomainUser();
         prisma.user.update.mockResolvedValue(makePrismaUser());
         vi.mocked(EntityUser.reconstitute).mockReturnValue(domainUser);
@@ -473,7 +470,7 @@ describe("UserRepositoryPrisma", () => {
         expect(result).toStrictEqual(domainUser);
       });
 
-      it("should update by correct id", async () => {
+      it('should update by correct id', async () => {
         prisma.user.update.mockResolvedValue(makePrismaUser());
 
         await sut.update(makeDomainUser());
@@ -484,26 +481,26 @@ describe("UserRepositoryPrisma", () => {
       });
     });
 
-    describe("when user does not exist", () => {
-      it("should propagate prisma not found exception", async () => {
+    describe('when user does not exist', () => {
+      it('should propagate prisma not found exception', async () => {
         prisma.user.update.mockRejectedValue(
-          new NotFoundError("Record not found"),
+          new NotFoundError('Record not found'),
         );
 
         await expect(sut.update(makeDomainUser())).rejects.toThrow(
-          "Record not found",
+          'Record not found',
         );
       });
     });
 
-    describe("when database throws", () => {
-      it("should propagate the exception", async () => {
+    describe('when database throws', () => {
+      it('should propagate the exception', async () => {
         prisma.user.update.mockRejectedValue(
-          new InfrastructureError("DB unavailable"),
+          new InfrastructureError('DB unavailable'),
         );
 
         await expect(sut.update(makeDomainUser())).rejects.toThrow(
-          "DB unavailable",
+          'DB unavailable',
         );
       });
     });

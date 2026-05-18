@@ -1,28 +1,28 @@
-import { PaginationDTO } from "@/application/dtos/shared/pagination-dto";
+import { PaginationDTO } from '@/application/dtos/shared/pagination-dto';
 import {
   User as EntityUser,
   UserProps as EntityUserProps,
-} from "@/core/entities/user/user";
-import { Email } from "@/core/entities/user/value-objects/user-email";
-import { UserId } from "@/core/entities/user/value-objects/user-id";
+} from '@/core/entities/user/user';
+import { Email } from '@/core/entities/user/value-objects/user-email';
+import { UserId } from '@/core/entities/user/value-objects/user-id';
 import {
   PaginatedResult,
   UserRepositoryInterface,
-} from "@/core/ports/repositories/user-repository-interface";
+} from '@/core/ports/repositories/user-repository-interface';
 import {
   ListUsersFiltersOptions,
   ListUsersOrderRequestProps,
-} from "@/core/usecases/user/list-user-dto";
+} from '@/core/usecases/user/list-user-dto';
 import {
   PrismaClientGenerated,
   PrismaGenerated,
-} from "@/infrastructure/repositories/prisma/config/prisma-client";
-import { UserRoleMapper } from "@/infrastructure/repositories/prisma/mappers/user-role-mapper";
+} from '@/infrastructure/repositories/prisma/config/prisma-client';
+import { UserRoleMapper } from '@/infrastructure/repositories/prisma/mappers/user-role-mapper';
 
-import { listUsersFilters } from "@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters";
+import { listUsersFilters } from '@/infrastructure/repositories/prisma/utils/query-builders/list-user-query-filters';
 
-import { Password } from "@/core/entities/user/value-objects/password";
-import { User as PrismaUser } from "@/prisma/index";
+import { Password } from '@/core/entities/user/value-objects/password';
+import { User as PrismaUser } from '@prisma/client';
 
 export type GenericFilterMapper<
   TFilterObject extends object,
@@ -212,7 +212,7 @@ export class UserRepositoryPrisma implements UserRepositoryInterface {
       if (
         inputValue !== undefined &&
         inputValue !== null &&
-        inputValue !== ""
+        inputValue !== ''
       ) {
         const mapperFunction = query[filterKey];
 
