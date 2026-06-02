@@ -40,11 +40,31 @@ pagination_fields (page, page_size, etc...)
 
 */
 
+import { PaginatedResponse } from '@/application/dtos/shared/pagination-dto';
 import { PropsToStringOptional } from '@/core/shared/types/helpers/props-to-string';
 
 export type ListExpenseInput = {};
 
-export type ListExpenseInputHttpString =
-  PropsToStringOptional<ListExpenseInput>;
+export type ListExpenseQueryParams = PropsToStringOptional<ListExpenseInput>;
 
-export type ListExpenseOutput = {};
+export type ListExpensesInputDTO = {
+  userId: string;
+};
+
+export type ListExpenseOutputProps = {
+  name: string;
+  description: string;
+  amount: number;
+  currency: string;
+  totalAmount: number;
+  status: string;
+  tags: string[];
+  currentInstallment: number;
+  totalInstallment: number;
+  paymentDay: string;
+  expirationDay: string;
+  paymentStartAt: string;
+  paymentEndAt: string;
+};
+
+export type ListExpenseOutputDTO = PaginatedResponse<ListExpenseOutputProps[]>;

@@ -1,16 +1,16 @@
 import {
   PaginatedResponseMeta,
   PaginationDTO,
-} from "@/application/dtos/shared/pagination-dto";
-import { Email } from "@/core/entities/user/value-objects/user-email";
-import { UserId } from "@/core/entities/user/value-objects/user-id";
-import { UserRole } from "@/core/entities/user/value-objects/user-role";
-import { UserRepositoryInterface } from "@/core/ports/repositories/user-repository-interface";
+} from '@/application/dtos/shared/pagination-dto';
+import { Email } from '@/core/entities/user/value-objects/user-email';
+import { UserId } from '@/core/entities/user/value-objects/user-id';
+import { UserRole } from '@/core/entities/user/value-objects/user-role';
+import { UserRepositoryInterface } from '@/core/ports/repositories/user-repository-interface';
 import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
-} from "@/core/shared/errors/api-errors";
+} from '@/core/shared/errors/api-errors';
 import {
   ListUserOrderDirectionOptions,
   ListUserOutputDTO,
@@ -19,11 +19,11 @@ import {
   ListUsersOrderByOptionsArrKey,
   ListUsersOrderRequestOptionalProps,
   ListUsersOrderRequestProps,
-} from "@/core/usecases/user/list-user-dto";
-import { ListUsersUseCaseInterface as ListUserUsesCaseInterface } from "@/core/usecases/user/list-users-usecase-interface";
-import { ListUserOutputProps } from "./list-user-dto";
+} from '@/core/usecases/user/list-user-dto';
+import { ListUsersUseCaseInterface } from '@/core/usecases/user/list-users-usecase-interface';
+import { ListUserOutputProps } from './list-user-dto';
 
-export class ListUsersUseCase implements ListUserUsesCaseInterface {
+export class ListUsersUseCase implements ListUsersUseCaseInterface {
   constructor(private readonly repository: UserRepositoryInterface) {}
 
   public async execute(data: ListUsersInputDTO): Promise<ListUserOutputDTO> {
@@ -32,11 +32,11 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
     const requestingUser = await this.repository.findById(requestingUserId);
 
     if (!requestingUser) {
-      throw new NotFoundError("User not found");
+      throw new NotFoundError('User not found');
     }
 
     if (!requestingUser.isAdmin()) {
-      throw new UnauthorizedError("Only admins can list users");
+      throw new UnauthorizedError('Only admins can list users');
     }
 
     const filterProps: ListUsersFiltersOptions = this.buildFilters(data);
@@ -122,8 +122,8 @@ export class ListUsersUseCase implements ListUserUsesCaseInterface {
 
   private buildOrder(data: ListUsersInputDTO): ListUsersOrderRequestProps {
     let defaultOrder: ListUsersOrderRequestProps = {
-      orderBy: "name",
-      order: "asc",
+      orderBy: 'name',
+      order: 'asc',
     };
 
     if (data.order !== undefined) {
