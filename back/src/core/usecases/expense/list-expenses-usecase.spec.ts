@@ -57,6 +57,7 @@ describe('ListExpenseUseCase', () => {
       create: vi.fn(),
       deleteByInstallmentId: vi.fn(),
       findInstallmentById: vi.fn(),
+      list: vi.fn(),
     };
   });
 

@@ -67,4 +67,4 @@ export type ListExpenseOutputProps = {
   paymentEndAt: string;
 };
 
-export type ListExpenseOutputDTO = PaginatedResponse<ListExpenseOutputProps[]>;
+export type ListExpenseOutputDTO = PaginatedResponse<ListExpenseOutputProps>;

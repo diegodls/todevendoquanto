@@ -1,3 +1,4 @@
+import { PaginatedResponseMeta } from '@/application/dtos/shared/pagination-dto';
 import { ExpenseRepositoryInterface } from '@/core/ports/repositories/expense-repository-interface';
 import {
   ListExpenseOutputDTO,
@@ -11,6 +12,14 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
   public async execute(
     data: ListExpensesInputDTO,
   ): Promise<ListExpenseOutputDTO> {
-    return {};
+    const expenses = this.repository.list(data);
+    const paginationMeta: PaginatedResponseMeta = {};
+
+    const output: ListExpenseOutputDTO = {
+      meta: paginationMeta,
+      data: {},
+    };
+
+    return output;
   }
 }
