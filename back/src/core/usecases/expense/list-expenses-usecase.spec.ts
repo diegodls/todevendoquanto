@@ -12,6 +12,7 @@ import { Email } from '@/core/entities/user/value-objects/user-email';
 import { UserId } from '@/core/entities/user/value-objects/user-id';
 import { UserRole } from '@/core/entities/user/value-objects/user-role';
 import { ExpenseRepositoryInterface } from '@/core/ports/repositories/expense-repository-interface';
+import { UserRepositoryInterface } from '@/core/ports/repositories/user-repository-interface';
 import {
   ListExpenseOutputDTO,
   ListExpensesInputDTO,
@@ -26,10 +27,39 @@ Filtrar usando todos dos campos do dto (boa sorte)
 
 */
 
-const validHashedPassword = '$2b$10$hashedPassword';
-
 let listExpenseUseCase: ListExpenseUseCase;
 let expenseRepository: ExpenseRepositoryInterface;
+let userRepository: UserRepositoryInterface;
+
+const validHashedPassword = '$2b$10$hashedPassword';
+
+let basicUser: User;
+let basicUserExpenses: Expense[];
+
+beforeEach(() => {
+  expenseRepository = {
+    create: vi.fn(),
+    deleteByInstallmentId: vi.fn(),
+    findInstallmentById: vi.fn(),
+    list: vi.fn(),
+  };
+
+  userRepository = {
+    deleteById: vi.fn(),
+    exists: vi.fn(),
+    findByEmail: vi.fn(),
+    findByName: vi.fn(),
+    findById: vi.fn(),
+    list: vi.fn(),
+    save: vi.fn(),
+    update: vi.fn(),
+  };
+
+  listExpenseUseCase = new ListExpenseUseCase(
+    expenseRepository,
+    userRepository,
+  );
+});
 
 const makeExpenseInput = (overrides?: Partial<CreateExpenseInput>): Expense =>
   Expense.create({
@@ -59,43 +89,40 @@ describe('ListExpenseUseCase', () => {
       findInstallmentById: vi.fn(),
       list: vi.fn(),
     };
-  });
 
-  listExpenseUseCase = new ListExpenseUseCase(expenseRepository);
+    userRepository = {
+      deleteById: vi.fn(),
+      exists: vi.fn(),
+      findByEmail: vi.fn(),
+      findByName: vi.fn(),
+      findById: vi.fn(),
+      list: vi.fn(),
+      save: vi.fn(),
+      update: vi.fn(),
+    };
 
-  const adminValidUuid = '550E8400-E29B-41D4-A716-446655440000';
+    listExpenseUseCase = new ListExpenseUseCase(
+      expenseRepository,
+      userRepository,
+    );
 
-  const adminUser = User.reconstitute({
-    id: UserId.from(adminValidUuid),
-    name: 'Admin User',
-    email: Email.create('admin_user@gmail.com.br'),
-    hashedPassword: validHashedPassword,
-    role: UserRole.ADMIN,
-    createdAt: new Date('2000-01-10'),
-    updatedAt: new Date('2024-01-10'),
-    isActive: true,
-  });
+    const basicValidUuid = '550E8400-E29B-41D4-A716-446655440001';
 
-  const installmentIdAdmin = InstallmentId.create();
+    basicUser = User.reconstitute({
+      id: UserId.from(basicValidUuid),
+      name: 'Basic User',
+      email: Email.create('basic_user@gmail.com.br'),
+      hashedPassword: validHashedPassword,
+      role: UserRole.BASIC,
+      createdAt: new Date('2005-01-10'),
+      updatedAt: new Date('2025-01-10'),
+      isActive: true,
+    });
 
-  const basicValidUuid = '550E8400-E29B-41D4-A716-446655440001';
+    const installmentIdBasicOne = InstallmentId.create();
 
-  let basicUser: User = User.reconstitute({
-    id: UserId.from(basicValidUuid),
-    name: 'Basic User',
-    email: Email.create('basic_user@gmail.com.br'),
-    hashedPassword: validHashedPassword,
-    role: UserRole.BASIC,
-    createdAt: new Date('2005-01-10'),
-    updatedAt: new Date('2025-01-10'),
-    isActive: true,
-  });
+    const installmentIdBasicTwo = InstallmentId.create();
 
-  const installmentIdBasicOne = InstallmentId.create();
-  let expenses: Expense[];
-  const installmentIdBasicTwo = InstallmentId.create();
-
-  describe('execute', () => {
     basicUser = User.create(
       {
         name: 'Admin User',
@@ -105,11 +132,7 @@ describe('ListExpenseUseCase', () => {
       validHashedPassword,
     );
 
-    expenses = [
-      makeExpenseInput({
-        userId: adminUser.id,
-        installmentId: installmentIdAdmin,
-      }),
+    basicUserExpenses = [
       makeExpenseInput({
         userId: basicUser.id,
         installmentId: installmentIdBasicOne,
@@ -118,18 +141,31 @@ describe('ListExpenseUseCase', () => {
         userId: basicUser.id,
         installmentId: installmentIdBasicTwo,
       }),
+      makeExpenseInput({
+        userId: basicUser.id,
+        installmentId: installmentIdBasicTwo,
+      }),
     ];
+  });
 
+  describe('execute', () => {
     describe('authorization', () => {
       it('should allow user list own expenses', async () => {
-        const data: ListExpensesInputDTO = {
-          userId: basicUser.id.toString(),
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicUser.id.toString(),
+          targetUserId: basicUser.id.toString(),
         };
 
-        const result: ListExpenseOutputDTO =
-          await listExpenseUseCase.execute(data);
+        vi.spyOn(userRepository, 'findById').mockResolvedValue(basicUser);
 
-        expect(result.data.length).toBe(2);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValue(
+          basicUserExpenses,
+        );
+
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
       });
     });
   });

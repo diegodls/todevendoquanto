@@ -48,7 +48,8 @@ export type ListExpenseInput = {};
 export type ListExpenseQueryParams = PropsToStringOptional<ListExpenseInput>;
 
 export type ListExpensesInputDTO = {
-  userId: string;
+  requestingUserId: string;
+  targetUserId: string;
 };
 
 export type ListExpenseOutputProps = {

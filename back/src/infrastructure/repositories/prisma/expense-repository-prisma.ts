@@ -1,10 +1,11 @@
-import { Expense } from "@/core/entities/expense/expense";
-import { InstallmentId } from "@/core/entities/expense/value-objects/installment-id";
-import { ExpenseRepositoryInterface } from "@/core/ports/repositories/expense-repository-interface";
-import { InternalError } from "@/core/shared/errors/api-errors";
-import { CreateExpenseOutputDTO } from "@/core/usecases/expense/create-expense-dto";
-import { PrismaClientGenerated } from "@/infrastructure/repositories/prisma/config/prisma-client";
-import { ExpenseMapper } from "@/infrastructure/repositories/prisma/mappers/expense-mapper";
+import { Expense } from '@/core/entities/expense/expense';
+import { InstallmentId } from '@/core/entities/expense/value-objects/installment-id';
+import { ExpenseRepositoryInterface } from '@/core/ports/repositories/expense-repository-interface';
+import { InternalError } from '@/core/shared/errors/api-errors';
+import { CreateExpenseOutputDTO } from '@/core/usecases/expense/create-expense-dto';
+import { ListExpensesInputDTO } from '@/core/usecases/expense/list-expense-dto';
+import { PrismaClientGenerated } from '@/infrastructure/repositories/prisma/config/prisma-client';
+import { ExpenseMapper } from '@/infrastructure/repositories/prisma/mappers/expense-mapper';
 
 export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
   constructor(private readonly prismaORMClient: PrismaClientGenerated) {}
@@ -32,7 +33,7 @@ export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
 
     if (!created || created.count !== expenses.length) {
       throw new InternalError(
-        "Error when creating expenses, expenses created mismatch with informed expenses.",
+        'Error when creating expenses, expenses created mismatch with informed expenses.',
       );
     }
 
@@ -43,5 +44,10 @@ export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
     await this.prismaORMClient.expense.deleteMany({
       where: { installmentId: id.toString() },
     });
+  }
+
+  async list(data: ListExpensesInputDTO): Promise<Expense[]> {
+    // ! IMPLEMENT THIS
+    return [];
   }
 }
