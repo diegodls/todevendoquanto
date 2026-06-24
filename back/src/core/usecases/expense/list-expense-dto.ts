@@ -53,6 +53,7 @@ export type ListExpensesInputDTO = {
 };
 
 export type ListExpenseOutputProps = {
+  userId: string;
   name: string;
   description: string;
   amount: number;

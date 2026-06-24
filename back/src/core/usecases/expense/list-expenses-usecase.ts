@@ -3,6 +3,10 @@ import { UserId } from '@/core/entities/user/value-objects/user-id';
 import { ExpenseRepositoryInterface } from '@/core/ports/repositories/expense-repository-interface';
 import { UserRepositoryInterface } from '@/core/ports/repositories/user-repository-interface';
 import {
+  NotFoundError,
+  UnauthorizedError,
+} from '@/core/shared/errors/api-errors';
+import {
   ListExpenseOutputDTO,
   ListExpenseOutputProps,
   ListExpensesInputDTO,
@@ -20,11 +24,28 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
   ): Promise<ListExpenseOutputDTO> {
     const requestingUserId = UserId.from(data.requestingUserId);
 
-    const requestingUser = this.userRepository.findById(requestingUserId);
+    const requestingUser = await this.userRepository.findById(requestingUserId);
+
+    if (!requestingUser) {
+      throw new NotFoundError('User not found.');
+    }
 
     const targetUserId = UserId.from(data.targetUserId);
 
-    const targetUser = this.userRepository.findById(targetUserId);
+    const targetUser = await this.userRepository.findById(targetUserId);
+
+    if (!targetUser) {
+      throw new NotFoundError('User not found');
+    }
+
+    if (
+      !requestingUser?.isAdmin() &&
+      requestingUserId.toString() !== targetUser.id.toString()
+    ) {
+      throw new UnauthorizedError(
+        "You don't have the permissions to list this expense.",
+      );
+    }
 
     const repositoryInput: ListExpensesInputDTO = {
       requestingUserId: requestingUserId.toString(),
@@ -33,21 +54,30 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
 
     const expenses = await this.expenseRepository.list(repositoryInput);
 
-    const expensesList: ListExpenseOutputProps[] = expenses.map((e) => ({
-      name: e.name.value,
-      description: e.description?.value || '',
-      amount: e.amount.cents,
-      currency: e.amount.currency,
-      totalAmount: e.totalAmount.cents,
-      status: e.status.value,
-      tags: e.tags.toArray(),
-      currentInstallment: e.installmentInfo.current,
-      totalInstallment: e.installmentInfo.total,
-      paymentDay: e.paymentSchedule.paymentDay.toISOString(),
-      expirationDay: e.paymentSchedule.expirationDay.toISOString(),
-      paymentStartAt: e.paymentSchedule.startAt.toISOString(),
-      paymentEndAt: e.paymentSchedule.endAt.toISOString(),
-    }));
+    const expensesList: ListExpenseOutputProps[] = expenses.map((e) => {
+      if (e.userId.toString() !== targetUserId.toString()) {
+        throw new UnauthorizedError(
+          "You don't have the permissions to list this expense.",
+        );
+      }
+
+      return {
+        userId: e.userId.toString(),
+        name: e.name.value,
+        description: e.description?.value || '',
+        amount: e.amount.cents,
+        currency: e.amount.currency,
+        totalAmount: e.totalAmount.cents,
+        status: e.status.value,
+        tags: e.tags.toArray(),
+        currentInstallment: e.installmentInfo.current,
+        totalInstallment: e.installmentInfo.total,
+        paymentDay: e.paymentSchedule.paymentDay.toISOString(),
+        expirationDay: e.paymentSchedule.expirationDay.toISOString(),
+        paymentStartAt: e.paymentSchedule.startAt.toISOString(),
+        paymentEndAt: e.paymentSchedule.endAt.toISOString(),
+      };
+    });
 
     const paginationMeta: PaginatedResponseMeta = {
       hasNextPage: true,
