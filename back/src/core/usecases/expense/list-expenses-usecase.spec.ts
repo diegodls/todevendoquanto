@@ -226,6 +226,65 @@ describe('ListExpenseUseCase', () => {
       });
     });
 
+    describe('pagination', () => {
+      it('should use default pagination when no provided', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
+          basicUserExpenses,
+        );
+
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          { page: 1, pageSize: 10 },
+        );
+      });
+
+      it('should default to page 1 when page is less than 1', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          page: 0,
+          pageSize: 10,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
+          basicUserExpenses,
+        );
+
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          { page: 1, pageSize: 10 },
+        );
+      });
+
+      it('should limit to 100 items per page', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          page: 0,
+          pageSize: 10,
+        };
+      });
+    });
+
     describe('validation', () => {
       it('should throw UserIdEmptyError when requesting user id does not exist', async () => {
         const input: ListExpensesInputDTO = {

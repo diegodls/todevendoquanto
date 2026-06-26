@@ -40,17 +40,23 @@ pagination_fields (page, page_size, etc...)
 
 */
 
-import { PaginatedResponse } from '@/application/dtos/shared/pagination-dto';
+import {
+  PaginatedResponse,
+  PaginationRequestProps,
+} from '@/application/dtos/shared/pagination-dto';
 import { PropsToStringOptional } from '@/core/shared/types/helpers/props-to-string';
 
 export type ListExpenseInput = {};
 
 export type ListExpenseQueryParams = PropsToStringOptional<ListExpenseInput>;
 
-export type ListExpensesInputDTO = {
+export type ListExpenseRequestDataProps = {
   requestingUserId: string;
   targetUserId: string;
 };
+
+export type ListExpensesInputDTO = ListExpenseRequestDataProps &
+  PaginationRequestProps;
 
 export type ListExpenseOutputProps = {
   userId: string;

@@ -1,4 +1,7 @@
-import { PaginatedResponseMeta } from '@/application/dtos/shared/pagination-dto';
+import {
+  PaginatedResponseMeta,
+  PaginationDTO,
+} from '@/application/dtos/shared/pagination-dto';
 import { UserId } from '@/core/entities/user/value-objects/user-id';
 import { ExpenseRepositoryInterface } from '@/core/ports/repositories/expense-repository-interface';
 import { UserRepositoryInterface } from '@/core/ports/repositories/user-repository-interface';
@@ -47,12 +50,14 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
       );
     }
 
-    const repositoryInput: ListExpensesInputDTO = {
+    const input: ListExpensesInputDTO = {
       requestingUserId: requestingUserId.toString(),
       targetUserId: targetUserId.toString(),
     };
 
-    const expenses = await this.expenseRepository.list(repositoryInput);
+    const pagination = this.buildPagination(data);
+
+    const expenses = await this.expenseRepository.list(input, pagination);
 
     const expensesList: ListExpenseOutputProps[] = expenses.map((e) => {
       if (e.userId.toString() !== targetUserId.toString()) {
@@ -82,10 +87,10 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
     const paginationMeta: PaginatedResponseMeta = {
       hasNextPage: true,
       hasPreviousPage: false,
-      page: 1,
-      pageSize: 10,
-      totalItems: 10,
-      totalPages: 200,
+      page: 0,
+      pageSize: 0,
+      totalItems: 0,
+      totalPages: 0,
     };
 
     const output: ListExpenseOutputDTO = {
@@ -94,5 +99,26 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
     };
 
     return output;
+  }
+
+  private buildPagination(data: ListExpensesInputDTO): PaginationDTO {
+    const defaultPagination: PaginationDTO = {
+      page: 1,
+      pageSize: 10,
+    };
+
+    if (data.page && data.page > 0) {
+      defaultPagination.page = data.page;
+    }
+
+    if (data.pageSize && data.pageSize > 0 && data.pageSize <= 100) {
+      defaultPagination.pageSize = data.pageSize;
+    }
+
+    if (data.pageSize && data.pageSize > 100) {
+      defaultPagination.pageSize = 100;
+    }
+
+    return defaultPagination;
   }
 }
