@@ -148,7 +148,8 @@ describe('ListExpenseUseCase', () => {
           targetUserId: basicUser.id.toString(),
         };
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
 
         vi.spyOn(expenseRepository, 'list').mockResolvedValue(
           basicUserExpenses,
@@ -197,8 +198,10 @@ describe('ListExpenseUseCase', () => {
           targetUserId: basicAltValidUuid,
         };
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(basicUser);
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(basicAltUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(
+          basicAltUser,
+        );
 
         await expect(listExpenseUseCase.execute(input)).rejects.toThrow(
           new UnauthorizedError(
@@ -258,7 +261,7 @@ describe('ListExpenseUseCase', () => {
           pageSize: 10,
         };
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
           basicUserExpenses,
@@ -280,8 +283,51 @@ describe('ListExpenseUseCase', () => {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
           page: 0,
-          pageSize: 10,
+          pageSize: 500,
         };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
+          basicUserExpenses,
+        );
+
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          { page: 1, pageSize: 100 },
+        );
+      });
+
+      it('should return correct pagination metadata', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          page: 2,
+          pageSize: 5,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
+          basicUserExpenses,
+        );
+
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
+
+        expect(result.meta).toEqual({
+          page: 1,
+          pageSize: 5,
+          totalItems: 3,
+          totalPages: 1,
+        });
       });
     });
 
@@ -291,8 +337,6 @@ describe('ListExpenseUseCase', () => {
           requestingUserId: '',
           targetUserId: basicValidUuid,
         };
-
-        vi.spyOn(userRepository, 'findById').mockResolvedValue(null);
 
         await expect(listExpenseUseCase.execute(input)).rejects.toThrow(
           new UserIdEmptyError(),
@@ -307,14 +351,11 @@ describe('ListExpenseUseCase', () => {
           targetUserId: '',
         };
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
-        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(null);
-
         await expect(listExpenseUseCase.execute(input)).rejects.toThrow(
           new UserIdEmptyError(),
         );
 
-        expect(userRepository.findById).toHaveBeenCalledTimes(1);
+        expect(userRepository.findById).not.toHaveBeenCalled();
       });
 
       it("should throw NotFoundError when requesting user doesn't exist", async () => {
@@ -324,24 +365,31 @@ describe('ListExpenseUseCase', () => {
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(null);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(
+          basicAltUser,
+        );
 
         await expect(listExpenseUseCase.execute(input)).rejects.toThrow(
           new NotFoundError('User not found.'),
         );
 
-        expect(userRepository.findById).toHaveBeenCalledTimes(1);
+        expect(userRepository.findById).toHaveBeenCalledTimes(2);
       });
 
       it("should throw NotFoundError when target user doesn't exist", async () => {
         const input: ListExpensesInputDTO = {
-          requestingUserId: basicAltValidUuid,
-          targetUserId: '',
+          requestingUserId: basicValidUuid,
+          targetUserId: basicAltValidUuid,
         };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(
+          basicAltUser,
+        );
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(null);
 
         await expect(listExpenseUseCase.execute(input)).rejects.toThrow(
-          new NotFoundError('User not found.'),
+          new NotFoundError('A user ID must be provided.'),
         );
       });
     });

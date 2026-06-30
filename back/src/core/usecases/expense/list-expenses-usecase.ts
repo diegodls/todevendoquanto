@@ -27,24 +27,32 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
   ): Promise<ListExpenseOutputDTO> {
     const requestingUserId = UserId.from(data.requestingUserId);
 
-    const requestingUser = await this.userRepository.findById(requestingUserId);
+    const targetUserId = UserId.from(data.targetUserId);
+
+    const [requestingUser, targetUser] = await Promise.all([
+      this.userRepository.findById(requestingUserId),
+      this.userRepository.findById(targetUserId),
+    ]);
 
     if (!requestingUser) {
       throw new NotFoundError('User not found.');
     }
 
-    const targetUserId = UserId.from(data.targetUserId);
-
-    const targetUser = await this.userRepository.findById(targetUserId);
-
     if (!targetUser) {
-      throw new NotFoundError('User not found');
+      throw new NotFoundError('A user ID must be provided.');
     }
 
     if (
-      !requestingUser?.isAdmin() &&
-      requestingUserId.toString() !== targetUser.id.toString()
+      !requestingUser.isAdmin() &&
+      requestingUser.id.toString() !== targetUser.id.toString()
     ) {
+      throw new UnauthorizedError(
+        "You don't have the permissions to list this expense.",
+      );
+    }
+
+    if (!requestingUser.isAdmin() && targetUser.isAdmin()) {
+      //impedir usuário normal de ver admin, colocar nos testes
       throw new UnauthorizedError(
         "You don't have the permissions to list this expense.",
       );
