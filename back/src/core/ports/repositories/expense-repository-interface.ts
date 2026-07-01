@@ -3,6 +3,11 @@ import { Expense } from '@/core/entities/expense/expense';
 import { CreateExpenseOutputDTO } from '@/core/usecases/expense/create-expense-dto';
 import { ListExpensesInputDTO } from '@/core/usecases/expense/list-expense-dto';
 
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+}
+
 export interface ExpenseRepositoryInterface {
   findInstallmentById: (
     id: Expense['installmentId'],
@@ -12,5 +17,5 @@ export interface ExpenseRepositoryInterface {
   list: (
     data: ListExpensesInputDTO,
     pagination: PaginationDTO,
-  ) => Promise<Expense[]>;
+  ) => Promise<PaginatedResult<Expense>>;
 }

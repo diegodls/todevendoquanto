@@ -52,7 +52,6 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
     }
 
     if (!requestingUser.isAdmin() && targetUser.isAdmin()) {
-      //impedir usuário normal de ver admin, colocar nos testes
       throw new UnauthorizedError(
         "You don't have the permissions to list this expense.",
       );
@@ -65,41 +64,39 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
 
     const pagination = this.buildPagination(data);
 
-    const expenses = await this.expenseRepository.list(input, pagination);
+    const repositoryData = await this.expenseRepository.list(input, pagination);
 
-    const expensesList: ListExpenseOutputProps[] = expenses.map((e) => {
-      if (e.userId.toString() !== targetUserId.toString()) {
-        throw new UnauthorizedError(
-          "You don't have the permissions to list this expense.",
-        );
-      }
+    const expensesList: ListExpenseOutputProps[] = repositoryData.data.map(
+      (e) => {
+        if (e.userId.toString() !== targetUserId.toString()) {
+          throw new UnauthorizedError(
+            "You don't have the permissions to list this expense.",
+          );
+        }
 
-      return {
-        userId: e.userId.toString(),
-        name: e.name.value,
-        description: e.description?.value || '',
-        amount: e.amount.cents,
-        currency: e.amount.currency,
-        totalAmount: e.totalAmount.cents,
-        status: e.status.value,
-        tags: e.tags.toArray(),
-        currentInstallment: e.installmentInfo.current,
-        totalInstallment: e.installmentInfo.total,
-        paymentDay: e.paymentSchedule.paymentDay.toISOString(),
-        expirationDay: e.paymentSchedule.expirationDay.toISOString(),
-        paymentStartAt: e.paymentSchedule.startAt.toISOString(),
-        paymentEndAt: e.paymentSchedule.endAt.toISOString(),
-      };
-    });
+        return {
+          userId: e.userId.toString(),
+          name: e.name.value,
+          description: e.description?.value || '',
+          amount: e.amount.cents,
+          currency: e.amount.currency,
+          totalAmount: e.totalAmount.cents,
+          status: e.status.value,
+          tags: e.tags.toArray(),
+          currentInstallment: e.installmentInfo.current,
+          totalInstallment: e.installmentInfo.total,
+          paymentDay: e.paymentSchedule.paymentDay.toISOString(),
+          expirationDay: e.paymentSchedule.expirationDay.toISOString(),
+          paymentStartAt: e.paymentSchedule.startAt.toISOString(),
+          paymentEndAt: e.paymentSchedule.endAt.toISOString(),
+        };
+      },
+    );
 
-    const paginationMeta: PaginatedResponseMeta = {
-      hasNextPage: true,
-      hasPreviousPage: false,
-      page: 0,
-      pageSize: 0,
-      totalItems: 0,
-      totalPages: 0,
-    };
+    const paginationMeta: PaginatedResponseMeta = this.buildMetaPagination(
+      pagination,
+      repositoryData.total,
+    );
 
     const output: ListExpenseOutputDTO = {
       meta: paginationMeta,
@@ -128,5 +125,30 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
     }
 
     return defaultPagination;
+  }
+
+  private buildMetaPagination(
+    data: PaginationDTO,
+    totalItems: number,
+  ): PaginatedResponseMeta {
+    const totalPages = Math.ceil(totalItems / data.pageSize);
+
+    const page = data.pageSize < totalItems ? data.page : 1;
+
+    const pageSize = data.pageSize;
+
+    const hasPreviousPage = page > 1;
+
+    const hasNextPage = page < totalPages;
+
+    const meta: PaginatedResponseMeta = {
+      page,
+      pageSize,
+      hasPreviousPage,
+      hasNextPage,
+      totalItems,
+      totalPages,
+    };
+    return meta;
   }
 }

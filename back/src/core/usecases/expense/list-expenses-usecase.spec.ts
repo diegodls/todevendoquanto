@@ -151,9 +151,10 @@ describe('ListExpenseUseCase', () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
 
-        vi.spyOn(expenseRepository, 'list').mockResolvedValue(
-          basicUserExpenses,
-        );
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
 
         const result: ListExpenseOutputDTO =
           await listExpenseUseCase.execute(input);
@@ -181,7 +182,10 @@ describe('ListExpenseUseCase', () => {
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
-        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(wrongOutput);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: wrongOutput,
+          total: 4,
+        });
 
         expect(async () => {
           return await listExpenseUseCase.execute(input);
@@ -208,6 +212,8 @@ describe('ListExpenseUseCase', () => {
             "You don't have the permissions to list this expense.",
           ),
         );
+
+        expect(userRepository.list).not.toHaveBeenCalled();
       });
 
       it('should allow admin user list other user expenses', async () => {
@@ -218,14 +224,33 @@ describe('ListExpenseUseCase', () => {
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
-        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
-          basicUserExpenses,
-        );
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
 
         const result: ListExpenseOutputDTO =
           await listExpenseUseCase.execute(input);
 
         expect(result.data.length).toBe(3);
+      });
+
+      it('should not allow basic user list admin user expenses', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicValidUuid,
+          targetUserId: adminValidUuid,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+
+        await expect(listExpenseUseCase.execute(input)).rejects.toThrow(
+          new UnauthorizedError(
+            "You don't have the permissions to list this expense.",
+          ),
+        );
+
+        expect(userRepository.list).not.toHaveBeenCalled();
       });
     });
 
@@ -238,9 +263,10 @@ describe('ListExpenseUseCase', () => {
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
-        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
-          basicUserExpenses,
-        );
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
 
         const result: ListExpenseOutputDTO =
           await listExpenseUseCase.execute(input);
@@ -263,9 +289,10 @@ describe('ListExpenseUseCase', () => {
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
-        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
-          basicUserExpenses,
-        );
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
 
         const result: ListExpenseOutputDTO =
           await listExpenseUseCase.execute(input);
@@ -288,9 +315,10 @@ describe('ListExpenseUseCase', () => {
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
-        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
-          basicUserExpenses,
-        );
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
 
         const result: ListExpenseOutputDTO =
           await listExpenseUseCase.execute(input);
@@ -305,7 +333,7 @@ describe('ListExpenseUseCase', () => {
 
       it('should return correct pagination metadata', async () => {
         const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
           page: 2,
           pageSize: 5,
@@ -313,9 +341,10 @@ describe('ListExpenseUseCase', () => {
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
-        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce(
-          basicUserExpenses,
-        );
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
 
         const result: ListExpenseOutputDTO =
           await listExpenseUseCase.execute(input);
@@ -325,9 +354,103 @@ describe('ListExpenseUseCase', () => {
         expect(result.meta).toEqual({
           page: 1,
           pageSize: 5,
+          hasPreviousPage: false,
+          hasNextPage: false,
           totalItems: 3,
           totalPages: 1,
         });
+      });
+
+      it('should indicate no next page on last page', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicValidUuid,
+          targetUserId: basicValidUuid,
+          page: 3,
+          pageSize: 5,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
+
+        expect(result.meta.hasPreviousPage).toBe(false);
+        expect(result.meta.hasNextPage).toBe(false);
+      });
+
+      it('should indicate no previous page on first page', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicValidUuid,
+          targetUserId: basicValidUuid,
+          page: 1,
+          pageSize: 5,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
+
+        expect(result.meta.hasPreviousPage).toBe(false);
+        expect(result.meta.hasNextPage).toBe(false);
+      });
+
+      it('should indicate next page on first page', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicValidUuid,
+          targetUserId: basicValidUuid,
+          page: 1,
+          pageSize: 1,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
+
+        expect(result.meta.hasPreviousPage).toBe(false);
+        expect(result.meta.hasNextPage).toBe(true);
+      });
+
+      it('should indicate previous page on first page', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicValidUuid,
+          targetUserId: basicValidUuid,
+          page: 2,
+          pageSize: 1,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
+
+        expect(result.meta.hasPreviousPage).toBe(true);
+        expect(result.meta.hasNextPage).toBe(true);
       });
     });
 
