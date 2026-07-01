@@ -55,8 +55,16 @@ export type ListExpenseRequestDataProps = {
   targetUserId: string;
 };
 
+export type ListExpenseFiltersOptions = {
+  name?: string;
+};
+
+export type ListExpenseFiltersQueryParams =
+  PropsToStringOptional<ListExpenseFiltersOptions>;
+
 export type ListExpensesInputDTO = ListExpenseRequestDataProps &
-  PaginationRequestProps;
+  PaginationRequestProps &
+  ListExpenseFiltersQueryParams;
 
 export type ListExpenseOutputProps = {
   userId: string;

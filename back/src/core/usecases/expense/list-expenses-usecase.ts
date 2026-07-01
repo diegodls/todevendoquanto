@@ -10,6 +10,7 @@ import {
   UnauthorizedError,
 } from '@/core/shared/errors/api-errors';
 import {
+  ListExpenseFiltersOptions,
   ListExpenseOutputDTO,
   ListExpenseOutputProps,
   ListExpensesInputDTO,
@@ -64,7 +65,13 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
 
     const pagination = this.buildPagination(data);
 
-    const repositoryData = await this.expenseRepository.list(input, pagination);
+    const filters = this.buildFilters(data);
+
+    const repositoryData = await this.expenseRepository.list(
+      input,
+      pagination,
+      filters,
+    );
 
     const expensesList: ListExpenseOutputProps[] = repositoryData.data.map(
       (e) => {
@@ -150,5 +157,15 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
       totalPages,
     };
     return meta;
+  }
+
+  private buildFilters(data: ListExpensesInputDTO): ListExpenseFiltersOptions {
+    const filters: ListExpenseFiltersOptions = {};
+
+    if (data.name?.trim()) {
+      filters.name = data.name;
+    }
+
+    return filters;
   }
 }

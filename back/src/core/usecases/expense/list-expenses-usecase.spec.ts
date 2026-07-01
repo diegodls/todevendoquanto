@@ -126,14 +126,17 @@ beforeEach(() => {
   basicUserExpenses = [
     makeExpenseInput({
       userId: basicUser.id,
+      name: ExpenseName.create('Expanse01'),
       installmentId: installmentIdBasicOne,
     }),
     makeExpenseInput({
       userId: basicUser.id,
+      name: ExpenseName.create('Expanse02'),
       installmentId: installmentIdBasicTwo,
     }),
     makeExpenseInput({
       userId: basicUser.id,
+      name: ExpenseName.create('Expanse03'),
       installmentId: installmentIdBasicTwo,
     }),
   ];
@@ -168,11 +171,9 @@ describe('ListExpenseUseCase', () => {
           targetUserId: basicValidUuid,
         };
 
-        const installmentIdBasicTwo = InstallmentId.create();
-
         const basicAltUserExpense = makeExpenseInput({
           userId: basicAltUser.id,
-          installmentId: installmentIdBasicTwo,
+          installmentId: InstallmentId.create(),
         });
 
         const wrongOutput: Expense[] = [
@@ -276,6 +277,7 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           { page: 1, pageSize: 10 },
+          expect.any(Object),
         );
       });
 
@@ -302,6 +304,7 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           { page: 1, pageSize: 10 },
+          expect.any(Object),
         );
       });
 
@@ -328,6 +331,7 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           { page: 1, pageSize: 100 },
+          expect.any(Object),
         );
       });
 
@@ -451,6 +455,64 @@ describe('ListExpenseUseCase', () => {
 
         expect(result.meta.hasPreviousPage).toBe(true);
         expect(result.meta.hasNextPage).toBe(true);
+      });
+    });
+
+    describe('filters', () => {
+      it('should filter expenses by name', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicValidUuid,
+          targetUserId: basicValidUuid,
+          name: 'Expanse01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses.filter(
+            (expense) => expense.name.value === 'Expanse01',
+          ),
+          total: 1,
+        });
+
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(1);
+        expect(result.data[0].name).toBe('Expanse01');
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { name: 'Expanse01' },
+        );
+      });
+
+      it('should filter expenses by name', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicValidUuid,
+          targetUserId: basicValidUuid,
+          name: 'Expanse01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses.filter(
+            (expense) => expense.name.value === 'Expanse01',
+          ),
+          total: 1,
+        });
+
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(1);
+        expect(result.data[0].name).toBe('Expanse01');
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { name: 'Expanse01' },
+        );
       });
     });
 

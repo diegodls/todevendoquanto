@@ -1,7 +1,10 @@
 import { PaginationDTO } from '@/application/dtos/shared/pagination-dto';
 import { Expense } from '@/core/entities/expense/expense';
 import { CreateExpenseOutputDTO } from '@/core/usecases/expense/create-expense-dto';
-import { ListExpensesInputDTO } from '@/core/usecases/expense/list-expense-dto';
+import {
+  ListExpenseFiltersOptions,
+  ListExpensesInputDTO,
+} from '@/core/usecases/expense/list-expense-dto';
 
 export interface PaginatedResult<T> {
   data: T[];
@@ -17,5 +20,6 @@ export interface ExpenseRepositoryInterface {
   list: (
     data: ListExpensesInputDTO,
     pagination: PaginationDTO,
+    filters: ListExpenseFiltersOptions,
   ) => Promise<PaginatedResult<Expense>>;
 }
