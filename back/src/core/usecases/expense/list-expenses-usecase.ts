@@ -83,6 +83,7 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
 
         return {
           userId: e.userId.toString(),
+          installmentId: e.installmentId.toString(),
           name: e.name.value,
           description: e.description?.value || '',
           amount: e.amount.cents,
@@ -164,6 +165,10 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
 
     if (data.name?.trim()) {
       filters.name = data.name;
+    }
+
+    if (data.installmentId?.trim()) {
+      filters.installmentId = data.installmentId;
     }
 
     return filters;

@@ -57,6 +57,7 @@ export type ListExpenseRequestDataProps = {
 
 export type ListExpenseFiltersOptions = {
   name?: string;
+  installmentId?: string;
 };
 
 export type ListExpenseFiltersQueryParams =
@@ -68,6 +69,7 @@ export type ListExpensesInputDTO = ListExpenseRequestDataProps &
 
 export type ListExpenseOutputProps = {
   userId: string;
+  installmentId: string;
   name: string;
   description: string;
   amount: number;

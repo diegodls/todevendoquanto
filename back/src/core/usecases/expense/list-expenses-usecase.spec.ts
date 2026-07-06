@@ -35,6 +35,10 @@ const basicValidUuid = '550E8400-E29B-41D4-A716-446655440001';
 
 const basicAltValidUuid = '550E8400-E29B-41D4-A716-446655440002';
 
+const installmentIdValidUuidOne = '660E8400-E29B-41D4-A716-446655440001';
+
+const installmentIdValidUuidTwo = '660E8400-E29B-41D4-A716-446655440002';
+
 const validHashedPassword = '$2b$10$hashedPassword';
 
 let adminUser: User;
@@ -119,9 +123,9 @@ beforeEach(() => {
     isActive: true,
   });
 
-  const installmentIdBasicOne = InstallmentId.create();
+  const installmentIdBasicOne = InstallmentId.from(installmentIdValidUuidOne);
 
-  const installmentIdBasicTwo = InstallmentId.create();
+  const installmentIdBasicTwo = InstallmentId.from(installmentIdValidUuidTwo);
 
   basicUserExpenses = [
     makeExpenseInput({
@@ -459,31 +463,58 @@ describe('ListExpenseUseCase', () => {
     });
 
     describe('filters', () => {
-      it('should filter expenses by name', async () => {
+      it('should default when argument is missing', async () => {
         const input: ListExpensesInputDTO = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          name: 'Expanse01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        const result: ListExpenseOutputDTO =
+          await listExpenseUseCase.execute(input);
+
+        expect(result.data.length).toBe(3);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {},
+        );
+      });
+
+      it('should filter expenses by installment id', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicValidUuid,
+          targetUserId: basicValidUuid,
+          installmentId: installmentIdValidUuidTwo,
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
           data: basicUserExpenses.filter(
-            (expense) => expense.name.value === 'Expanse01',
+            (expense) =>
+              expense.installmentId.toString() === installmentIdValidUuidTwo,
           ),
-          total: 1,
+          total: 2,
         });
 
         const result: ListExpenseOutputDTO =
           await listExpenseUseCase.execute(input);
 
-        expect(result.data.length).toBe(1);
-        expect(result.data[0].name).toBe('Expanse01');
+        expect(result.data.length).toBe(2);
+        expect(result.meta.totalItems).toBe(2);
+        expect(result.data[0].installmentId).toBe(installmentIdValidUuidTwo);
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          { name: 'Expanse01' },
+          { installmentId: installmentIdValidUuidTwo },
         );
       });
 
