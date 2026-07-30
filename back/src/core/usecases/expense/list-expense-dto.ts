@@ -25,14 +25,14 @@ export type ListExpenseFiltersOptionsProps = {
   updated_before?: Date;
   updated_after?: Date;
   description?: ExpenseDescription;
+  currency?: string[];
   amount_min?: Money;
   amount_max?: Money;
-  currency?: string[];
+  totalAmount_min?: Money;
+  totalAmount_max?: Money;
 
   /*
 
-totalAmount_min
-totalAmount_max
 
 status (string[])
 

@@ -213,6 +213,14 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
         .map((c) => c.trim().toUpperCase());
     }
 
+    if (data.totalAmount_min !== undefined) {
+      filters.totalAmount_min = Money.create(Number(data.totalAmount_min));
+    }
+
+    if (data.totalAmount_max !== undefined) {
+      filters.totalAmount_max = Money.create(Number(data.totalAmount_max));
+    }
+
     return filters;
   }
 }

@@ -707,6 +707,52 @@ describe('ListExpenseUseCase', () => {
           { currency: ['BRL', 'USD'] },
         );
       });
+
+      it('should forward totalAmount_min', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          totalAmount_min: '10',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { totalAmount_min: Money.create(10, 'BRL') },
+        );
+      });
+
+      it('should forward totalAmount_max', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          totalAmount_max: '100',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { totalAmount_max: Money.create(100, 'BRL') },
+        );
+      });
     });
 
     describe('validation', () => {
