@@ -1,7 +1,12 @@
 import {
   PaginatedResponseMeta,
   PaginationDTO,
+  PaginationRequestProps,
 } from '@/application/dtos/shared/pagination-dto';
+import { ExpenseDescription } from '@/core/entities/expense/value-objects/expense-description';
+import { ExpenseName } from '@/core/entities/expense/value-objects/expense-name';
+import { InstallmentId } from '@/core/entities/expense/value-objects/installment-id';
+import { Money } from '@/core/entities/expense/value-objects/money';
 import { UserId } from '@/core/entities/user/value-objects/user-id';
 import { ExpenseRepositoryInterface } from '@/core/ports/repositories/expense-repository-interface';
 import { UserRepositoryInterface } from '@/core/ports/repositories/user-repository-interface';
@@ -10,9 +15,10 @@ import {
   UnauthorizedError,
 } from '@/core/shared/errors/api-errors';
 import {
-  ListExpenseFiltersOptions,
+  ListExpenseFiltersOptionsProps,
   ListExpenseOutputDTO,
   ListExpenseOutputProps,
+  ListExpenseRequestDataProps,
   ListExpensesInputDTO,
 } from '@/core/usecases/expense/list-expense-dto';
 import { ListExpenseUseCaseInterface } from '@/core/usecases/expense/list-expenses-usecase-interface';
@@ -40,7 +46,7 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
     }
 
     if (!targetUser) {
-      throw new NotFoundError('A user ID must be provided.');
+      throw new NotFoundError('User not found.');
     }
 
     if (
@@ -58,9 +64,9 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
       );
     }
 
-    const input: ListExpensesInputDTO = {
-      requestingUserId: requestingUserId.toString(),
-      targetUserId: targetUserId.toString(),
+    const input: ListExpenseRequestDataProps = {
+      requestingUserId,
+      targetUserId,
     };
 
     const pagination = this.buildPagination(data);
@@ -114,7 +120,7 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
     return output;
   }
 
-  private buildPagination(data: ListExpensesInputDTO): PaginationDTO {
+  private buildPagination(data: PaginationRequestProps): PaginationDTO {
     const defaultPagination: PaginationDTO = {
       page: 1,
       pageSize: 10,
@@ -160,15 +166,51 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
     return meta;
   }
 
-  private buildFilters(data: ListExpensesInputDTO): ListExpenseFiltersOptions {
-    const filters: ListExpenseFiltersOptions = {};
+  private buildFilters(
+    data: ListExpensesInputDTO,
+  ): ListExpenseFiltersOptionsProps {
+    const filters: ListExpenseFiltersOptionsProps = {};
 
     if (data.name?.trim()) {
-      filters.name = data.name;
+      filters.name = ExpenseName.create(data.name);
     }
 
     if (data.installmentId?.trim()) {
-      filters.installmentId = data.installmentId;
+      filters.installmentId = InstallmentId.from(data.installmentId);
+    }
+
+    if (data.created_before) {
+      filters.created_before = new Date(data.created_before);
+    }
+
+    if (data.created_after) {
+      filters.created_after = new Date(data.created_after);
+    }
+
+    if (data.updated_before) {
+      filters.updated_before = new Date(data.updated_before);
+    }
+
+    if (data.updated_after) {
+      filters.updated_after = new Date(data.updated_after);
+    }
+
+    if (data.description?.trim()) {
+      filters.description = ExpenseDescription.create(data.description);
+    }
+
+    if (data.amount_min !== undefined) {
+      filters.amount_min = Money.create(Number(data.amount_min));
+    }
+
+    if (data.amount_max !== undefined) {
+      filters.amount_max = Money.create(Number(data.amount_max));
+    }
+
+    if (data.currency && data.currency.length > 0) {
+      filters.currency = data.currency
+        .split(',')
+        .map((c) => c.trim().toUpperCase());
     }
 
     return filters;

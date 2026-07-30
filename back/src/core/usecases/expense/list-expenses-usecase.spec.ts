@@ -37,7 +37,11 @@ const basicAltValidUuid = '550E8400-E29B-41D4-A716-446655440002';
 
 const installmentIdValidUuidOne = '660E8400-E29B-41D4-A716-446655440001';
 
+const installmentIdBasicOne = InstallmentId.from(installmentIdValidUuidOne);
+
 const installmentIdValidUuidTwo = '660E8400-E29B-41D4-A716-446655440002';
+
+const installmentIdBasicTwo = InstallmentId.from(installmentIdValidUuidTwo);
 
 const validHashedPassword = '$2b$10$hashedPassword';
 
@@ -107,8 +111,8 @@ beforeEach(() => {
     email: Email.create('basic_user@gmail.com.br'),
     hashedPassword: validHashedPassword,
     role: UserRole.BASIC,
-    createdAt: new Date('2005-01-10'),
-    updatedAt: new Date('2025-01-10'),
+    createdAt: new Date('2005-02-10'),
+    updatedAt: new Date('2025-02-10'),
     isActive: true,
   });
 
@@ -118,14 +122,10 @@ beforeEach(() => {
     email: Email.create('basic_user@gmail.com.br'),
     hashedPassword: validHashedPassword,
     role: UserRole.BASIC,
-    createdAt: new Date('2005-01-10'),
-    updatedAt: new Date('2025-01-10'),
+    createdAt: new Date('2005-03-10'),
+    updatedAt: new Date('2025-03-10'),
     isActive: true,
   });
-
-  const installmentIdBasicOne = InstallmentId.from(installmentIdValidUuidOne);
-
-  const installmentIdBasicTwo = InstallmentId.from(installmentIdValidUuidTwo);
 
   basicUserExpenses = [
     makeExpenseInput({
@@ -151,8 +151,8 @@ describe('ListExpenseUseCase', () => {
     describe('authorization', () => {
       it('should allow user list own expenses', async () => {
         const input: ListExpensesInputDTO = {
-          requestingUserId: basicUser.id.toString(),
-          targetUserId: basicUser.id.toString(),
+          requestingUserId: basicValidUuid,
+          targetUserId: basicValidUuid,
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -492,7 +492,7 @@ describe('ListExpenseUseCase', () => {
         const input: ListExpensesInputDTO = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          installmentId: installmentIdValidUuidTwo,
+          installmentId: installmentIdBasicTwo.toString(),
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -500,7 +500,8 @@ describe('ListExpenseUseCase', () => {
         vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
           data: basicUserExpenses.filter(
             (expense) =>
-              expense.installmentId.toString() === installmentIdValidUuidTwo,
+              expense.installmentId.toString() ===
+              installmentIdBasicTwo.toString(),
           ),
           total: 2,
         });
@@ -514,7 +515,7 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          { installmentId: installmentIdValidUuidTwo },
+          { installmentId: installmentIdBasicTwo },
         );
       });
 
@@ -542,7 +543,168 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          { name: 'Expanse01' },
+          { name: basicUserExpenses[0].name },
+        );
+      });
+
+      it('should forward created_before date', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          created_after: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { created_after: new Date('2024-01-01') },
+        );
+      });
+
+      it('should forward created_after date', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          created_after: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { created_after: new Date('2024-01-01') },
+        );
+      });
+
+      it('should forward updated_before date', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          updated_before: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { updated_before: new Date('2024-01-01') },
+        );
+      });
+
+      it('should forward description', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          description: 'description test',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { description: ExpenseDescription.create('description test') },
+        );
+      });
+
+      it('should forward amount_min', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          amount_min: '10',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { amount_min: Money.create(10, 'BRL') },
+        );
+      });
+
+      it('should forward amount_max', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          amount_max: '100',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { amount_max: Money.create(100, 'BRL') },
+        );
+      });
+
+      it('should forward currency', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          currency: 'BRL, USD',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          { currency: ['BRL', 'USD'] },
         );
       });
     });
@@ -605,7 +767,7 @@ describe('ListExpenseUseCase', () => {
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(null);
 
         await expect(listExpenseUseCase.execute(input)).rejects.toThrow(
-          new NotFoundError('A user ID must be provided.'),
+          new NotFoundError('User not found.'),
         );
       });
     });

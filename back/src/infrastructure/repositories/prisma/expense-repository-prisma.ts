@@ -1,9 +1,16 @@
+import {
+  PaginatedResult,
+  PaginationDTO,
+} from '@/application/dtos/shared/pagination-dto';
 import { Expense } from '@/core/entities/expense/expense';
 import { InstallmentId } from '@/core/entities/expense/value-objects/installment-id';
 import { ExpenseRepositoryInterface } from '@/core/ports/repositories/expense-repository-interface';
 import { InternalError } from '@/core/shared/errors/api-errors';
 import { CreateExpenseOutputDTO } from '@/core/usecases/expense/create-expense-dto';
-import { ListExpensesInputDTO } from '@/core/usecases/expense/list-expense-dto';
+import {
+  ListExpenseFiltersOptionsProps,
+  ListExpenseRequestDataProps,
+} from '@/core/usecases/expense/list-expense-dto';
 import { PrismaClientGenerated } from '@/infrastructure/repositories/prisma/config/prisma-client';
 import { ExpenseMapper } from '@/infrastructure/repositories/prisma/mappers/expense-mapper';
 
@@ -46,8 +53,12 @@ export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
     });
   }
 
-  async list(data: ListExpensesInputDTO): Promise<Expense[]> {
+  async list(
+    data: ListExpenseRequestDataProps,
+    pagination: PaginationDTO,
+    filters: ListExpenseFiltersOptionsProps,
+  ): Promise<PaginatedResult<Expense>> {
     // ! IMPLEMENT THIS
-    return [];
+    return { data: [], total: 0 };
   }
 }

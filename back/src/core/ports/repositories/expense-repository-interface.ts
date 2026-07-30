@@ -1,15 +1,13 @@
-import { PaginationDTO } from '@/application/dtos/shared/pagination-dto';
+import {
+  PaginatedResult,
+  PaginationDTO,
+} from '@/application/dtos/shared/pagination-dto';
 import { Expense } from '@/core/entities/expense/expense';
 import { CreateExpenseOutputDTO } from '@/core/usecases/expense/create-expense-dto';
 import {
-  ListExpenseFiltersOptions,
-  ListExpensesInputDTO,
+  ListExpenseFiltersOptionsProps,
+  ListExpenseRequestDataProps,
 } from '@/core/usecases/expense/list-expense-dto';
-
-export interface PaginatedResult<T> {
-  data: T[];
-  total: number;
-}
 
 export interface ExpenseRepositoryInterface {
   findInstallmentById: (
@@ -18,8 +16,8 @@ export interface ExpenseRepositoryInterface {
   create: (expenses: Expense[]) => Promise<CreateExpenseOutputDTO[]>;
   deleteByInstallmentId: (id: Expense['installmentId']) => Promise<void>;
   list: (
-    data: ListExpensesInputDTO,
+    data: ListExpenseRequestDataProps,
     pagination: PaginationDTO,
-    filters: ListExpenseFiltersOptions,
+    filters: ListExpenseFiltersOptionsProps,
   ) => Promise<PaginatedResult<Expense>>;
 }

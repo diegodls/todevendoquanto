@@ -1,14 +1,14 @@
-import { PaginationDTO } from '@/application/dtos/shared/pagination-dto';
+import {
+  PaginatedResult,
+  PaginationDTO,
+} from '@/application/dtos/shared/pagination-dto';
 import {
   User as EntityUser,
   UserProps as EntityUserProps,
 } from '@/core/entities/user/user';
 import { Email } from '@/core/entities/user/value-objects/user-email';
 import { UserId } from '@/core/entities/user/value-objects/user-id';
-import {
-  PaginatedResult,
-  UserRepositoryInterface,
-} from '@/core/ports/repositories/user-repository-interface';
+import { UserRepositoryInterface } from '@/core/ports/repositories/user-repository-interface';
 import {
   ListUsersFiltersOptions,
   ListUsersOrderRequestProps,

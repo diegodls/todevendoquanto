@@ -1,4 +1,4 @@
-import { PropsToStringOptional } from "@/core/shared/types/helpers/props-to-string";
+import { PropsToStringOptional } from '@/core/shared/types/helpers/props-to-string';
 
 export type PaginationRequestProps = {
   page?: number;
@@ -21,6 +21,11 @@ export type PaginatedResponseMeta = {
   totalPages: number;
   totalItems: number;
 };
+
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+}
 
 export type PaginatedResponse<T> = {
   data: T[];

@@ -1,21 +1,35 @@
-/*
+import {
+  PaginatedResponse,
+  PaginationRequestProps,
+} from '@/application/dtos/shared/pagination-dto';
+import { ExpenseDescription } from '@/core/entities/expense/value-objects/expense-description';
+import { ExpenseName } from '@/core/entities/expense/value-objects/expense-name';
+import { InstallmentId } from '@/core/entities/expense/value-objects/installment-id';
+import { Money } from '@/core/entities/expense/value-objects/money';
+import { UserId } from '@/core/entities/user/value-objects/user-id';
+import {
+  PropsToStringAssertive,
+  PropsToStringOptional,
+} from '@/core/shared/types/helpers/props-to-string';
 
-userId
-installmentId
+export type ListExpenseRequestDataProps = {
+  requestingUserId: UserId;
+  targetUserId: UserId;
+};
 
-created_before
-created_after
-updated_before
-updated_after
+export type ListExpenseFiltersOptionsProps = {
+  name?: ExpenseName;
+  installmentId?: InstallmentId;
+  created_before?: Date;
+  created_after?: Date;
+  updated_before?: Date;
+  updated_after?: Date;
+  description?: ExpenseDescription;
+  amount_min?: Money;
+  amount_max?: Money;
+  currency?: string[];
 
-name (contain)
-
-description (contain)
-
-amount_min
-amount_max
-
-currency (string[])
+  /*
 
 totalAmount_min
 totalAmount_max
@@ -39,33 +53,21 @@ paymentEndAt_after
 pagination_fields (page, page_size, etc...)
 
 */
-
-import {
-  PaginatedResponse,
-  PaginationRequestProps,
-} from '@/application/dtos/shared/pagination-dto';
-import { PropsToStringOptional } from '@/core/shared/types/helpers/props-to-string';
-
-export type ListExpenseInput = {};
-
-export type ListExpenseQueryParams = PropsToStringOptional<ListExpenseInput>;
-
-export type ListExpenseRequestDataProps = {
-  requestingUserId: string;
-  targetUserId: string;
 };
 
-export type ListExpenseFiltersOptions = {
-  name?: string;
-  installmentId?: string;
-};
+export type ListExpenseRequestDataParams =
+  PropsToStringAssertive<ListExpenseRequestDataProps>;
 
-export type ListExpenseFiltersQueryParams =
-  PropsToStringOptional<ListExpenseFiltersOptions>;
+export type ListExpenseFiltersParams =
+  PropsToStringOptional<ListExpenseFiltersOptionsProps>;
 
-export type ListExpensesInputDTO = ListExpenseRequestDataProps &
-  PaginationRequestProps &
-  ListExpenseFiltersQueryParams;
+export type ListExpenseParams = ListExpenseRequestDataParams &
+  ListExpenseFiltersParams &
+  PaginationRequestProps;
+
+export type ListExpensesInputDTO = ListExpenseRequestDataParams &
+  ListExpenseFiltersParams &
+  PaginationRequestProps;
 
 export type ListExpenseOutputProps = {
   userId: string;
