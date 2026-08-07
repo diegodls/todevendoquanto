@@ -4,8 +4,11 @@ import {
 } from '@/application/dtos/shared/pagination-dto';
 import { ExpenseDescription } from '@/core/entities/expense/value-objects/expense-description';
 import { ExpenseName } from '@/core/entities/expense/value-objects/expense-name';
+import { ExpenseStatus } from '@/core/entities/expense/value-objects/expense-status';
 import { InstallmentId } from '@/core/entities/expense/value-objects/installment-id';
+import { InstallmentInfo } from '@/core/entities/expense/value-objects/installment-info';
 import { Money } from '@/core/entities/expense/value-objects/money';
+import { Tags } from '@/core/entities/expense/value-objects/tags';
 import { UserId } from '@/core/entities/user/value-objects/user-id';
 import {
   PropsToStringAssertive,
@@ -30,29 +33,24 @@ export type ListExpenseFiltersOptionsProps = {
   amount_max?: Money;
   totalAmount_min?: Money;
   totalAmount_max?: Money;
+  status?: ExpenseStatus[];
+  tags?: Tags[];
+  currentInstallment?: InstallmentInfo[];
+  totalInstallment?: InstallmentInfo[];
+  paymentDay_before?: Date;
+  paymentDay_after?: Date;
+  expirationDay_before?: Date;
+  expirationDay_after?: Date;
+  paymentStartAt_before?: Date;
+  paymentStartAt_after?: Date;
+  paymentEndAt_before?: Date;
+  paymentEndAt_after?: Date;
 
   /*
 
+  pagination_fields (page, page_size, etc...)
 
-status (string[])
-
-tags (string[])
-
-currentInstallment (number[])
-totalInstallment (number[])
-
-paymentDay_before
-paymentDay_after
-expirationDay_before
-expirationDay_after
-paymentStartAt_before
-paymentStartAt_after
-paymentEndAt_before
-paymentEndAt_after
-
-pagination_fields (page, page_size, etc...)
-
-*/
+  */
 };
 
 export type ListExpenseRequestDataParams =

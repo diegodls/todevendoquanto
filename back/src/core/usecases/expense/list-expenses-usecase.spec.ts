@@ -753,6 +753,322 @@ describe('ListExpenseUseCase', () => {
           { totalAmount_max: Money.create(100, 'BRL') },
         );
       });
+
+      it('should forward status', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          status: 'paid, paying',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            status: [
+              ExpenseStatus.fromString('paid'),
+              ExpenseStatus.fromString('paying'),
+            ],
+          },
+        );
+      });
+
+      it('should forward currentInstallment', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          currentInstallment: '1, 2',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            currentInstallment: [
+              InstallmentInfo.create(1, 1),
+              InstallmentInfo.create(2, 2),
+            ],
+          },
+        );
+      });
+
+      it('should forward totalInstallment', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          totalInstallment: '1, 2',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            totalInstallment: [
+              InstallmentInfo.create(1, 1),
+              InstallmentInfo.create(1, 2),
+            ],
+          },
+        );
+      });
+
+      it('should forward paymentDay_before', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          paymentDay_before: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            paymentDay_before: new Date('2024-01-01'),
+          },
+        );
+      });
+
+      it('should forward paymentDay_after', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          paymentDay_after: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            paymentDay_after: new Date('2024-01-01'),
+          },
+        );
+      });
+
+      it('should forward expirationDay_before', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          expirationDay_before: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            expirationDay_before: new Date('2024-01-01'),
+          },
+        );
+      });
+
+      it('should forward expirationDay_after', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          expirationDay_after: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            expirationDay_after: new Date('2024-01-01'),
+          },
+        );
+      });
+
+      it('should forward paymentStartAt_before', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          paymentStartAt_before: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            paymentStartAt_before: new Date('2024-01-01'),
+          },
+        );
+      });
+
+      it('should forward paymentStartAt_after', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          paymentStartAt_after: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            paymentStartAt_after: new Date('2024-01-01'),
+          },
+        );
+      });
+
+      it('should forward paymentEndAt_before', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          paymentEndAt_before: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            paymentEndAt_before: new Date('2024-01-01'),
+          },
+        );
+      });
+
+      it('should forward paymentEndAt_after', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          paymentEndAt_after: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            paymentEndAt_after: new Date('2024-01-01'),
+          },
+        );
+      });
+
+      it('should forward multiples filters', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: basicValidUuid,
+          targetUserId: basicValidUuid,
+          status: 'paid, paying',
+          paymentEndAt_before: '2024-01-01',
+          paymentEndAt_after: '2024-01-01',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          {
+            status: [
+              ExpenseStatus.fromString('paid'),
+              ExpenseStatus.fromString('paying'),
+            ],
+            paymentEndAt_before: new Date('2024-01-01'),
+            paymentEndAt_after: new Date('2024-01-01'),
+          },
+        );
+      });
     });
 
     describe('validation', () => {

@@ -5,7 +5,9 @@ import {
 } from '@/application/dtos/shared/pagination-dto';
 import { ExpenseDescription } from '@/core/entities/expense/value-objects/expense-description';
 import { ExpenseName } from '@/core/entities/expense/value-objects/expense-name';
+import { ExpenseStatus } from '@/core/entities/expense/value-objects/expense-status';
 import { InstallmentId } from '@/core/entities/expense/value-objects/installment-id';
+import { InstallmentInfo } from '@/core/entities/expense/value-objects/installment-info';
 import { Money } from '@/core/entities/expense/value-objects/money';
 import { UserId } from '@/core/entities/user/value-objects/user-id';
 import { ExpenseRepositoryInterface } from '@/core/ports/repositories/expense-repository-interface';
@@ -219,6 +221,56 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
 
     if (data.totalAmount_max !== undefined) {
       filters.totalAmount_max = Money.create(Number(data.totalAmount_max));
+    }
+
+    if (data.status && data.status.length > 0) {
+      filters.status = data.status
+        .split(',')
+        .map((c) => ExpenseStatus.fromString(c.trim().toUpperCase()));
+    }
+
+    if (data.currentInstallment && data.currentInstallment.length > 0) {
+      filters.currentInstallment = data.currentInstallment
+        .split(',')
+        .map((c) => InstallmentInfo.create(Number(c.trim()), Number(c.trim())));
+    }
+
+    if (data.totalInstallment && data.totalInstallment.length > 0) {
+      filters.totalInstallment = data.totalInstallment
+        .split(',')
+        .map((c) => InstallmentInfo.create(1, Number(c.trim())));
+    }
+
+    if (data.paymentDay_before) {
+      filters.paymentDay_before = new Date(data.paymentDay_before);
+    }
+
+    if (data.paymentDay_after) {
+      filters.paymentDay_after = new Date(data.paymentDay_after);
+    }
+
+    if (data.expirationDay_before) {
+      filters.expirationDay_before = new Date(data.expirationDay_before);
+    }
+
+    if (data.expirationDay_after) {
+      filters.expirationDay_after = new Date(data.expirationDay_after);
+    }
+
+    if (data.paymentStartAt_before) {
+      filters.paymentStartAt_before = new Date(data.paymentStartAt_before);
+    }
+
+    if (data.paymentStartAt_after) {
+      filters.paymentStartAt_after = new Date(data.paymentStartAt_after);
+    }
+
+    if (data.paymentEndAt_before) {
+      filters.paymentEndAt_before = new Date(data.paymentEndAt_before);
+    }
+
+    if (data.paymentEndAt_after) {
+      filters.paymentEndAt_after = new Date(data.paymentEndAt_after);
     }
 
     return filters;
