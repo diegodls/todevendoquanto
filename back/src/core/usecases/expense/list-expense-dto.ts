@@ -45,12 +45,6 @@ export type ListExpenseFiltersOptionsProps = {
   paymentStartAt_after?: Date;
   paymentEndAt_before?: Date;
   paymentEndAt_after?: Date;
-
-  /*
-
-  pagination_fields (page, page_size, etc...)
-
-  */
 };
 
 export type ListExpenseRequestDataParams =
