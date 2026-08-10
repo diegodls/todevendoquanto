@@ -1071,6 +1071,33 @@ describe('ListExpenseUseCase', () => {
       });
     });
 
+    describe('shorting', () => {
+      it('should sort by name ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'name',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'name', orderBy: 'asc' },
+        );
+      });
+    });
+
     describe('validation', () => {
       it('should throw UserIdEmptyError when requesting user id does not exist', async () => {
         const input: ListExpensesInputDTO = {

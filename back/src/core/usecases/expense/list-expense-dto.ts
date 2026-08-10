@@ -20,6 +20,9 @@ export type ListExpenseRequestDataProps = {
   targetUserId: UserId;
 };
 
+export type ListExpenseRequestDataParams =
+  PropsToStringAssertive<ListExpenseRequestDataProps>;
+
 export type ListExpenseFiltersOptionsProps = {
   name?: ExpenseName;
   installmentId?: InstallmentId;
@@ -47,18 +50,32 @@ export type ListExpenseFiltersOptionsProps = {
   paymentEndAt_after?: Date;
 };
 
-export type ListExpenseRequestDataParams =
-  PropsToStringAssertive<ListExpenseRequestDataProps>;
-
 export type ListExpenseFiltersParams =
   PropsToStringOptional<ListExpenseFiltersOptionsProps>;
 
+export type ListExpenseOrderByOptions = {
+  name: ExpenseName;
+  description: ExpenseDescription;
+};
+
+export type ListExpenseOrderByParams =
+  PropsToStringOptional<ListExpenseOrderByOptions>;
+
+export const ListExpenseOrderDirectionOptions = ['asc', 'desc'] as const;
+
+export type ListExpenseOrderRequestOptionalOptions = {
+  order?: (typeof ListExpenseOrderDirectionOptions)[number];
+  orderBy?: keyof PropsToStringAssertive<ListExpenseOrderByOptions>;
+};
+
 export type ListExpenseParams = ListExpenseRequestDataParams &
   ListExpenseFiltersParams &
+  ListExpenseOrderRequestOptionalOptions &
   PaginationRequestProps;
 
 export type ListExpensesInputDTO = ListExpenseRequestDataParams &
   ListExpenseFiltersParams &
+  ListExpenseOrderRequestOptionalOptions &
   PaginationRequestProps;
 
 export type ListExpenseOutputProps = {
