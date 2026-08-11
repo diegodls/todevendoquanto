@@ -18,6 +18,7 @@ import {
 } from '@/core/shared/errors/api-errors';
 import {
   ListExpenseFiltersOptionsProps,
+  ListExpenseOrderRequestOptionalOptions,
   ListExpenseOutputDTO,
   ListExpenseOutputProps,
   ListExpenseRequestDataProps,
@@ -75,10 +76,13 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
 
     const filters = this.buildFilters(data);
 
+    const sorting = this.buildSorting(data);
+
     const repositoryData = await this.expenseRepository.list(
       input,
       pagination,
       filters,
+      sorting,
     );
 
     const expensesList: ListExpenseOutputProps[] = repositoryData.data.map(
@@ -274,5 +278,24 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
     }
 
     return filters;
+  }
+
+  private buildSorting(
+    data: ListExpensesInputDTO,
+  ): ListExpenseOrderRequestOptionalOptions {
+    const sorting: ListExpenseOrderRequestOptionalOptions = {
+      order: 'asc',
+      orderBy: 'name',
+    };
+
+    if (data.order) {
+      sorting.order = data.order;
+    }
+
+    if (data.orderBy) {
+      sorting.orderBy = data.orderBy;
+    }
+
+    return sorting;
   }
 }

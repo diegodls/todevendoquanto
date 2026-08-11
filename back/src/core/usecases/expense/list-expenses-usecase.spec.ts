@@ -282,6 +282,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           { page: 1, pageSize: 10 },
           expect.any(Object),
+          expect.any(Object),
         );
       });
 
@@ -309,6 +310,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           { page: 1, pageSize: 10 },
           expect.any(Object),
+          expect.any(Object),
         );
       });
 
@@ -335,6 +337,7 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           { page: 1, pageSize: 100 },
+          expect.any(Object),
           expect.any(Object),
         );
       });
@@ -485,6 +488,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           {},
+          expect.any(Object),
         );
       });
 
@@ -516,6 +520,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { installmentId: installmentIdBasicTwo },
+          expect.any(Object),
         );
       });
 
@@ -544,6 +549,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { name: basicUserExpenses[0].name },
+          expect.any(Object),
         );
       });
 
@@ -567,6 +573,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { created_after: new Date('2024-01-01') },
+          expect.any(Object),
         );
       });
 
@@ -590,6 +597,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { created_after: new Date('2024-01-01') },
+          expect.any(Object),
         );
       });
 
@@ -613,6 +621,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { updated_before: new Date('2024-01-01') },
+          expect.any(Object),
         );
       });
 
@@ -636,6 +645,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { description: ExpenseDescription.create('description test') },
+          expect.any(Object),
         );
       });
 
@@ -659,6 +669,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { amount_min: Money.create(10, 'BRL') },
+          expect.any(Object),
         );
       });
 
@@ -682,6 +693,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { amount_max: Money.create(100, 'BRL') },
+          expect.any(Object),
         );
       });
 
@@ -705,6 +717,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { currency: ['BRL', 'USD'] },
+          expect.any(Object),
         );
       });
 
@@ -728,6 +741,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { totalAmount_min: Money.create(10, 'BRL') },
+          expect.any(Object),
         );
       });
 
@@ -751,6 +765,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           { totalAmount_max: Money.create(100, 'BRL') },
+          expect.any(Object),
         );
       });
 
@@ -779,6 +794,7 @@ describe('ListExpenseUseCase', () => {
               ExpenseStatus.fromString('paying'),
             ],
           },
+          expect.any(Object),
         );
       });
 
@@ -807,6 +823,7 @@ describe('ListExpenseUseCase', () => {
               InstallmentInfo.create(2, 2),
             ],
           },
+          expect.any(Object),
         );
       });
 
@@ -835,6 +852,7 @@ describe('ListExpenseUseCase', () => {
               InstallmentInfo.create(1, 2),
             ],
           },
+          expect.any(Object),
         );
       });
 
@@ -860,6 +878,7 @@ describe('ListExpenseUseCase', () => {
           {
             paymentDay_before: new Date('2024-01-01'),
           },
+          expect.any(Object),
         );
       });
 
@@ -885,6 +904,7 @@ describe('ListExpenseUseCase', () => {
           {
             paymentDay_after: new Date('2024-01-01'),
           },
+          expect.any(Object),
         );
       });
 
@@ -910,6 +930,7 @@ describe('ListExpenseUseCase', () => {
           {
             expirationDay_before: new Date('2024-01-01'),
           },
+          expect.any(Object),
         );
       });
 
@@ -935,6 +956,7 @@ describe('ListExpenseUseCase', () => {
           {
             expirationDay_after: new Date('2024-01-01'),
           },
+          expect.any(Object),
         );
       });
 
@@ -960,6 +982,7 @@ describe('ListExpenseUseCase', () => {
           {
             paymentStartAt_before: new Date('2024-01-01'),
           },
+          expect.any(Object),
         );
       });
 
@@ -985,6 +1008,7 @@ describe('ListExpenseUseCase', () => {
           {
             paymentStartAt_after: new Date('2024-01-01'),
           },
+          expect.any(Object),
         );
       });
 
@@ -1010,6 +1034,7 @@ describe('ListExpenseUseCase', () => {
           {
             paymentEndAt_before: new Date('2024-01-01'),
           },
+          expect.any(Object),
         );
       });
 
@@ -1035,6 +1060,7 @@ describe('ListExpenseUseCase', () => {
           {
             paymentEndAt_after: new Date('2024-01-01'),
           },
+          expect.any(Object),
         );
       });
 
@@ -1067,6 +1093,7 @@ describe('ListExpenseUseCase', () => {
             paymentEndAt_before: new Date('2024-01-01'),
             paymentEndAt_after: new Date('2024-01-01'),
           },
+          expect.any(Object),
         );
       });
     });
@@ -1093,7 +1120,7 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           expect.any(Object),
           expect.any(Object),
-          { order: 'name', orderBy: 'asc' },
+          { order: 'asc', orderBy: 'name' },
         );
       });
     });

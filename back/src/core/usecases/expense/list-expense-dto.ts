@@ -54,8 +54,8 @@ export type ListExpenseFiltersParams =
   PropsToStringOptional<ListExpenseFiltersOptionsProps>;
 
 export type ListExpenseOrderByOptions = {
-  name: ExpenseName;
-  description: ExpenseDescription;
+  name: string;
+  description: string;
 };
 
 export type ListExpenseOrderByParams =
@@ -67,6 +67,8 @@ export type ListExpenseOrderRequestOptionalOptions = {
   order?: (typeof ListExpenseOrderDirectionOptions)[number];
   orderBy?: keyof PropsToStringAssertive<ListExpenseOrderByOptions>;
 };
+
+export type ListExpenseRepositoryDTO = {};
 
 export type ListExpenseParams = ListExpenseRequestDataParams &
   ListExpenseFiltersParams &

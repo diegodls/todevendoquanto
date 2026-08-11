@@ -6,6 +6,7 @@ import { Expense } from '@/core/entities/expense/expense';
 import { CreateExpenseOutputDTO } from '@/core/usecases/expense/create-expense-dto';
 import {
   ListExpenseFiltersOptionsProps,
+  ListExpenseOrderRequestOptionalOptions,
   ListExpenseRequestDataProps,
 } from '@/core/usecases/expense/list-expense-dto';
 
@@ -19,5 +20,6 @@ export interface ExpenseRepositoryInterface {
     data: ListExpenseRequestDataProps,
     pagination: PaginationDTO,
     filters: ListExpenseFiltersOptionsProps,
+    sorting: ListExpenseOrderRequestOptionalOptions,
   ) => Promise<PaginatedResult<Expense>>;
 }
