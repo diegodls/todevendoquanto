@@ -1099,7 +1099,30 @@ describe('ListExpenseUseCase', () => {
     });
 
     describe('shorting', () => {
-      it('should sort by name ascending', async () => {
+      it('should forward sort by name as default', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'name' },
+        );
+      });
+
+      it('should forward sort by name ascending', async () => {
         const input: ListExpensesInputDTO = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
@@ -1122,6 +1145,671 @@ describe('ListExpenseUseCase', () => {
           expect.any(Object),
           { order: 'asc', orderBy: 'name' },
         );
+      });
+
+      it('should forward sort by name descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'name',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'name' },
+        );
+      });
+
+      it('should forward sort by description ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'description',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'description' },
+        );
+      });
+
+      it('should forward sort by description descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'description',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'description' },
+        );
+      });
+
+      it('should forward sort by amount ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'amount',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'amount' },
+        );
+      });
+
+      it('should forward sort by amount ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'amount',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'amount' },
+        );
+      });
+
+      it('should forward sort by currency descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'currency',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'currency' },
+        );
+      });
+
+      it('should forward sort by currency ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'currency',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'currency' },
+        );
+      });
+
+      it('should forward sort by totalAmount descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'totalAmount',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'totalAmount' },
+        );
+      });
+
+      it('should forward sort by totalAmount ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'totalAmount',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'totalAmount' },
+        );
+      });
+
+      it('should forward sort by status descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'status',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'status' },
+        );
+      });
+
+      it('should forward sort by status ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'status',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'status' },
+        );
+      });
+
+      it('should forward sort by tags descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'tags',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'tags' },
+        );
+      });
+
+      it('should forward sort by tags ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'tags',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'tags' },
+        );
+      });
+
+      it('should forward sort by currentInstallment descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'currentInstallment',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'currentInstallment' },
+        );
+      });
+
+      it('should forward sort by currentInstallment ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'currentInstallment',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'currentInstallment' },
+        );
+      });
+
+      it('should forward sort by totalInstallment descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'totalInstallment',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'totalInstallment' },
+        );
+      });
+
+      it('should forward sort by totalInstallment ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'totalInstallment',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'totalInstallment' },
+        );
+      });
+
+      it('should forward sort by paymentDay descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'paymentDay',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'paymentDay' },
+        );
+      });
+
+      it('should forward sort by paymentDay ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'paymentDay',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'paymentDay' },
+        );
+      });
+
+      it('should forward sort by expirationDay descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'expirationDay',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'expirationDay' },
+        );
+      });
+
+      it('should forward sort by expirationDay ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'expirationDay',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'expirationDay' },
+        );
+      });
+
+      it('should forward sort by paymentStartAt descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'paymentStartAt',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'paymentStartAt' },
+        );
+      });
+
+      it('should forward sort by paymentStartAt ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'paymentStartAt',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'paymentStartAt' },
+        );
+      });
+
+      it('should forward sort by paymentEndAt descending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'desc',
+          orderBy: 'paymentEndAt',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'desc', orderBy: 'paymentEndAt' },
+        );
+      });
+
+      it('should forward sort by paymentEndAt ascending', async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+          order: 'asc',
+          orderBy: 'paymentEndAt',
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        await listExpenseUseCase.execute(input);
+
+        expect(expenseRepository.list).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
+          { order: 'asc', orderBy: 'paymentEndAt' },
+        );
+      });
+    });
+
+    describe('output', () => {
+      it("should map expenses to DTO's correctly", async () => {
+        const input: ListExpensesInputDTO = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        const result = await listExpenseUseCase.execute(input);
+
+        expect(result.data[0]).toEqual({
+          userId: basicUserExpenses[0].userId.toString(),
+          installmentId: basicUserExpenses[0].installmentId.toString(),
+          name: basicUserExpenses[0].name.value,
+          description: basicUserExpenses[0].description?.value,
+          amount: basicUserExpenses[0].amount.cents,
+          currency: basicUserExpenses[0].amount.currency,
+          totalAmount: basicUserExpenses[0].totalAmount.cents,
+          status: basicUserExpenses[0].status.toString(),
+          tags: basicUserExpenses[0].tags.toArray(),
+          currentInstallment: basicUserExpenses[0].installmentInfo.current,
+          totalInstallment: basicUserExpenses[0].installmentInfo.total,
+          paymentDay:
+            basicUserExpenses[0].paymentSchedule.paymentDay.toISOString(),
+          expirationDay:
+            basicUserExpenses[0].paymentSchedule.expirationDay.toISOString(),
+          paymentStartAt:
+            basicUserExpenses[0].paymentSchedule.startAt.toISOString(),
+          paymentEndAt:
+            basicUserExpenses[0].paymentSchedule.endAt.toISOString(),
+        });
       });
     });
 

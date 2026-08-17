@@ -56,6 +56,17 @@ export type ListExpenseFiltersParams =
 export type ListExpenseOrderByOptions = {
   name: string;
   description: string;
+  amount: string;
+  currency: string;
+  totalAmount: string;
+  status: string;
+  tags: string;
+  currentInstallment: string;
+  totalInstallment: string;
+  paymentDay: string;
+  expirationDay: string;
+  paymentStartAt: string;
+  paymentEndAt: string;
 };
 
 export type ListExpenseOrderByParams =
