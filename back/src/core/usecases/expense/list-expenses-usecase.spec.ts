@@ -1780,7 +1780,7 @@ describe('ListExpenseUseCase', () => {
           targetUserId: basicValidUuid,
         };
 
-        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
         vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
           data: basicUserExpenses,
@@ -1810,6 +1810,38 @@ describe('ListExpenseUseCase', () => {
           paymentEndAt:
             basicUserExpenses[0].paymentSchedule.endAt.toISOString(),
         });
+      });
+
+      it('should return dates in ISO format', async () => {
+        const input = {
+          requestingUserId: adminValidUuid,
+          targetUserId: basicValidUuid,
+        };
+
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
+        vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
+        vi.spyOn(expenseRepository, 'list').mockResolvedValueOnce({
+          data: basicUserExpenses,
+          total: 3,
+        });
+
+        const result = await listExpenseUseCase.execute(input);
+
+        expect(result.data[0].paymentDay).toMatch(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+        );
+
+        expect(result.data[0].expirationDay).toMatch(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+        );
+
+        expect(result.data[0].paymentStartAt).toMatch(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+        );
+
+        expect(result.data[0].paymentEndAt).toMatch(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+        );
       });
     });
 
