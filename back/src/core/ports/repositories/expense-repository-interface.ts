@@ -7,7 +7,7 @@ import { CreateExpenseOutputDTO } from '@/core/usecases/expense/create-expense-d
 import {
   ListExpenseFiltersOptionsProps,
   ListExpenseOrderRequestOptionalOptions,
-  ListExpenseRequestDataProps,
+  ListExpenseRequestBodyProps,
 } from '@/core/usecases/expense/list-expense-dto';
 
 export interface ExpenseRepositoryInterface {
@@ -17,9 +17,9 @@ export interface ExpenseRepositoryInterface {
   create: (expenses: Expense[]) => Promise<CreateExpenseOutputDTO[]>;
   deleteByInstallmentId: (id: Expense['installmentId']) => Promise<void>;
   list: (
-    data: ListExpenseRequestDataProps,
-    pagination: PaginationDTO,
+    data: ListExpenseRequestBodyProps,
     filters: ListExpenseFiltersOptionsProps,
     sorting: ListExpenseOrderRequestOptionalOptions,
+    pagination: PaginationDTO,
   ) => Promise<PaginatedResult<Expense>>;
 }

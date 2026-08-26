@@ -20,6 +20,7 @@ import {
 import { UserIdEmptyError } from '@/core/shared/errors/domain';
 import {
   ListExpenseOutputDTO,
+  ListExpenseRequestBodyParams,
   ListExpensesInputDTO,
 } from '@/core/usecases/expense/list-expense-dto';
 import { ListExpenseUseCase } from '@/core/usecases/expense/list-expenses-usecase';
@@ -150,9 +151,16 @@ describe('ListExpenseUseCase', () => {
   describe('execute', () => {
     describe('authorization', () => {
       it('should allow user list own expenses', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -170,9 +178,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should not return others expenses', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         const basicAltUserExpense = makeExpenseInput({
@@ -202,9 +217,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should not allow user list other user expenses', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicAltValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -222,9 +244,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should allow admin user list other user expenses', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -241,9 +270,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should not allow basic user list admin user expenses', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: adminValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -261,9 +297,16 @@ describe('ListExpenseUseCase', () => {
 
     describe('pagination', () => {
       it('should use default pagination when no provided', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -280,18 +323,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
           { page: 1, pageSize: 10 },
-          expect.any(Object),
-          expect.any(Object),
         );
       });
 
       it('should default to page 1 when page is less than 1', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          page: 0,
-          pageSize: 10,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -308,18 +356,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
           { page: 1, pageSize: 10 },
-          expect.any(Object),
-          expect.any(Object),
         );
       });
 
       it('should limit to 100 items per page', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          page: 0,
-          pageSize: 500,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 500 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -336,18 +389,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          expect.any(Object),
+          expect.any(Object),
           { page: 1, pageSize: 100 },
-          expect.any(Object),
-          expect.any(Object),
         );
       });
 
       it('should return correct pagination metadata', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: basicValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          page: 2,
-          pageSize: 5,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 5 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -373,11 +431,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should indicate no next page on last page', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: basicValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          page: 3,
-          pageSize: 5,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -396,11 +459,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should indicate no previous page on first page', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          page: 1,
-          pageSize: 5,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -419,11 +487,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should indicate next page on first page', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          page: 1,
-          pageSize: 1,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 1 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -442,11 +515,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should indicate previous page on first page', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          page: 2,
-          pageSize: 1,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 2, pageSize: 1 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -467,9 +545,16 @@ describe('ListExpenseUseCase', () => {
 
     describe('filters', () => {
       it('should default when argument is missing', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -486,17 +571,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           {},
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should filter expenses by installment id', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          installmentId: installmentIdBasicTwo.toString(),
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { installmentId: installmentIdBasicTwo.toString() },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -518,17 +609,23 @@ describe('ListExpenseUseCase', () => {
         expect(result.data[0].installmentId).toBe(installmentIdValidUuidTwo);
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          { installmentId: installmentIdBasicTwo.toString() },
           expect.any(Object),
-          { installmentId: installmentIdBasicTwo },
           expect.any(Object),
         );
       });
 
       it('should filter expenses by name', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          name: 'Expanse01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { name: 'Expanse01' },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -547,17 +644,23 @@ describe('ListExpenseUseCase', () => {
         expect(result.data[0].name).toBe('Expanse01');
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          { name: basicUserExpenses[0].name.value },
           expect.any(Object),
-          { name: basicUserExpenses[0].name },
           expect.any(Object),
         );
       });
 
       it('should forward created_before date', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          created_after: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { created_after: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -571,17 +674,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           { created_after: new Date('2024-01-01') },
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should forward created_after date', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          created_after: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { created_after: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -595,17 +704,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           { created_after: new Date('2024-01-01') },
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should forward updated_before date', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          updated_before: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { updated_before: new Date('2024-01-01') },
+          sorting: {},
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -619,17 +734,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           { updated_before: new Date('2024-01-01') },
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should forward description', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          description: 'description test',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { description: 'description test' },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -643,17 +764,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          { description: 'description test' },
           expect.any(Object),
-          { description: ExpenseDescription.create('description test') },
           expect.any(Object),
         );
       });
 
       it('should forward amount_min', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          amount_min: '10',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { amount_min: 10 },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -667,17 +794,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          { amount_min: 10 },
           expect.any(Object),
-          { amount_min: Money.create(10, 'BRL') },
           expect.any(Object),
         );
       });
 
       it('should forward amount_max', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          amount_max: '100',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { amount_max: 100 },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -691,17 +824,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          { amount_max: 100 },
           expect.any(Object),
-          { amount_max: Money.create(100, 'BRL') },
           expect.any(Object),
         );
       });
 
       it('should forward currency', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          currency: 'BRL, USD',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { currency: ['BRL', 'USD'] },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -715,17 +854,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           { currency: ['BRL', 'USD'] },
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should forward totalAmount_min', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          totalAmount_min: '10',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { totalAmount_min: 10 },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -739,17 +884,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          { totalAmount_min: 10 },
           expect.any(Object),
-          { totalAmount_min: Money.create(10, 'BRL') },
           expect.any(Object),
         );
       });
 
       it('should forward totalAmount_max', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          totalAmount_max: '100',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { totalAmount_max: 100 },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -763,17 +914,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          { totalAmount_max: 100 },
           expect.any(Object),
-          { totalAmount_max: Money.create(100, 'BRL') },
           expect.any(Object),
         );
       });
 
       it('should forward status', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          status: 'paid, paying',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { status: ['paid', 'paying'] },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -787,22 +944,25 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           {
-            status: [
-              ExpenseStatus.fromString('paid'),
-              ExpenseStatus.fromString('paying'),
-            ],
+            status: ['paid', 'paying'],
           },
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should forward currentInstallment', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          currentInstallment: '1, 2',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { currentInstallment: 2 },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -816,22 +976,25 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           {
-            currentInstallment: [
-              InstallmentInfo.create(1, 1),
-              InstallmentInfo.create(2, 2),
-            ],
+            currentInstallment: 2,
           },
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should forward totalInstallment', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          totalInstallment: '1, 2',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { totalInstallment: 1 },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -845,22 +1008,25 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           {
-            totalInstallment: [
-              InstallmentInfo.create(1, 1),
-              InstallmentInfo.create(1, 2),
-            ],
+            totalInstallment: 1,
           },
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should forward paymentDay_before', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          paymentDay_before: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { paymentDay_before: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -873,20 +1039,26 @@ describe('ListExpenseUseCase', () => {
         await listExpenseUseCase.execute(input);
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
           expect.any(Object),
           {
             paymentDay_before: new Date('2024-01-01'),
           },
           expect.any(Object),
+          expect.any(Object),
         );
       });
 
       it('should forward paymentDay_after', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          paymentDay_after: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { paymentDay_after: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -899,20 +1071,26 @@ describe('ListExpenseUseCase', () => {
         await listExpenseUseCase.execute(input);
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
           expect.any(Object),
           {
             paymentDay_after: new Date('2024-01-01'),
           },
           expect.any(Object),
+          expect.any(Object),
         );
       });
 
       it('should forward expirationDay_before', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          expirationDay_before: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { expirationDay_before: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -925,20 +1103,26 @@ describe('ListExpenseUseCase', () => {
         await listExpenseUseCase.execute(input);
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
           expect.any(Object),
           {
             expirationDay_before: new Date('2024-01-01'),
           },
           expect.any(Object),
+          expect.any(Object),
         );
       });
 
       it('should forward expirationDay_after', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          expirationDay_after: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { expirationDay_after: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -952,19 +1136,23 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
+          { expirationDay_after: new Date('2024-01-01') },
           expect.any(Object),
-          {
-            expirationDay_after: new Date('2024-01-01'),
-          },
           expect.any(Object),
         );
       });
 
       it('should forward paymentStartAt_before', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          paymentStartAt_before: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { paymentStartAt_before: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -977,20 +1165,26 @@ describe('ListExpenseUseCase', () => {
         await listExpenseUseCase.execute(input);
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
           expect.any(Object),
           {
             paymentStartAt_before: new Date('2024-01-01'),
           },
           expect.any(Object),
+          expect.any(Object),
         );
       });
 
       it('should forward paymentStartAt_after', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          paymentStartAt_after: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { paymentStartAt_after: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -1003,20 +1197,26 @@ describe('ListExpenseUseCase', () => {
         await listExpenseUseCase.execute(input);
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
           expect.any(Object),
           {
             paymentStartAt_after: new Date('2024-01-01'),
           },
           expect.any(Object),
+          expect.any(Object),
         );
       });
 
       it('should forward paymentEndAt_before', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          paymentEndAt_before: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { paymentEndAt_before: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -1030,19 +1230,25 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           {
             paymentEndAt_before: new Date('2024-01-01'),
           },
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should forward paymentEndAt_after', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          paymentEndAt_after: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: { paymentEndAt_after: new Date('2024-01-01') },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -1056,21 +1262,29 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           {
             paymentEndAt_after: new Date('2024-01-01'),
           },
+          expect.any(Object),
           expect.any(Object),
         );
       });
 
       it('should forward multiples filters', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          status: 'paid, paying',
-          paymentEndAt_before: '2024-01-01',
-          paymentEndAt_after: '2024-01-01',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {
+            status: ['paid', 'paying'],
+            paymentEndAt_after: new Date('2024-01-01'),
+            paymentEndAt_before: new Date('2024-01-01'),
+          },
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -1084,15 +1298,12 @@ describe('ListExpenseUseCase', () => {
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
-          expect.any(Object),
           {
-            status: [
-              ExpenseStatus.fromString('paid'),
-              ExpenseStatus.fromString('paying'),
-            ],
+            status: ['paid', 'paying'],
             paymentEndAt_before: new Date('2024-01-01'),
             paymentEndAt_after: new Date('2024-01-01'),
           },
+          expect.any(Object),
           expect.any(Object),
         );
       });
@@ -1100,9 +1311,16 @@ describe('ListExpenseUseCase', () => {
 
     describe('shorting', () => {
       it('should forward sort by name as default', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'name' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1117,17 +1335,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'name' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by name ascending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'name',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'name' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1142,17 +1365,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'name' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by name descending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'name',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'name' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1167,17 +1395,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'name' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by description ascending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'description',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'description' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1192,17 +1425,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'description' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by description descending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'description',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'description' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1215,19 +1453,24 @@ describe('ListExpenseUseCase', () => {
         await listExpenseUseCase.execute(input);
 
         expect(expenseRepository.list).toHaveBeenCalledWith(
-          expect.any(Object),
           expect.any(Object),
           expect.any(Object),
           { order: 'desc', orderBy: 'description' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by amount ascending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'amount',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'amount' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1242,17 +1485,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'amount' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by amount ascending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'amount',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'amount' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1267,17 +1515,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'amount' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by currency descending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'currency',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'currency' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1292,17 +1545,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'currency' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by currency ascending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'currency',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'currency' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1317,17 +1575,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'currency' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by totalAmount descending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'totalAmount',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'totalAmount' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1342,17 +1605,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'totalAmount' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by totalAmount ascending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'totalAmount',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'totalAmount' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1367,17 +1635,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'totalAmount' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by status descending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'status',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'status' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1392,17 +1665,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'status' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by status ascending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'status',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'status' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1417,17 +1695,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'status' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by tags descending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'tags',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'tags' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1442,17 +1725,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'tags' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by tags ascending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'tags',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'tags' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1467,17 +1755,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'tags' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by currentInstallment descending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'currentInstallment',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'currentInstallment' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1492,17 +1785,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'currentInstallment' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by currentInstallment ascending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'currentInstallment',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'currentInstallment' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1517,17 +1815,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'currentInstallment' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by totalInstallment descending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'totalInstallment',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'totalInstallment' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1542,17 +1845,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'totalInstallment' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by totalInstallment ascending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'totalInstallment',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'totalInstallment' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1567,17 +1875,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'totalInstallment' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by paymentDay descending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'paymentDay',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'paymentDay' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1592,17 +1905,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'paymentDay' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by paymentDay ascending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'paymentDay',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'paymentDay' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1617,17 +1935,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'paymentDay' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by expirationDay descending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'expirationDay',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'expirationDay' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1642,17 +1965,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'expirationDay' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by expirationDay ascending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'expirationDay',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'expirationDay' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1667,17 +1995,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'expirationDay' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by paymentStartAt descending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'paymentStartAt',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'paymentStartAt' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1692,17 +2025,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'paymentStartAt' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by paymentStartAt ascending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'paymentStartAt',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'paymentStartAt' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1717,17 +2055,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'paymentStartAt' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by paymentEndAt descending', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
-          order: 'desc',
-          orderBy: 'paymentEndAt',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'desc', orderBy: 'paymentEndAt' },
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1742,17 +2085,22 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'desc', orderBy: 'paymentEndAt' },
+          expect.any(Object),
         );
       });
 
       it('should forward sort by paymentEndAt ascending', async () => {
-        const input: ListExpensesInputDTO = {
-          requestingUserId: adminValidUuid,
+        const body: ListExpenseRequestBodyParams = {
+          requestingUserId: basicValidUuid,
           targetUserId: basicValidUuid,
-          order: 'asc',
-          orderBy: 'paymentEndAt',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: { order: 'asc', orderBy: 'paymentEndAt' },
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(basicUser);
@@ -1767,17 +2115,24 @@ describe('ListExpenseUseCase', () => {
         expect(expenseRepository.list).toHaveBeenCalledWith(
           expect.any(Object),
           expect.any(Object),
-          expect.any(Object),
           { order: 'asc', orderBy: 'paymentEndAt' },
+          expect.any(Object),
         );
       });
     });
 
     describe('output', () => {
       it("should map expenses to DTO's correctly", async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -1813,9 +2168,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should return dates in ISO format', async () => {
-        const input = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: basicValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(adminUser);
@@ -1847,9 +2209,16 @@ describe('ListExpenseUseCase', () => {
 
     describe('validation', () => {
       it('should throw UserIdEmptyError when requesting user id does not exist', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: '',
           targetUserId: basicValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         await expect(listExpenseUseCase.execute(input)).rejects.toThrow(
@@ -1860,9 +2229,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it('should throw UserIdEmptyError when target user id does not exist', async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: adminValidUuid,
           targetUserId: '',
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: { page: 1, pageSize: 10 },
         };
 
         await expect(listExpenseUseCase.execute(input)).rejects.toThrow(
@@ -1873,9 +2249,16 @@ describe('ListExpenseUseCase', () => {
       });
 
       it("should throw NotFoundError when requesting user doesn't exist", async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicAltValidUuid,
+        };
+
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: {},
         };
 
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(null);
@@ -1891,11 +2274,17 @@ describe('ListExpenseUseCase', () => {
       });
 
       it("should throw NotFoundError when target user doesn't exist", async () => {
-        const input: ListExpensesInputDTO = {
+        const body: ListExpenseRequestBodyParams = {
           requestingUserId: basicValidUuid,
           targetUserId: basicAltValidUuid,
         };
 
+        const input: ListExpensesInputDTO = {
+          body,
+          filters: {},
+          sorting: {},
+          pagination: {},
+        };
         vi.spyOn(userRepository, 'findById').mockResolvedValueOnce(
           basicAltUser,
         );
