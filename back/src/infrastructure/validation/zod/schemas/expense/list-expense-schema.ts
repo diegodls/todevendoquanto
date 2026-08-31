@@ -1,8 +1,14 @@
 import {
   ListExpenseFiltersOptionsParams,
   ListExpenseFiltersOptionsProps,
+  ListExpenseOrderByOptionsArrKey,
+  ListExpenseOrderDirectionOptions,
+  ListExpenseOrderRequestOptionalProps,
+  ListExpenseOrderRequestOptionsParams,
 } from '@/core/usecases/expense/list-expense-dto';
+import { toZodEnum } from '@/infrastructure/validation/zod/helpers/to-zod-enum';
 import { DateSchema } from '@/infrastructure/validation/zod/schemas/shared/date-schema';
+import { PaginationSchema } from '@/infrastructure/validation/zod/schemas/shared/pagination-schema';
 import z from 'zod';
 
 const ListExpenseFilterOptionsSchema = z
@@ -64,7 +70,6 @@ const ListExpenseFilterOptionsSchema = z
   ListExpenseFiltersOptionsParams
 >;
 
-/*
 const ListExpenseOrderOptionsSchema = z
   .object({
     order: z.string().pipe(z.enum(ListExpenseOrderDirectionOptions)).optional(),
@@ -75,7 +80,14 @@ const ListExpenseOrderOptionsSchema = z
       .optional(),
   })
   .strip() satisfies z.ZodType<
-  ListExpenseOrderRequestOptionalOptions,
+  ListExpenseOrderRequestOptionalProps,
   ListExpenseOrderRequestOptionsParams
 >;
-*/
+
+const ListExpenseRequestProps = ListExpenseFilterOptionsSchema.safeExtend(
+  ListExpenseOrderOptionsSchema.shape,
+);
+
+export const ListExpenseSchema = ListExpenseRequestProps.safeExtend(
+  PaginationSchema.shape,
+);

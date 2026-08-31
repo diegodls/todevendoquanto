@@ -90,7 +90,7 @@ export const ListExpenseOrderByOptionsArrKey = Object.keys(
 
 export const ListExpenseOrderDirectionOptions = ['asc', 'desc'] as const;
 
-export type ListExpenseOrderRequestOptionalOptions = {
+export type ListExpenseOrderRequestOptionalProps = {
   order?: (typeof ListExpenseOrderDirectionOptions)[number];
   orderBy?: keyof PropsToStringAssertive<ListExpenseOrderByOptions>;
 };
@@ -101,19 +101,19 @@ export type ListExpenseOrderRequestOptions = {
 };
 
 export type ListExpenseOrderRequestOptionsParams =
-  PropsToStringAssertive<ListExpenseOrderRequestOptions>;
+  PropsToStringOptional<ListExpenseOrderRequestOptions>;
 
 export type ListExpenseRepositoryDTO = {};
 
 export type ListExpenseInputParams = ListExpenseRequestBodyParams &
   ListExpenseFiltersOptionsParams &
-  ListExpenseOrderRequestOptionalOptions &
+  ListExpenseOrderRequestOptionalProps &
   PaginationRequestProps;
 
 export type ListExpensesInputDTO = {
   body: ListExpenseRequestBodyParams;
   filters: ListExpenseFiltersOptionsProps;
-  sorting: ListExpenseOrderRequestOptionalOptions;
+  sorting: ListExpenseOrderRequestOptionalProps;
   pagination: PaginationRequestProps;
 };
 

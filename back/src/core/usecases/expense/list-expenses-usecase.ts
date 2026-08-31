@@ -12,7 +12,7 @@ import {
 } from '@/core/shared/errors/api-errors';
 import {
   ListExpenseFiltersOptionsProps,
-  ListExpenseOrderRequestOptionalOptions,
+  ListExpenseOrderRequestOptionalProps,
   ListExpenseOrderRequestOptions,
   ListExpenseOutputDTO,
   ListExpenseOutputProps,
@@ -168,7 +168,7 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
   }
 
   private buildSorting(
-    data: ListExpenseOrderRequestOptionalOptions,
+    data: ListExpenseOrderRequestOptionalProps,
   ): ListExpenseOrderRequestOptions {
     const sorting: ListExpenseOrderRequestOptions = {
       order: 'asc',
