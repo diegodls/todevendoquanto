@@ -30,9 +30,11 @@ export class ListExpenseUseCase implements ListExpenseUseCaseInterface {
   public async execute(
     data: ListExpensesInputDTO,
   ): Promise<ListExpenseOutputDTO> {
-    const requestingUserId = UserId.from(data.body.requestingUserId);
+    const requestingUserId = UserId.from(data.requestingUserId);
 
-    const targetUserId = UserId.from(data.body.targetUserId);
+    const targetUserId = UserId.from(
+      data.filters.targetUserId || data.requestingUserId,
+    );
 
     const [requestingUser, targetUser] = await Promise.all([
       this.userRepository.findById(requestingUserId),

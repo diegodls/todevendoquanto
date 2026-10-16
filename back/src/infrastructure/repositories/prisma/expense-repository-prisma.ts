@@ -9,6 +9,7 @@ import { InternalError } from '@/core/shared/errors/api-errors';
 import { CreateExpenseOutputDTO } from '@/core/usecases/expense/create-expense-dto';
 import {
   ListExpenseFiltersOptionsProps,
+  ListExpenseOrderRequestOptionalProps,
   ListExpenseRequestBodyProps,
 } from '@/core/usecases/expense/list-expense-dto';
 import { PrismaClientGenerated } from '@/infrastructure/repositories/prisma/config/prisma-client';
@@ -55,8 +56,9 @@ export class ExpenseRepositoryPrisma implements ExpenseRepositoryInterface {
 
   async list(
     data: ListExpenseRequestBodyProps,
-    pagination: PaginationDTO,
     filters: ListExpenseFiltersOptionsProps,
+    sorting: ListExpenseOrderRequestOptionalProps,
+    pagination: PaginationDTO,
   ): Promise<PaginatedResult<Expense>> {
     // ! IMPLEMENT THIS
     return { data: [], total: 0 };

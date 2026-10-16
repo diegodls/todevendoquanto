@@ -11,8 +11,9 @@ import { DateSchema } from '@/infrastructure/validation/zod/schemas/shared/date-
 import { PaginationSchema } from '@/infrastructure/validation/zod/schemas/shared/pagination-schema';
 import z from 'zod';
 
-const ListExpenseFilterOptionsSchema = z
+export const ListExpenseFilterOptionsSchema = z
   .object({
+    targetUserId: z.string().optional(),
     name: z.string().optional(),
     installmentId: z.string().optional(),
     created_before: DateSchema.optional(),
@@ -70,7 +71,7 @@ const ListExpenseFilterOptionsSchema = z
   ListExpenseFiltersOptionsParams
 >;
 
-const ListExpenseOrderOptionsSchema = z
+export const ListExpenseOrderOptionsSchema = z
   .object({
     order: z.string().pipe(z.enum(ListExpenseOrderDirectionOptions)).optional(),
 

@@ -17,6 +17,7 @@ export type ListExpenseRequestBodyParams =
   PropsToStringAssertive<ListExpenseRequestBodyProps>;
 
 export type ListExpenseFiltersOptionsProps = {
+  targetUserId?: string;
   name?: string;
   installmentId?: string;
   created_before?: Date;
@@ -105,13 +106,12 @@ export type ListExpenseOrderRequestOptionsParams =
 
 export type ListExpenseRepositoryDTO = {};
 
-export type ListExpenseInputParams = ListExpenseRequestBodyParams &
-  ListExpenseFiltersOptionsParams &
+export type ListExpenseInputParams = ListExpenseFiltersOptionsProps &
   ListExpenseOrderRequestOptionalProps &
   PaginationRequestProps;
 
 export type ListExpensesInputDTO = {
-  body: ListExpenseRequestBodyParams;
+  requestingUserId: string;
   filters: ListExpenseFiltersOptionsProps;
   sorting: ListExpenseOrderRequestOptionalProps;
   pagination: PaginationRequestProps;
